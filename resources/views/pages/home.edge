@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      AdonisJS Traditional Web Starter Kit
+    </title>
+
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link
+      href="https://fonts.bunny.net/css?family=instrument-sans:400,400i,500,500i,600,600i,700,700i"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --sand-1: #fdfdfc;
+        --sand-2: #f9f9f8;
+        --sand-3: #f1f0ef;
+        --sand-4: #e9e8e6;
+        --sand-5: #e2e1de;
+        --sand-6: #dad9d6;
+        --sand-7: #cfceca;
+        --sand-8: #bcbbb5;
+        --sand-9: #8d8d86;
+        --sand-10: #82827c;
+        --sand-11: #63635e;
+        --sand-12: #21201c;
+      }
+    </style>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [ "Instrument Sans", "sans-serif" ]
+            },
+            colors: {
+              primary: {
+                DEFAULT: "#5A45FF",
+                lighter: "#a599ff"
+              },
+              sand: {
+                1: "var(--sand-1)",
+                2: "var(--sand-2)",
+                3: "var(--sand-3)",
+                4: "var(--sand-4)",
+                5: "var(--sand-5)",
+                6: "var(--sand-6)",
+                7: "var(--sand-7)",
+                8: "var(--sand-8)",
+                9: "var(--sand-9)",
+                10: "var(--sand-10)",
+                11: "var(--sand-11)",
+                12: "var(--sand-12)"
+              }
+            }
+          }
+        }
+      };
+    </script>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('dumper')
+  </head>
+  <body class="min-h-screen w-screen font-sans bg-sand-1">
+    <div class="min-h-screen flex flex-col">
+      <div class="flex-1 flex items-center justify-center py-16 px-8">
+        <div class="max-w-4xl w-full space-y-12">
+          <div class="text-center space-y-6">
+            <div class="flex justify-center">
+              <svg class="w-20 h-20 fill-primary" viewBox="0 0 33 33">
+                <path
+                  fill-rule="evenodd"
+                  d="M0 16.333c0 13.173 3.16 16.333 16.333 16.333 13.173 0 16.333-3.16 16.333-16.333C32.666 3.16 29.506 0 16.333 0 3.16 0 0 3.16 0 16.333Zm6.586 3.393L11.71 8.083c.865-1.962 2.528-3.027 4.624-3.027 2.096 0 3.759 1.065 4.624 3.027l5.123 11.643c.233.566.432 1.297.432 1.93 0 2.893-2.029 4.923-4.923 4.923-.986 0-1.769-.252-2.561-.506-.812-.261-1.634-.526-2.695-.526-1.048 0-1.89.267-2.718.529-.801.253-1.59.503-2.538.503-2.894 0-4.923-2.03-4.923-4.924 0-.632.2-1.363.432-1.929Zm9.747-9.613-5.056 11.443c1.497-.699 3.227-1.032 5.056-1.032 1.763 0 3.56.333 4.99 1.032l-4.99-11.444Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <h1 class="text-5xl font-bold text-sand-12">
+              AdonisJS Traditional Web Starter Kit
+            </h1>
+            <p class="text-xl text-sand-11 max-w-2xl mx-auto">
+              A modern starter kit for building traditional web applications with AdonisJS, htmx, and Alpine.js
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white border border-sand-7 rounded-xl p-6 hover:border-sand-8 hover:shadow-md transition-all">
+              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 fill-primary" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-sand-12 mb-2">AdonisJS</h3>
+              <p class="text-sm text-sand-11">
+                Full-featured Node.js web framework with authentication, database ORM, and more.
+              </p>
+            </div>
+
+            <div class="bg-white border border-sand-7 rounded-xl p-6 hover:border-sand-8 hover:shadow-md transition-all">
+              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 fill-primary" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-sand-12 mb-2">htmx</h3>
+              <p class="text-sm text-sand-11">
+                Build dynamic web applications with HTML attributes. No complex JavaScript required.
+              </p>
+            </div>
+
+            <div class="bg-white border border-sand-7 rounded-xl p-6 hover:border-sand-8 hover:shadow-md transition-all">
+              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 fill-primary" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-sand-12 mb-2">Alpine.js</h3>
+              <p class="text-sm text-sand-11">
+                Lightweight JavaScript framework for declarative, reactive UIs with minimal overhead.
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-white border border-sand-7 rounded-xl p-8">
+            <h2 class="text-2xl font-semibold text-sand-12 mb-6">Getting Started</h2>
+            <div class="space-y-4">
+              <div class="flex gap-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <span class="text-primary font-semibold text-sm">1</span>
+                </div>
+                <div>
+                  <h3 class="font-semibold text-sand-12 mb-1">Install Dependencies</h3>
+                  <p class="text-sm text-sand-11 mb-2">Make sure all dependencies are installed:</p>
+                  <code class="block bg-sand-2 px-4 py-2 rounded text-sm text-sand-12">pnpm install</code>
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <span class="text-primary font-semibold text-sm">2</span>
+                </div>
+                <div>
+                  <h3 class="font-semibold text-sand-12 mb-1">Configure Environment</h3>
+                  <p class="text-sm text-sand-11 mb-2">Copy the environment file and configure your database:</p>
+                  <code class="block bg-sand-2 px-4 py-2 rounded text-sm text-sand-12">cp .env.example .env</code>
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <span class="text-primary font-semibold text-sm">3</span>
+                </div>
+                <div>
+                  <h3 class="font-semibold text-sand-12 mb-1">Run Migrations</h3>
+                  <p class="text-sm text-sand-11 mb-2">Set up your database schema:</p>
+                  <code class="block bg-sand-2 px-4 py-2 rounded text-sm text-sand-12">node ace migration:run</code>
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <span class="text-primary font-semibold text-sm">4</span>
+                </div>
+                <div>
+                  <h3 class="font-semibold text-sand-12 mb-1">Start Development Server</h3>
+                  <p class="text-sm text-sand-11 mb-2">Launch the development server with hot reload:</p>
+                  <code class="block bg-sand-2 px-4 py-2 rounded text-sm text-sand-12">pnpm dev</code>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-sand-12 text-sand-1 rounded-xl p-8">
+            <h2 class="text-2xl font-semibold mb-4">Features Included</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 fill-sand-1 flex-shrink-0 mt-0.5" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                <span class="text-sm">Authentication system</span>
+              </div>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 fill-sand-1 flex-shrink-0 mt-0.5" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                <span class="text-sm">Database ORM (Lucid)</span>
+              </div>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 fill-sand-1 flex-shrink-0 mt-0.5" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                <span class="text-sm">Form validation (Vine)</span>
+              </div>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 fill-sand-1 flex-shrink-0 mt-0.5" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                <span class="text-sm">Template engine (Edge)</span>
+              </div>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 fill-sand-1 flex-shrink-0 mt-0.5" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                <span class="text-sm">htmx integration</span>
+              </div>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 fill-sand-1 flex-shrink-0 mt-0.5" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                <span class="text-sm">Alpine.js integration</span>
+              </div>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 fill-sand-1 flex-shrink-0 mt-0.5" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                <span class="text-sm">Vite for asset bundling</span>
+              </div>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 fill-sand-1 flex-shrink-0 mt-0.5" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                <span class="text-sm">TypeScript support</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="border-t border-sand-7 bg-white py-6 px-8">
+        <div class="max-w-4xl mx-auto text-center text-sm text-sand-11">
+          <p>
+            Route for this page is registered in <code class="font-medium text-primary">start/routes.ts</code> file, 
+            rendering <code class="font-medium text-primary">resources/views/pages/home.edge</code> template
+          </p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
