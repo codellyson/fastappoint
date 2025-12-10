@@ -1,0 +1,88 @@
+@layout('layouts/app')
+
+@set('title', 'Verify Email - PayFacilitator')
+
+@section('content')
+  <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <div class="text-center">
+        <h2 class="text-3xl font-bold text-sand-12">Verify your email</h2>
+        <p class="mt-2 text-sm text-sand-11">
+          We've sent a 4-digit code to your email address
+        </p>
+      </div>
+
+      <form
+        class="mt-8 space-y-6"
+        method="POST"
+        action="/verify-otp"
+        x-data="{ 
+          otp: ['', '', '', ''],
+          loading: false,
+          focusNext(index) {
+            if (index < 3 && this.otp[index]) {
+              document.getElementById(`otp-${index + 1}`).focus()
+            }
+          },
+          handlePaste(e) {
+            const pasted = e.clipboardData.getData('text').trim().slice(0, 4)
+            pasted.split('').forEach((char, i) => {
+              if (i < 4) {
+                this.otp[i] = char
+                if (i < 3) document.getElementById(`otp-${i + 1}`).focus()
+              }
+            })
+            e.preventDefault()
+          }
+        }"
+        @submit="loading = true"
+      >
+        <div class="bg-white border border-sand-7 rounded-xl p-6">
+          <div class="flex justify-center gap-3 mb-6">
+            <template x-for="(digit, index) in otp" :key="index">
+              <input
+                :id="`otp-${index}`"
+                type="text"
+                maxlength="1"
+                pattern="[0-9]"
+                required
+                class="w-14 h-14 text-center text-2xl font-semibold border-2 border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                x-model="otp[index]"
+                @input="focusNext(index)"
+                @paste.prevent="handlePaste($event)"
+                @keydown.backspace="if (!otp[index] && index > 0) document.getElementById(`otp-${index - 1}`).focus()"
+              />
+            </template>
+          </div>
+
+          <input type="hidden" name="otp" :value="otp.join('')" />
+
+          <p class="text-center text-sm text-sand-11 mb-4">
+            Didn't receive the code?
+            <button type="button" class="font-medium text-primary hover:text-primary/80">
+              Resend
+            </button>
+          </p>
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            :disabled="loading || otp.join('').length !== 4"
+            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span x-show="!loading">Verify</span>
+            <span x-show="loading" class="flex items-center gap-2">
+              <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Verifying...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+@endsection
+

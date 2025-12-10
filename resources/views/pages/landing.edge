@@ -1,0 +1,102 @@
+@layout('layouts/app')
+
+@set('title', 'PayFacilitator')
+
+@section('content')
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center space-y-8 mb-16">
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-sand-12 leading-tight">
+        Pay for YouTube Premium in Naira.<br />
+        <span class="text-primary">Instantly.</span>
+      </h1>
+      <p class="text-xl sm:text-2xl text-sand-11 max-w-3xl mx-auto">
+        Virtual cards that actually work. No dollar limits. Fund via Bank Transfer.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          href="/signup"
+          class="inline-flex items-center justify-center px-8 py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors shadow-lg"
+        >
+          Get Started
+        </a>
+        <a
+          href="/login"
+          class="inline-flex items-center justify-center px-8 py-4 bg-white border-2 border-sand-7 text-sand-12 font-semibold rounded-lg hover:border-sand-8 transition-colors"
+        >
+          Sign In
+        </a>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+      <div
+        class="bg-white border border-sand-7 rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all"
+      >
+        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 fill-primary" viewBox="0 0 24 24">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-sand-12 mb-2">
+          Instant Creation
+        </h3>
+        <p class="text-sm text-sand-11">
+          Get your virtual card in seconds. No waiting, no delays.
+        </p>
+      </div>
+
+      <div
+        class="bg-white border border-sand-7 rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all"
+      >
+        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 fill-primary" viewBox="0 0 24 24">
+            <path
+              d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-sand-12 mb-2">
+          Accepted on YouTube/Spotify
+        </h3>
+        <p class="text-sm text-sand-11">
+          Works seamlessly on all major platforms. No rejections.
+        </p>
+      </div>
+
+      <div
+        class="bg-white border border-sand-7 rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all"
+      >
+        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 fill-primary" viewBox="0 0 24 24">
+            <path
+              d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm-1 14H5c-.55 0-1-.45-1-1V8l6.94 4.34c.65.41 1.47.41 2.12 0L19 8v9c0 .55-.45 1-1 1zm-6-3l-2.5-1.5L8 15h6z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-sand-12 mb-2">
+          Bank Transfer Funding
+        </h3>
+        <p class="text-sm text-sand-11">
+          Top up your wallet instantly via bank transfer. No cards needed.
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-white border border-sand-7 rounded-xl p-6 md:p-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h3 class="text-lg font-semibold text-sand-12 mb-1">
+            Current Rate
+          </h3>
+          <p class="text-sm text-sand-11">
+            Card Creation Fee: ₦100
+          </p>
+        </div>
+        <div x-data="{ rate: '₦1 = $0.00067' }" class="text-2xl font-bold text-primary" x-text="rate">
+        </div>
+      </div>
+    </div>
+  </div>
+@endsection

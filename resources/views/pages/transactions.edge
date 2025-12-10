@@ -1,0 +1,85 @@
+@layout('layouts/app')
+
+@set('title', 'Transaction History - PayFacilitator')
+
+@section('content')
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-sand-12">Transaction History</h1>
+      <p class="mt-2 text-sm text-sand-11">View all your transactions</p>
+    </div>
+
+    <div
+      x-data="{
+        transactions: [
+          { id: 1, type: 'debit', title: 'YouTube Premium', date: '2024-12-10T14:30:00', amount: 1100 },
+          { id: 2, type: 'credit', title: 'Wallet Top-up', date: '2024-12-09T10:15:00', amount: 5000 },
+          { id: 3, type: 'debit', title: 'Card Creation Fee', date: '2024-12-08T09:00:00', amount: 100 },
+          { id: 4, type: 'credit', title: 'Wallet Top-up', date: '2024-12-05T16:45:00', amount: 3000 }
+        ],
+        formatDate(dateString) {
+          const date = new Date(dateString)
+          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+          const month = months[date.getMonth()]
+          const day = date.getDate()
+          const hours = date.getHours()
+          const minutes = date.getMinutes()
+          const ampm = hours >= 12 ? 'PM' : 'AM'
+          const displayHours = hours % 12 || 12
+          const displayMinutes = minutes.toString().padStart(2, '0')
+          return `${month} ${day}, ${displayHours}:${displayMinutes} ${ampm}`
+        }
+      }"
+      class="bg-white border border-sand-7 rounded-xl overflow-hidden"
+    >
+      <div class="divide-y divide-sand-7">
+        <template x-for="transaction in transactions" :key="transaction.id">
+          <div class="p-4 sm:p-6 hover:bg-sand-2 transition-colors">
+            <div class="flex items-center gap-4">
+              <div
+                class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                :class="transaction.type === 'credit' ? 'bg-success/20' : 'bg-error/20'"
+              >
+                <svg
+                  class="w-6 h-6"
+                  :class="transaction.type === 'credit' ? 'fill-success' : 'fill-error'"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    x-show="transaction.type === 'credit'"
+                    d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"
+                    style="display: none;"
+                  />
+                  <path
+                    x-show="transaction.type === 'debit'"
+                    d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"
+                    style="display: none;"
+                  />
+                </svg>
+              </div>
+              
+              <div class="flex-1 min-w-0">
+                <div class="font-semibold text-sand-12 mb-1" x-text="transaction.title"></div>
+                <div class="text-sm text-sand-11" x-text="formatDate(transaction.date)"></div>
+              </div>
+              
+              <div
+                class="text-lg font-bold"
+                :class="transaction.type === 'credit' ? 'text-success' : 'text-error'"
+                x-text="(transaction.type === 'credit' ? '+' : '-') + (window.formatCurrency ? window.formatCurrency(Math.abs(transaction.amount)) : '₦' + Math.abs(transaction.amount).toLocaleString('en-NG', {minimumFractionDigits: 2}))"
+              ></div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="transactions.length === 0" class="p-12 text-center">
+        <svg class="w-24 h-24 mx-auto mb-4 text-sand-7" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+        </svg>
+        <p class="text-sand-11">No transactions yet</p>
+      </div>
+    </div>
+  </div>
+@endsection
+

@@ -1,0 +1,21 @@
+<nav class="bg-white border-b border-sand-7 sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <a href="/dashboard" class="flex items-center gap-2">
+        <svg class="w-8 h-8 fill-primary" viewBox="0 0 24 24">
+          <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+        </svg>
+        <span class="font-semibold text-sand-12">PayFacilitator</span>
+      </a>
+      
+      <div class="flex items-center gap-4">
+        <a href="/dashboard" class="text-sm text-sand-11 hover:text-sand-12">Dashboard</a>
+        <a href="/transactions" class="text-sm text-sand-11 hover:text-sand-12">Transactions</a>
+        <form method="POST" action="/logout">
+          <button type="submit" class="text-sm text-sand-11 hover:text-sand-12">Logout</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</nav>
+

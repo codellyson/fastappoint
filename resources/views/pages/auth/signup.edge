@@ -1,0 +1,105 @@
+@layout('layouts/app')
+
+@set('title', 'Sign Up - PayFacilitator')
+
+@section('content')
+  <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <div class="text-center">
+        <h2 class="text-3xl font-bold text-sand-12">Create your account</h2>
+        <p class="mt-2 text-sm text-sand-11">
+          Already have an account?
+          <a href="/login" class="font-medium text-primary hover:text-primary/80">Sign in</a>
+        </p>
+      </div>
+
+      <form
+        class="mt-8 space-y-6"
+        method="POST"
+        action="/signup"
+        x-data="{ loading: false }"
+        @submit="loading = true"
+      >
+        <div class="bg-white border border-sand-7 rounded-xl p-6 space-y-4">
+          <div>
+            <label for="name" class="block text-sm font-medium text-sand-12 mb-2">
+              Full Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              required
+              class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder="John Doe"
+            />
+          </div>
+
+          <div>
+            <label for="email" class="block text-sm font-medium text-sand-12 mb-2">
+              Email Address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder="john@example.com"
+            />
+          </div>
+
+          <div>
+            <label for="phone" class="block text-sm font-medium text-sand-12 mb-2">
+              Phone Number
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              required
+              class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder="08012345678"
+              x-model="phoneInput"
+              @input="phoneInput = $event.target.value.replace(/\D/g, '')"
+            />
+              <p class="mt-1 text-xs text-sand-10" x-show="phoneInput" x-text="window.formatPhoneNumber ? window.formatPhoneNumber(phoneInput) : phoneInput"></p>
+          </div>
+
+          <div>
+            <label for="password" class="block text-sm font-medium text-sand-12 mb-2">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              minlength="8"
+              class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder="••••••••"
+            />
+          </div>
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            :disabled="loading"
+            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span x-show="!loading">Sign Up</span>
+            <span x-show="loading" class="flex items-center gap-2">
+              <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Creating account...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+@endsection
+
