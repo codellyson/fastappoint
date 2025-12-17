@@ -15,13 +15,14 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_PASSWORD: Env.schema.string.optional(),
   DB_DATABASE: Env.schema.string(),
 
-  DOJAH_APP_ID: Env.schema.string.optional(),
-  DOJAH_SECRET_KEY: Env.schema.string.optional(),
-  DOJAH_BASE_URL: Env.schema.string.optional(),
+  APP_URL: Env.schema.string.optional(),
 
   PAYSTACK_SECRET_KEY: Env.schema.string.optional(),
+  PAYSTACK_PUBLIC_KEY: Env.schema.string.optional(),
 
-  BRIDGECARD_API_KEY: Env.schema.string.optional(),
-  BRIDGECARD_SECRET_KEY: Env.schema.string.optional(),
-  BRIDGECARD_BASE_URL: Env.schema.string.optional(),
+  RESEND_API_KEY: Env.schema.string.optional(),
+  FROM_EMAIL: Env.schema.string.optional(),
+
+  TERMII_API_KEY: Env.schema.string.optional(),
+  TERMII_SENDER_ID: Env.schema.string.optional(),
 })

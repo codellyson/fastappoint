@@ -1,40 +1,27 @@
 import { DateTime } from 'luxon'
-import hash from '@adonisjs/core/services/hash'
-import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
-import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import Business from '#models/business'
+import User from '#models/user'
 
-const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
-  uids: ['email'],
-  passwordColumnName: 'password',
-})
-
-export default class User extends compose(BaseModel, AuthFinder) {
+export default class Availability extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
   @column()
-  declare businessId: number | null
+  declare businessId: number
 
   @column()
-  declare fullName: string
+  declare userId: number | null
 
   @column()
-  declare email: string
+  declare dayOfWeek: number
 
   @column()
-  declare phone: string | null
-
-  @column({ serializeAs: null })
-  declare password: string
+  declare startTime: string
 
   @column()
-  declare avatar: string | null
-
-  @column()
-  declare role: 'owner' | 'admin' | 'staff'
+  declare endTime: string
 
   @column()
   declare isActive: boolean
@@ -47,4 +34,13 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @belongsTo(() => Business)
   declare business: BelongsTo<typeof Business>
+
+  @belongsTo(() => User)
+  declare user: BelongsTo<typeof User>
+
+  static dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+  get dayName() {
+    return Availability.dayNames[this.dayOfWeek]
+  }
 }

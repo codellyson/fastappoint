@@ -1,0 +1,95 @@
+@layout('layouts/app')
+
+@set('title', 'Edit Service - BookMe')
+
+@section('content')
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    @if(flashMessages.has('error'))
+      <div class="mb-6 bg-error/10 border border-error text-error rounded-lg p-4 text-sm">
+        {{ flashMessages.get('error') }}
+      </div>
+    @endif
+
+    <div class="mb-6">
+      <a href="{{ route('services.index') }}" class="text-sm text-primary hover:underline">← Back to Services</a>
+    </div>
+
+    <div class="bg-white border border-sand-7 rounded-xl">
+      <div class="p-6 border-b border-sand-7">
+        <h1 class="text-xl font-bold text-sand-12">Edit Service</h1>
+      </div>
+
+      <form method="POST" action="{{ route('services.update', { id: service.id }) }}" class="p-6 space-y-6">
+        {{ csrfField() }}
+
+        <div>
+          <label for="name" class="block text-sm font-medium text-sand-12 mb-2">Service Name</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            required
+            value="{{ service.name }}"
+            class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        <div>
+          <label for="description" class="block text-sm font-medium text-sand-12 mb-2">
+            Description <span class="text-sand-9">(optional)</span>
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            rows="3"
+            class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+          >{{ service.description }}</textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="durationMinutes" class="block text-sm font-medium text-sand-12 mb-2">Duration</label>
+            <select
+              id="durationMinutes"
+              name="durationMinutes"
+              required
+              class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="15" {{ service.durationMinutes === 15 ? 'selected' : '' }}>15 minutes</option>
+              <option value="30" {{ service.durationMinutes === 30 ? 'selected' : '' }}>30 minutes</option>
+              <option value="45" {{ service.durationMinutes === 45 ? 'selected' : '' }}>45 minutes</option>
+              <option value="60" {{ service.durationMinutes === 60 ? 'selected' : '' }}>1 hour</option>
+              <option value="90" {{ service.durationMinutes === 90 ? 'selected' : '' }}>1.5 hours</option>
+              <option value="120" {{ service.durationMinutes === 120 ? 'selected' : '' }}>2 hours</option>
+              <option value="180" {{ service.durationMinutes === 180 ? 'selected' : '' }}>3 hours</option>
+              <option value="240" {{ service.durationMinutes === 240 ? 'selected' : '' }}>4 hours</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="price" class="block text-sm font-medium text-sand-12 mb-2">Price (₦)</label>
+            <input
+              id="price"
+              name="price"
+              type="number"
+              min="0"
+              step="100"
+              required
+              value="{{ service.price }}"
+              class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
+
+        <div class="pt-4 flex gap-3">
+          <button type="submit" class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
+            Save Changes
+          </button>
+          <a href="{{ route('services.index') }}" class="px-6 py-3 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+@endsection

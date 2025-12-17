@@ -1,15 +1,14 @@
 @layout('layouts/app')
 
-@set('title', 'Sign Up - PayFacilitator')
+@set('title', 'Sign Up - BookMe')
 
 @section('content')
   <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
       <div class="text-center">
-        <h2 class="text-3xl font-bold text-sand-12">Create your account</h2>
+        <h2 class="text-3xl font-bold text-sand-12">Create your booking page</h2>
         <p class="mt-2 text-sm text-sand-11">
-          Already have an account?
-          <a href="{{ route('auth.login.show') }}" class="font-medium text-primary hover:text-primary/80">Sign in</a>
+          Set up your business and start accepting bookings in minutes
         </p>
       </div>
 
@@ -19,15 +18,28 @@
         </div>
       @endif
 
+      @if(flashMessages.has('errors'))
+        <div class="bg-error/10 border border-error text-error rounded-lg p-4 text-sm">
+          <ul class="list-disc list-inside">
+            @each(err in flashMessages.get('errors'))
+              <li>{{ err.message }}</li>
+            @endeach
+          </ul>
+        </div>
+      @endif
+
       <form
         class="mt-8 space-y-6"
         method="POST"
         action="{{ route('auth.signup') }}"
-        x-data="{ loading: false, phoneInput: '{{ old('phone') || '' }}' }"
+        x-data="{ loading: false }"
         @submit="loading = true"
       >
         {{ csrfField() }}
+
         <div class="bg-white border border-sand-7 rounded-xl p-6 space-y-4">
+          <h3 class="font-semibold text-sand-12 border-b border-sand-6 pb-3 mb-4">About You</h3>
+
           <div>
             <label for="fullName" class="block text-sm font-medium text-sand-12 mb-2">
               Full Name
@@ -37,7 +49,7 @@
               name="fullName"
               type="text"
               required
-              value="{{ old('fullName') || '' }}"
+              value="{{ flashMessages.get('fullName') || '' }}"
               class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="John Doe"
             />
@@ -55,7 +67,7 @@
               name="email"
               type="email"
               required
-              value="{{ old('email') || '' }}"
+              autocomplete="email"
               class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="john@example.com"
             />
@@ -66,21 +78,15 @@
 
           <div>
             <label for="phone" class="block text-sm font-medium text-sand-12 mb-2">
-              Phone Number
+              Phone Number <span class="text-sand-9">(optional)</span>
             </label>
             <input
               id="phone"
               name="phone"
               type="tel"
-              required
               class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="08012345678"
-              x-model="phoneInput"
-              @input="phoneInput = $event.target.value.replace(/\D/g, '')"
+              placeholder="+234 800 000 0000"
             />
-            @error('phone')
-              <p class="mt-1 text-sm text-error">{{ $message }}</p>
-            @enderror
           </div>
 
           <div>
@@ -92,11 +98,55 @@
               name="password"
               type="password"
               required
-              minlength="8"
+              autocomplete="new-password"
               class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="••••••••"
+              placeholder="Min. 8 characters"
             />
             @error('password')
+              <p class="mt-1 text-sm text-error">{{ $message }}</p>
+            @enderror
+          </div>
+        </div>
+
+        <div class="bg-white border border-sand-7 rounded-xl p-6 space-y-4">
+          <h3 class="font-semibold text-sand-12 border-b border-sand-6 pb-3 mb-4">About Your Business</h3>
+
+          <div>
+            <label for="businessName" class="block text-sm font-medium text-sand-12 mb-2">
+              Business Name
+            </label>
+            <input
+              id="businessName"
+              name="businessName"
+              type="text"
+              required
+              class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder="Glow Beauty Salon"
+            />
+            @error('businessName')
+              <p class="mt-1 text-sm text-error">{{ $message }}</p>
+            @enderror
+          </div>
+
+          <div>
+            <label for="category" class="block text-sm font-medium text-sand-12 mb-2">
+              Category
+            </label>
+            <select
+              id="category"
+              name="category"
+              required
+              class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
+            >
+              <option value="">Select a category</option>
+              <option value="beauty">💇 Beauty & Wellness</option>
+              <option value="media">📸 Photography & Media</option>
+              <option value="health">🏥 Health & Medical</option>
+              <option value="fitness">💪 Fitness & Sports</option>
+              <option value="education">📚 Education & Coaching</option>
+              <option value="other">🏢 Other Services</option>
+            </select>
+            @error('category')
               <p class="mt-1 text-sm text-error">{{ $message }}</p>
             @enderror
           </div>
@@ -108,16 +158,23 @@
             :disabled="loading"
             class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span x-show="!loading">Sign Up</span>
+            <span x-show="!loading">Create Account</span>
             <span x-show="loading" class="flex items-center gap-2">
               <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Creating account...
+              Creating...
             </span>
           </button>
         </div>
+
+        <p class="text-center text-sm text-sand-11">
+          Already have an account?
+          <a href="{{ route('auth.login.show') }}" class="font-medium text-primary hover:text-primary/80">
+            Sign in
+          </a>
+        </p>
       </form>
     </div>
   </div>

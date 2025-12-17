@@ -2,11 +2,11 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth-controller')
-const KycController = () => import('#controllers/kyc-controller')
-const WalletController = () => import('#controllers/wallet-controller')
-const CardController = () => import('#controllers/card-controller')
-const DevController = () => import('#controllers/dev-controller')
-const SubscriptionController = () => import('#controllers/subscription-controller')
+const OnboardingController = () => import('#controllers/onboarding-controller')
+const DashboardController = () => import('#controllers/dashboard-controller')
+const BookingController = () => import('#controllers/booking-controller')
+const BookingsController = () => import('#controllers/bookings-controller')
+const ServicesController = () => import('#controllers/services-controller')
 
 router.get('/', async ({ view }) => view.render('pages/landing')).as('home')
 
@@ -16,8 +16,8 @@ router
     router.post('/signup', [AuthController, 'signup']).as('auth.signup')
     router.get('/login', [AuthController, 'showLogin']).as('auth.login.show')
     router.post('/login', [AuthController, 'login']).as('auth.login')
-    router.on('/forgot-password').render('pages/auth/forgot-password').as('auth.forgot')
-    router.on('/verify-otp').render('pages/auth/otp-verification').as('auth.otp')
+    router.get('/forgot-password', [AuthController, 'showForgotPassword']).as('auth.forgot.show')
+    router.post('/forgot-password', [AuthController, 'forgotPassword']).as('auth.forgot')
   })
   .use(middleware.guest())
 
@@ -25,45 +25,37 @@ router.post('/logout', [AuthController, 'logout']).as('auth.logout').use(middlew
 
 router
   .group(() => {
-    router.get('/dashboard', [CardController, 'index']).as('dashboard')
-    router.get('/kyc/verify', [KycController, 'show']).as('kyc.show')
-    router.post('/kyc/verify', [KycController, 'verify']).as('kyc.verify')
-    router.get('/fund-wallet', [WalletController, 'show']).as('wallet.fund')
-    router
-      .post('/wallet/create-account', [WalletController, 'createVirtualAccount'])
-      .as('wallet.create-account')
-    router.get('/transactions', [WalletController, 'transactions']).as('transactions')
+    router.get('/onboarding', [OnboardingController, 'show']).as('onboarding.show')
+    router.post('/onboarding/details', [OnboardingController, 'updateDetails']).as('onboarding.details')
+    router.post('/onboarding/service', [OnboardingController, 'addService']).as('onboarding.service.add')
+    router.post('/onboarding/service/:id/delete', [OnboardingController, 'deleteService']).as('onboarding.service.delete')
+    router.post('/onboarding/availability', [OnboardingController, 'saveAvailability']).as('onboarding.availability')
+    router.post('/onboarding/complete', [OnboardingController, 'complete']).as('onboarding.complete')
 
-    router.get('/cards/create', [CardController, 'showCreate']).as('cards.create.show')
-    router.post('/cards/create', [CardController, 'create']).as('cards.create')
-    router.get('/cards/:id', [CardController, 'show']).as('cards.show')
-    router.post('/cards/:id/freeze', [CardController, 'freeze']).as('cards.freeze')
-    router.post('/cards/:id/unfreeze', [CardController, 'unfreeze']).as('cards.unfreeze')
-    router.post('/cards/:id/delete', [CardController, 'delete']).as('cards.delete')
+    router.get('/dashboard', [DashboardController, 'index']).as('dashboard')
 
-    // Subscriptions
-    router.get('/subscriptions', [SubscriptionController, 'index']).as('subscriptions.index')
-    router
-      .get('/subscriptions/service/:id', [SubscriptionController, 'show'])
-      .as('subscriptions.show')
-    router
-      .post('/subscriptions/service/:id/subscribe', [SubscriptionController, 'subscribe'])
-      .as('subscriptions.subscribe')
-    router
-      .get('/subscriptions/:id/details', [SubscriptionController, 'details'])
-      .as('subscriptions.details')
-    router
-      .post('/subscriptions/:id/activate', [SubscriptionController, 'markActive'])
-      .as('subscriptions.activate')
-    router
-      .post('/subscriptions/:id/cancel', [SubscriptionController, 'cancel'])
-      .as('subscriptions.cancel')
+    router.get('/bookings', [BookingsController, 'index']).as('bookings.index')
+    router.get('/bookings/:id', [BookingsController, 'show']).as('bookings.show')
+    router.post('/bookings/:id/complete', [BookingsController, 'markComplete']).as('bookings.complete')
+    router.post('/bookings/:id/cancel', [BookingsController, 'cancel']).as('bookings.cancel')
 
-    // Dev/test routes (only work in development)
-    router
-      .post('/dev/simulate-funding', [DevController, 'simulateFunding'])
-      .as('dev.simulate-funding')
+    router.get('/services', [ServicesController, 'index']).as('services.index')
+    router.get('/services/new', [ServicesController, 'create']).as('services.create')
+    router.post('/services', [ServicesController, 'store']).as('services.store')
+    router.get('/services/:id/edit', [ServicesController, 'edit']).as('services.edit')
+    router.post('/services/:id', [ServicesController, 'update']).as('services.update')
+    router.post('/services/:id/toggle', [ServicesController, 'toggleActive']).as('services.toggle')
+    router.post('/services/:id/delete', [ServicesController, 'destroy']).as('services.destroy')
   })
   .use(middleware.auth())
 
-router.post('/webhooks/paystack', [WalletController, 'webhook']).as('webhooks.paystack')
+router
+  .group(() => {
+    router.get('/:slug', [BookingController, 'show']).as('book.show')
+    router.get('/:slug/service/:serviceId/slots', [BookingController, 'getTimeSlots']).as('book.slots')
+    router.post('/:slug/service/:serviceId', [BookingController, 'createBooking']).as('book.create')
+    router.get('/:slug/booking/:bookingId/payment', [BookingController, 'showPayment']).as('book.payment')
+    router.get('/:slug/booking/:bookingId/verify', [BookingController, 'verifyPayment']).as('book.verify')
+    router.get('/:slug/booking/:bookingId/confirmation', [BookingController, 'confirmBooking']).as('book.confirmation')
+  })
+  .prefix('/book')

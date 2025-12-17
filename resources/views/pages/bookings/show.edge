@@ -1,0 +1,163 @@
+@layout('layouts/app')
+
+@set('title', 'Booking Details - BookMe')
+
+@section('content')
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    @if(flashMessages.has('success'))
+      <div class="mb-6 bg-success/10 border border-success text-success rounded-lg p-4 text-sm">
+        {{ flashMessages.get('success') }}
+      </div>
+    @endif
+
+    <div class="mb-6">
+      <a href="{{ route('bookings.index') }}" class="text-sm text-primary hover:underline">← Back to Bookings</a>
+    </div>
+
+    <div class="bg-white border border-sand-7 rounded-xl overflow-hidden">
+      <div class="p-6 border-b border-sand-7 flex items-center justify-between">
+        <h1 class="text-xl font-bold text-sand-12">Booking Details</h1>
+        @if(booking.status === 'confirmed')
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-success/10 text-success">
+            Confirmed
+          </span>
+        @elseif(booking.status === 'completed')
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary">
+            Completed
+          </span>
+        @elseif(booking.status === 'cancelled')
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-error/10 text-error">
+            Cancelled
+          </span>
+        @else
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-warning/10 text-warning">
+            {{ booking.status }}
+          </span>
+        @endif
+      </div>
+
+      <div class="p-6 space-y-6">
+        {{-- Customer Info --}}
+        <div>
+          <h2 class="text-sm font-medium text-sand-11 mb-3">Customer Information</h2>
+          <div class="bg-sand-2 rounded-lg p-4">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <span class="text-lg font-medium text-primary">{{ booking.customerName.charAt(0).toUpperCase() }}</span>
+              </div>
+              <div>
+                <p class="font-medium text-sand-12">{{ booking.customerName }}</p>
+                <p class="text-sm text-sand-11">{{ booking.customerEmail }}</p>
+              </div>
+            </div>
+            @if(booking.customerPhone)
+              <p class="text-sm text-sand-11">Phone: <span class="text-sand-12">{{ booking.customerPhone }}</span></p>
+            @endif
+          </div>
+        </div>
+
+        {{-- Booking Info --}}
+        <div>
+          <h2 class="text-sm font-medium text-sand-11 mb-3">Booking Details</h2>
+          <div class="bg-sand-2 rounded-lg p-4 space-y-3">
+            <div class="flex justify-between">
+              <span class="text-sand-11">Service</span>
+              <span class="font-medium text-sand-12">{{ booking.service ? booking.service.name : '-' }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sand-11">Date</span>
+              <span class="font-medium text-sand-12">{{ booking.date.toFormat('EEEE, MMMM d, yyyy') }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sand-11">Time</span>
+              <span class="font-medium text-sand-12">{{ booking.startTime }} - {{ booking.endTime }}</span>
+            </div>
+            @if(booking.service)
+              <div class="flex justify-between">
+                <span class="text-sand-11">Duration</span>
+                <span class="font-medium text-sand-12">{{ booking.service.formattedDuration }}</span>
+              </div>
+            @endif
+            @if(booking.staff)
+              <div class="flex justify-between">
+                <span class="text-sand-11">Staff</span>
+                <span class="font-medium text-sand-12">{{ booking.staff.fullName }}</span>
+              </div>
+            @endif
+          </div>
+        </div>
+
+        {{-- Payment Info --}}
+        <div>
+          <h2 class="text-sm font-medium text-sand-11 mb-3">Payment</h2>
+          <div class="bg-sand-2 rounded-lg p-4 space-y-3">
+            <div class="flex justify-between">
+              <span class="text-sand-11">Amount</span>
+              <span class="font-bold text-lg text-sand-12">₦{{ Number(booking.amount).toLocaleString() }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sand-11">Status</span>
+              @if(booking.paymentStatus === 'paid')
+                <span class="text-success font-medium">Paid</span>
+              @elseif(booking.paymentStatus === 'refunded')
+                <span class="text-warning font-medium">Refunded</span>
+              @else
+                <span class="text-sand-11 font-medium">{{ booking.paymentStatus }}</span>
+              @endif
+            </div>
+            @if(booking.paymentReference)
+              <div class="flex justify-between">
+                <span class="text-sand-11">Reference</span>
+                <span class="font-mono text-sm text-sand-12">{{ booking.paymentReference.substring(0, 12) }}</span>
+              </div>
+            @endif
+          </div>
+        </div>
+
+        @if(booking.notes)
+          <div>
+            <h2 class="text-sm font-medium text-sand-11 mb-3">Notes</h2>
+            <div class="bg-sand-2 rounded-lg p-4">
+              <p class="text-sand-12">{{ booking.notes }}</p>
+            </div>
+          </div>
+        @endif
+
+        @if(booking.status === 'cancelled' && booking.cancellationReason)
+          <div>
+            <h2 class="text-sm font-medium text-sand-11 mb-3">Cancellation</h2>
+            <div class="bg-error/5 border border-error/20 rounded-lg p-4">
+              <p class="text-sm text-error">{{ booking.cancellationReason }}</p>
+              @if(booking.cancelledAt)
+                <p class="text-xs text-sand-11 mt-1">Cancelled on {{ booking.cancelledAt.toFormat('MMM d, yyyy h:mm a') }}</p>
+              @endif
+            </div>
+          </div>
+        @endif
+
+        {{-- Timestamps --}}
+        <div class="pt-4 border-t border-sand-6 text-sm text-sand-11">
+          <p>Booked on {{ booking.createdAt.toFormat('MMM d, yyyy h:mm a') }}</p>
+        </div>
+      </div>
+
+      {{-- Actions --}}
+      @if(booking.status === 'confirmed')
+        <div class="p-6 border-t border-sand-7 flex gap-3">
+          <form method="POST" action="{{ route('bookings.complete', { id: booking.id }) }}">
+            {{ csrfField() }}
+            <button type="submit" class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
+              Mark as Completed
+            </button>
+          </form>
+          <form method="POST" action="{{ route('bookings.cancel', { id: booking.id }) }}" onsubmit="return confirm('Are you sure you want to cancel this booking?')">
+            {{ csrfField() }}
+            <button type="submit" class="px-4 py-2 border border-error text-error font-medium rounded-lg hover:bg-error/5">
+              Cancel Booking
+            </button>
+          </form>
+        </div>
+      @endif
+    </div>
+  </div>
+@endsection

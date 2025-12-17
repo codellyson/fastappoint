@@ -2,9 +2,9 @@ import { DateTime } from 'luxon'
 import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import Business from '#models/business'
-import Booking from '#models/booking'
+import User from '#models/user'
 
-export default class Transaction extends BaseModel {
+export default class TimeOff extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
@@ -12,31 +12,19 @@ export default class Transaction extends BaseModel {
   declare businessId: number
 
   @column()
-  declare bookingId: number | null
+  declare userId: number | null
 
   @column()
-  declare amount: number
+  declare title: string | null
+
+  @column.dateTime()
+  declare startDatetime: DateTime
+
+  @column.dateTime()
+  declare endDatetime: DateTime
 
   @column()
-  declare platformFee: number
-
-  @column()
-  declare businessAmount: number
-
-  @column()
-  declare status: 'pending' | 'success' | 'failed' | 'refunded'
-
-  @column()
-  declare provider: string
-
-  @column()
-  declare reference: string
-
-  @column()
-  declare providerReference: string | null
-
-  @column()
-  declare metadata: Record<string, unknown> | null
+  declare isAllDay: boolean
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -47,6 +35,6 @@ export default class Transaction extends BaseModel {
   @belongsTo(() => Business)
   declare business: BelongsTo<typeof Business>
 
-  @belongsTo(() => Booking)
-  declare booking: BelongsTo<typeof Booking>
+  @belongsTo(() => User)
+  declare user: BelongsTo<typeof User>
 }

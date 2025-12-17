@@ -1,22 +1,57 @@
 <nav class="bg-white border-b border-sand-7 sticky top-0 z-40">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
-      <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-        <svg class="w-8 h-8 fill-primary" viewBox="0 0 24 24">
-          <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
-        </svg>
-        <span class="font-semibold text-sand-12">PayFacilitator</span>
-      </a>
+      <div class="flex items-center gap-8">
+        <a href="{{ auth.isAuthenticated ? route('dashboard') : route('home') }}" class="flex items-center gap-2">
+          <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span class="font-bold text-xl text-sand-12">BookMe</span>
+        </a>
 
-      <div class="flex items-center gap-4">
-        <a href="{{ route('dashboard') }}" class="text-sm text-sand-11 hover:text-sand-12">Dashboard</a>
-        <a href="{{ route('subscriptions.index') }}" class="text-sm text-sand-11 hover:text-sand-12">Services</a>
-        <a href="{{ route('transactions') }}" class="text-sm text-sand-11 hover:text-sand-12">Transactions</a>
-        <form method="POST" action="{{ route('auth.logout') }}">
-          {{ csrfField() }}
-          <button type="submit" class="text-sm text-sand-11 hover:text-sand-12">Logout</button>
-        </form>
+        @if(auth.isAuthenticated)
+          <div class="hidden md:flex items-center gap-6">
+            <a href="{{ route('dashboard') }}" class="text-sm font-medium text-sand-11 hover:text-sand-12">Dashboard</a>
+            <a href="{{ route('bookings.index') }}" class="text-sm font-medium text-sand-11 hover:text-sand-12">Bookings</a>
+            <a href="{{ route('services.index') }}" class="text-sm font-medium text-sand-11 hover:text-sand-12">Services</a>
+          </div>
+        @endif
       </div>
+
+      @if(auth.isAuthenticated)
+        <div class="flex items-center gap-4" x-data="{ open: false }">
+          <div class="relative">
+            <button @click="open = !open" class="flex items-center gap-2 p-2 hover:bg-sand-2 rounded-lg">
+              <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                <span class="text-sm font-medium text-primary">{{ auth.user.fullName.charAt(0).toUpperCase() }}</span>
+              </div>
+              <svg class="w-4 h-4 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white border border-sand-7 rounded-lg shadow-lg py-1">
+              <div class="px-4 py-2 border-b border-sand-6">
+                <p class="text-sm font-medium text-sand-12">{{ auth.user.fullName }}</p>
+                <p class="text-xs text-sand-11">{{ auth.user.email }}</p>
+              </div>
+              <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-sand-12 hover:bg-sand-2 md:hidden">Dashboard</a>
+              <a href="{{ route('bookings.index') }}" class="block px-4 py-2 text-sm text-sand-12 hover:bg-sand-2 md:hidden">Bookings</a>
+              <a href="{{ route('services.index') }}" class="block px-4 py-2 text-sm text-sand-12 hover:bg-sand-2 md:hidden">Services</a>
+              <form method="POST" action="{{ route('auth.logout') }}">
+                {{ csrfField() }}
+                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-error hover:bg-error/5">Logout</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      @else
+        <div class="flex items-center gap-4">
+          <a href="{{ route('auth.login.show') }}" class="text-sm text-sand-11 hover:text-sand-12">Login</a>
+          <a href="{{ route('auth.signup.show') }}" class="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90">
+            Get Started
+          </a>
+        </div>
+      @endif
     </div>
   </div>
 </nav>

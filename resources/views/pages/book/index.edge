@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book with {{ business.name }}</title>
+  <link rel="preconnect" href="https://fonts.bunny.net" />
+  <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --sand-1: #fdfdfc;
+      --sand-2: #f9f9f8;
+      --sand-3: #f1f0ef;
+      --sand-4: #e9e8e6;
+      --sand-5: #e2e1de;
+      --sand-6: #dad9d6;
+      --sand-7: #cfceca;
+      --sand-8: #bcbbb5;
+      --sand-9: #8d8d86;
+      --sand-10: #82827c;
+      --sand-11: #63635e;
+      --sand-12: #21201c;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+    }
+  </style>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Instrument Sans", "sans-serif"]
+          },
+          colors: {
+            primary: {
+              DEFAULT: "#5A45FF",
+              lighter: "#a599ff"
+            },
+            sand: {
+              1: "var(--sand-1)",
+              2: "var(--sand-2)",
+              3: "var(--sand-3)",
+              4: "var(--sand-4)",
+              5: "var(--sand-5)",
+              6: "var(--sand-6)",
+              7: "var(--sand-7)",
+              8: "var(--sand-8)",
+              9: "var(--sand-9)",
+              10: "var(--sand-10)",
+              11: "var(--sand-11)",
+              12: "var(--sand-12)"
+            },
+            success: "var(--success)",
+            error: "var(--error)",
+            warning: "var(--warning)"
+          }
+        }
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-sand-2 text-sand-12 min-h-screen font-sans">
+  <div x-data="bookingApp()" class="max-w-2xl mx-auto px-4 py-8">
+    {{-- Business Header --}}
+    <div class="text-center mb-8">
+      @if(business.logo)
+        <img src="{{ business.logo }}" alt="{{ business.name }}" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover" />
+      @else
+        <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+          <span class="text-3xl font-bold text-primary">{{ business.name.charAt(0) }}</span>
+        </div>
+      @endif
+      <h1 class="text-2xl font-bold text-sand-12">{{ business.name }}</h1>
+      @if(business.description)
+        <p class="text-sand-11 mt-2">{{ business.description }}</p>
+      @endif
+      <p class="text-sm text-sand-10 mt-1">{{ business.category }}</p>
+    </div>
+
+    {{-- Step Indicator --}}
+    <div class="flex items-center justify-center gap-2 mb-8">
+      <div class="flex items-center gap-2">
+        <div :class="step >= 1 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11'" class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">1</div>
+        <span class="text-sm text-sand-11 hidden sm:block">Service</span>
+      </div>
+      <div class="w-8 h-px bg-sand-6"></div>
+      <div class="flex items-center gap-2">
+        <div :class="step >= 2 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11'" class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">2</div>
+        <span class="text-sm text-sand-11 hidden sm:block">Date & Time</span>
+      </div>
+      <div class="w-8 h-px bg-sand-6"></div>
+      <div class="flex items-center gap-2">
+        <div :class="step >= 3 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11'" class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">3</div>
+        <span class="text-sm text-sand-11 hidden sm:block">Details</span>
+      </div>
+    </div>
+
+    {{-- Step 1: Select Service --}}
+    <div x-show="step === 1" class="space-y-4">
+      <h2 class="text-lg font-semibold text-sand-12">Select a service</h2>
+      @each(service in business.services)
+        <button
+          @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.durationMinutes }}, {{ service.price }})"
+          class="w-full text-left p-4 bg-white border border-sand-7 rounded-xl hover:border-primary transition-colors"
+          :class="selectedService?.id === {{ service.id }} ? 'border-primary ring-2 ring-primary/20' : ''"
+        >
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-medium text-sand-12">{{ service.name }}</h3>
+              @if(service.description)
+                <p class="text-sm text-sand-11 mt-1">{{ service.description }}</p>
+              @endif
+              <p class="text-sm text-sand-10 mt-2">{{ service.formattedDuration }}</p>
+            </div>
+            <span class="font-semibold text-primary">₦{{ Number(service.price).toLocaleString() }}</span>
+          </div>
+        </button>
+      @endeach
+    </div>
+
+    {{-- Step 2: Select Date & Time --}}
+    <div x-show="step === 2" class="space-y-6">
+      <button @click="step = 1" class="text-sm text-primary hover:underline">← Back to services</button>
+
+      <div class="bg-white border border-sand-7 rounded-xl p-4">
+        <p class="text-sm text-sand-11 mb-1">Selected service:</p>
+        <p class="font-medium text-sand-12" x-text="selectedService?.name"></p>
+        <p class="text-sm text-sand-10" x-text="selectedService?.duration + ' min • ₦' + selectedService?.price.toLocaleString()"></p>
+      </div>
+
+      {{-- Date Picker --}}
+      <div>
+        <h3 class="font-medium text-sand-12 mb-3">Select a date</h3>
+        <input
+          type="date"
+          x-model="selectedDate"
+          @change="fetchTimeSlots()"
+          :min="minDate"
+          class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+
+      {{-- Time Slots --}}
+      <div x-show="selectedDate">
+        <h3 class="font-medium text-sand-12 mb-3">Select a time</h3>
+        <div x-show="loadingSlots" class="text-center py-8 text-sand-11">Loading available times...</div>
+        <div x-show="!loadingSlots && slots.length === 0" class="text-center py-8 text-sand-11">No available times on this date</div>
+        <div x-show="!loadingSlots && slots.length > 0" class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <template x-for="slot in slots" :key="slot.time">
+            <button
+              :disabled="!slot.available"
+              @click="selectTime(slot.time)"
+              :class="{
+                'bg-primary text-white': selectedTime === slot.time,
+                'bg-white hover:border-primary': slot.available && selectedTime !== slot.time,
+                'bg-sand-3 text-sand-9 cursor-not-allowed': !slot.available
+              }"
+              class="px-3 py-2 border border-sand-7 rounded-lg text-sm font-medium transition-colors"
+              x-text="formatTime(slot.time)"
+            ></button>
+          </template>
+        </div>
+      </div>
+
+      <button
+        x-show="selectedDate && selectedTime"
+        @click="step = 3"
+        class="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90"
+      >
+        Continue →
+      </button>
+    </div>
+
+    {{-- Step 3: Customer Details --}}
+    <div x-show="step === 3" class="space-y-6">
+      <button @click="step = 2" class="text-sm text-primary hover:underline">← Back to date & time</button>
+
+      {{-- Booking Summary --}}
+      <div class="bg-white border border-sand-7 rounded-xl p-4 space-y-2">
+        <p class="font-medium text-sand-12" x-text="selectedService?.name"></p>
+        <p class="text-sm text-sand-11" x-text="formatDate(selectedDate) + ' at ' + formatTime(selectedTime)"></p>
+        <p class="text-sm text-sand-11" x-text="selectedService?.duration + ' minutes'"></p>
+        <div class="border-t border-sand-6 pt-2 mt-2">
+          <p class="font-semibold text-sand-12">Total: <span class="text-primary" x-text="'₦' + selectedService?.price.toLocaleString()"></span></p>
+        </div>
+      </div>
+
+      {{-- Customer Form --}}
+      <form method="POST" action="/book/{{ business.slug }}/service/" x-bind:action="'/book/{{ business.slug }}/service/' + selectedService?.id">
+        {{ csrfField() }}
+        <input type="hidden" name="date" x-bind:value="selectedDate" />
+        <input type="hidden" name="time" x-bind:value="selectedTime" />
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-sand-12 mb-2">Your Name</label>
+            <input
+              type="text"
+              name="customerName"
+              required
+              class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="John Doe"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-sand-12 mb-2">Email Address</label>
+            <input
+              type="email"
+              name="customerEmail"
+              required
+              class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="john@example.com"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-sand-12 mb-2">Phone Number <span class="text-sand-9">(optional)</span></label>
+            <input
+              type="tel"
+              name="customerPhone"
+              class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="+234 800 000 0000"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-sand-12 mb-2">Notes <span class="text-sand-9">(optional)</span></label>
+            <textarea
+              name="notes"
+              rows="2"
+              class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Any special requests..."
+            ></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full mt-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
+          Proceed to Payment →
+        </button>
+      </form>
+    </div>
+
+    {{-- Footer --}}
+    <div class="mt-12 text-center text-sm text-sand-10">
+      Powered by <a href="/" class="text-primary hover:underline">BookMe</a>
+    </div>
+  </div>
+
+  <script>
+    function bookingApp() {
+      return {
+        step: 1,
+        selectedService: null,
+        selectedDate: '',
+        selectedTime: '',
+        slots: [],
+        loadingSlots: false,
+        minDate: new Date().toISOString().split('T')[0],
+        businessSlug: '{{ business.slug }}',
+
+        selectService(id, name, duration, price) {
+          this.selectedService = { id, name, duration, price };
+          this.step = 2;
+          this.selectedDate = '';
+          this.selectedTime = '';
+          this.slots = [];
+        },
+
+        async fetchTimeSlots() {
+          if (!this.selectedDate || !this.selectedService) return;
+          this.loadingSlots = true;
+          this.selectedTime = '';
+          try {
+            const res = await fetch(`/book/${this.businessSlug}/service/${this.selectedService.id}/slots?date=${this.selectedDate}`);
+            const data = await res.json();
+            this.slots = data.slots || [];
+          } catch (e) {
+            console.error(e);
+            this.slots = [];
+          }
+          this.loadingSlots = false;
+        },
+
+        selectTime(time) {
+          this.selectedTime = time;
+        },
+
+        formatTime(time) {
+          if (!time) return '';
+          const [h, m] = time.split(':');
+          const hour = parseInt(h);
+          const suffix = hour >= 12 ? 'PM' : 'AM';
+          const displayHour = hour % 12 || 12;
+          return `${displayHour}:${m} ${suffix}`;
+        },
+
+        formatDate(dateStr) {
+          if (!dateStr) return '';
+          const date = new Date(dateStr);
+          return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+      }
+    }
+  </script>
+</body>
+</html>

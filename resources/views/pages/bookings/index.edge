@@ -1,0 +1,175 @@
+@layout('layouts/app')
+
+@set('title', 'Bookings - BookMe')
+
+@section('content')
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    @if(flashMessages.has('success'))
+      <div class="mb-6 bg-success/10 border border-success text-success rounded-lg p-4 text-sm">
+        {{ flashMessages.get('success') }}
+      </div>
+    @endif
+
+    <div class="mb-8 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-sand-12">Bookings</h1>
+        <p class="text-sand-11 mt-1">Manage all your appointments</p>
+      </div>
+    </div>
+
+    {{-- Filters --}}
+    <div class="bg-white border border-sand-7 rounded-xl p-4 mb-6">
+      <form method="GET" class="flex flex-wrap gap-4">
+        <div>
+          <label class="block text-sm font-medium text-sand-12 mb-1">Status</label>
+          <select name="status" onchange="this.form.submit()" class="px-4 py-2 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary">
+            <option value="all" {{ status === 'all' ? 'selected' : '' }}>All Bookings</option>
+            <option value="confirmed" {{ status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+            <option value="completed" {{ status === 'completed' ? 'selected' : '' }}>Completed</option>
+            <option value="cancelled" {{ status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+            <option value="pending_payment" {{ status === 'pending_payment' ? 'selected' : '' }}>Pending Payment</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-sand-12 mb-1">Date</label>
+          <input type="date" name="date" value="{{ date }}" onchange="this.form.submit()" class="px-4 py-2 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary" />
+        </div>
+        @if(status !== 'all' || date)
+          <div class="flex items-end">
+            <a href="{{ route('bookings.index') }}" class="px-4 py-2 text-sand-11 hover:text-sand-12">Clear filters</a>
+          </div>
+        @endif
+      </form>
+    </div>
+
+    {{-- Bookings List --}}
+    <div class="bg-white border border-sand-7 rounded-xl">
+      @if(bookings.length > 0)
+        <div class="overflow-x-auto overflow-y-visible">
+          <table class="w-full">
+            <thead class="bg-sand-2 border-b border-sand-7">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Customer</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Service</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Date & Time</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Amount</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-sand-11 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-sand-6">
+              @each(booking in bookings)
+                <tr class="hover:bg-sand-2">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-medium text-primary">{{ booking.customerName.charAt(0).toUpperCase() }}</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-sand-12">{{ booking.customerName }}</p>
+                        <p class="text-sm text-sand-11">{{ booking.customerEmail }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <p class="text-sand-12">{{ booking.service ? booking.service.name : '-' }}</p>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <p class="text-sand-12">{{ booking.date.toFormat('MMM d, yyyy') }}</p>
+                    <p class="text-sm text-sand-11">{{ booking.startTime }} - {{ booking.endTime }}</p>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <p class="font-medium text-sand-12">₦{{ Number(booking.amount).toLocaleString() }}</p>
+                    <p class="text-xs text-sand-11">{{ booking.paymentStatus }}</p>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    @if(booking.status === 'confirmed')
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+                        Confirmed
+                      </span>
+                    @elseif(booking.status === 'completed')
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                        Completed
+                      </span>
+                    @elseif(booking.status === 'cancelled')
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error/10 text-error">
+                        Cancelled
+                      </span>
+                    @elseif(booking.status === 'pending_payment')
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning/10 text-warning">
+                        Pending
+                      </span>
+                    @else
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sand-4 text-sand-11">
+                        {{ booking.status }}
+                      </span>
+                    @endif
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <a href="{{ route('bookings.show', { id: booking.id }) }}" class="p-2 hover:bg-sand-3 rounded-lg" title="View">
+                        <svg class="w-5 h-5 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                      </a>
+                      @if(booking.status === 'confirmed')
+                        <form method="POST" action="{{ route('bookings.complete', { id: booking.id }) }}">
+                          {{ csrfField() }}
+                          <button type="submit" class="p-2 hover:bg-success/10 rounded-lg" title="Mark Complete">
+                            <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                          </button>
+                        </form>
+                        <form method="POST" action="{{ route('bookings.cancel', { id: booking.id }) }}" onsubmit="return confirm('Cancel this booking?')">
+                          {{ csrfField() }}
+                          <button type="submit" class="p-2 hover:bg-error/10 rounded-lg" title="Cancel">
+                            <svg class="w-5 h-5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                          </button>
+                        </form>
+                      @endif
+                    </div>
+                  </td>
+                </tr>
+              @endeach
+            </tbody>
+          </table>
+        </div>
+
+        {{-- Pagination --}}
+        @if(bookings.hasPages)
+          <div class="px-6 py-4 border-t border-sand-6 flex items-center justify-between">
+            <p class="text-sm text-sand-11">
+              Showing {{ bookings.firstPage }} to {{ bookings.lastPage }} of {{ bookings.total }} bookings
+            </p>
+            <div class="flex gap-2">
+              @if(bookings.hasPreviousPage)
+                <a href="?page={{ bookings.currentPage - 1 }}&status={{ status }}&date={{ date }}" class="px-3 py-1 border border-sand-7 rounded-lg text-sm hover:bg-sand-2">Previous</a>
+              @endif
+              @if(bookings.hasNextPage)
+                <a href="?page={{ bookings.currentPage + 1 }}&status={{ status }}&date={{ date }}" class="px-3 py-1 border border-sand-7 rounded-lg text-sm hover:bg-sand-2">Next</a>
+              @endif
+            </div>
+          </div>
+        @endif
+      @else
+        <div class="text-center py-12">
+          <svg class="w-16 h-16 mx-auto mb-4 text-sand-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <h3 class="text-lg font-medium text-sand-12 mb-1">No bookings found</h3>
+          <p class="text-sand-11">
+            @if(status !== 'all' || date)
+              Try adjusting your filters
+            @else
+              Share your booking link to start receiving appointments!
+            @endif
+          </p>
+        </div>
+      @endif
+    </div>
+  </div>
+@endsection

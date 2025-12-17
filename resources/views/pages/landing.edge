@@ -1,102 +1,191 @@
 @layout('layouts/app')
 
-@set('title', 'PayFacilitator')
+@set('title', 'BookMe - Online Booking for Your Business')
 
 @section('content')
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="text-center space-y-8 mb-16">
-      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-sand-12 leading-tight">
-        Pay for YouTube Premium in Naira.<br />
-        <span class="text-primary">Instantly.</span>
-      </h1>
-      <p class="text-xl sm:text-2xl text-sand-11 max-w-3xl mx-auto">
-        Virtual cards that actually work. No dollar limits. Fund via Bank Transfer.
+  {{-- Hero Section --}}
+  <div class="bg-gradient-to-br from-primary/5 to-primary/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div class="text-center max-w-3xl mx-auto">
+        <h1 class="text-4xl md:text-6xl font-bold text-sand-12 mb-6">
+          Your booking page,
+          <span class="text-primary">live in minutes</span>
+        </h1>
+        <p class="text-xl text-sand-11 mb-8">
+          Create your personalized booking page, accept payments, and manage appointments—all in one place. Perfect for salons, photographers, and service businesses.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="{{ route('auth.signup.show') }}" class="px-8 py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors text-lg">
+            Get Started Free
+          </a>
+          <a href="#how-it-works" class="px-8 py-4 border border-sand-7 text-sand-12 font-semibold rounded-lg hover:bg-sand-2 transition-colors text-lg">
+            See How It Works
+          </a>
+        </div>
+        <p class="mt-4 text-sm text-sand-11">Free plan available • No credit card required</p>
+      </div>
+    </div>
+  </div>
+
+  {{-- Features --}}
+  <div class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-sand-12 mb-4">Everything you need to manage bookings</h2>
+        <p class="text-lg text-sand-11">Simple tools that help you focus on what you do best</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center p-6">
+          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-sand-12 mb-2">Custom Booking Page</h3>
+          <p class="text-sand-11">Get your own branded booking page at yourbusiness.bookme.ng. Share it anywhere.</p>
+        </div>
+
+        <div class="text-center p-6">
+          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-sand-12 mb-2">Online Payments</h3>
+          <p class="text-sand-11">Accept payments securely via card or bank transfer. No more chasing payments.</p>
+        </div>
+
+        <div class="text-center p-6">
+          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-sand-12 mb-2">Instant Notifications</h3>
+          <p class="text-sand-11">Get notified instantly when someone books. Your customers get reminders too.</p>
+        </div>
+
+        <div class="text-center p-6">
+          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-sand-12 mb-2">Smart Scheduling</h3>
+          <p class="text-sand-11">Set your availability once. The system handles conflicts automatically.</p>
+        </div>
+
+        <div class="text-center p-6">
+          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-sand-12 mb-2">Team Management</h3>
+          <p class="text-sand-11">Add your staff, assign services, and let customers choose who they want.</p>
+        </div>
+
+        <div class="text-center p-6">
+          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-sand-12 mb-2">Business Insights</h3>
+          <p class="text-sand-11">Track bookings, revenue, and popular services. Make data-driven decisions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- How It Works --}}
+  <div id="how-it-works" class="py-20 bg-sand-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-sand-12 mb-4">Up and running in 3 steps</h2>
+        <p class="text-lg text-sand-11">It takes less than 5 minutes to set up</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white rounded-xl p-8 border border-sand-7">
+          <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">1</div>
+          <h3 class="text-xl font-semibold text-sand-12 mb-2">Sign up & add services</h3>
+          <p class="text-sand-11">Create your account, add the services you offer with prices and duration.</p>
+        </div>
+
+        <div class="bg-white rounded-xl p-8 border border-sand-7">
+          <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">2</div>
+          <h3 class="text-xl font-semibold text-sand-12 mb-2">Set your availability</h3>
+          <p class="text-sand-11">Tell us when you're available for bookings. Set different hours for each day.</p>
+        </div>
+
+        <div class="bg-white rounded-xl p-8 border border-sand-7">
+          <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">3</div>
+          <h3 class="text-xl font-semibold text-sand-12 mb-2">Share your link</h3>
+          <p class="text-sand-11">Share your booking page on Instagram, WhatsApp, or anywhere. Start getting bookings!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- Industries --}}
+  <div class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-sand-12 mb-4">Built for service businesses</h2>
+        <p class="text-lg text-sand-11">Whether you're a solo professional or a growing team</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="text-center p-6 rounded-xl hover:bg-sand-2 transition-colors">
+          <div class="text-4xl mb-3">💇</div>
+          <p class="font-medium text-sand-12">Hair Salons</p>
+        </div>
+        <div class="text-center p-6 rounded-xl hover:bg-sand-2 transition-colors">
+          <div class="text-4xl mb-3">💅</div>
+          <p class="font-medium text-sand-12">Nail Techs</p>
+        </div>
+        <div class="text-center p-6 rounded-xl hover:bg-sand-2 transition-colors">
+          <div class="text-4xl mb-3">📸</div>
+          <p class="font-medium text-sand-12">Photographers</p>
+        </div>
+        <div class="text-center p-6 rounded-xl hover:bg-sand-2 transition-colors">
+          <div class="text-4xl mb-3">💄</div>
+          <p class="font-medium text-sand-12">Makeup Artists</p>
+        </div>
+        <div class="text-center p-6 rounded-xl hover:bg-sand-2 transition-colors">
+          <div class="text-4xl mb-3">🎬</div>
+          <p class="font-medium text-sand-12">Videographers</p>
+        </div>
+        <div class="text-center p-6 rounded-xl hover:bg-sand-2 transition-colors">
+          <div class="text-4xl mb-3">💪</div>
+          <p class="font-medium text-sand-12">Personal Trainers</p>
+        </div>
+        <div class="text-center p-6 rounded-xl hover:bg-sand-2 transition-colors">
+          <div class="text-4xl mb-3">🎧</div>
+          <p class="font-medium text-sand-12">DJs</p>
+        </div>
+        <div class="text-center p-6 rounded-xl hover:bg-sand-2 transition-colors">
+          <div class="text-4xl mb-3">🏥</div>
+          <p class="font-medium text-sand-12">Consultants</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- CTA --}}
+  <div class="py-20 bg-primary">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+        Ready to simplify your bookings?
+      </h2>
+      <p class="text-xl text-white/80 mb-8">
+        Join thousands of businesses already using BookMe to save time and grow.
       </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a
-          href="/signup"
-          class="inline-flex items-center justify-center px-8 py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors shadow-lg"
-        >
-          Get Started
-        </a>
-        <a
-          href="/login"
-          class="inline-flex items-center justify-center px-8 py-4 bg-white border-2 border-sand-7 text-sand-12 font-semibold rounded-lg hover:border-sand-8 transition-colors"
-        >
-          Sign In
-        </a>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-      <div
-        class="bg-white border border-sand-7 rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all"
-      >
-        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-          <svg class="w-6 h-6 fill-primary" viewBox="0 0 24 24">
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-            />
-          </svg>
-        </div>
-        <h3 class="text-lg font-semibold text-sand-12 mb-2">
-          Instant Creation
-        </h3>
-        <p class="text-sm text-sand-11">
-          Get your virtual card in seconds. No waiting, no delays.
-        </p>
-      </div>
-
-      <div
-        class="bg-white border border-sand-7 rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all"
-      >
-        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-          <svg class="w-6 h-6 fill-primary" viewBox="0 0 24 24">
-            <path
-              d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"
-            />
-          </svg>
-        </div>
-        <h3 class="text-lg font-semibold text-sand-12 mb-2">
-          Accepted on YouTube/Spotify
-        </h3>
-        <p class="text-sm text-sand-11">
-          Works seamlessly on all major platforms. No rejections.
-        </p>
-      </div>
-
-      <div
-        class="bg-white border border-sand-7 rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all"
-      >
-        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-          <svg class="w-6 h-6 fill-primary" viewBox="0 0 24 24">
-            <path
-              d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm-1 14H5c-.55 0-1-.45-1-1V8l6.94 4.34c.65.41 1.47.41 2.12 0L19 8v9c0 .55-.45 1-1 1zm-6-3l-2.5-1.5L8 15h6z"
-            />
-          </svg>
-        </div>
-        <h3 class="text-lg font-semibold text-sand-12 mb-2">
-          Bank Transfer Funding
-        </h3>
-        <p class="text-sm text-sand-11">
-          Top up your wallet instantly via bank transfer. No cards needed.
-        </p>
-      </div>
-    </div>
-
-    <div class="bg-white border border-sand-7 rounded-xl p-6 md:p-8">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-        <div>
-          <h3 class="text-lg font-semibold text-sand-12 mb-1">
-            Current Rate
-          </h3>
-          <p class="text-sm text-sand-11">
-            Card Creation Fee: ₦100
-          </p>
-        </div>
-        <div x-data="{ rate: '₦1 = $0.00067' }" class="text-2xl font-bold text-primary" x-text="rate">
-        </div>
-      </div>
+      <a href="{{ route('auth.signup.show') }}" class="inline-block px-8 py-4 bg-white text-primary font-semibold rounded-lg hover:bg-sand-1 transition-colors text-lg">
+        Create Your Free Account
+      </a>
     </div>
   </div>
 @endsection

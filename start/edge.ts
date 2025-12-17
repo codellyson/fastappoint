@@ -7,3 +7,4 @@ edge.use(migrate)
 
 edge.global('isDev', env.get('NODE_ENV') === 'development')
 edge.global('DateTime', DateTime)
+edge.global('appName', 'BookMe')
