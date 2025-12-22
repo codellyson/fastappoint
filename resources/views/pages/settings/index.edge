@@ -1,100 +1,203 @@
 @layout('layouts/app')
 
-@set('title', 'Settings - FastAppoint')
+  @set('title', 'Settings - FastAppoint')
 
-@section('content')
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold text-sand-12">Settings</h1>
-      <p class="text-sand-11 mt-1">Manage your business settings</p>
-    </div>
-
-    <div class="space-y-4">
-      <a href="{{ route('settings.profile') }}" class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="font-medium text-sand-12">Business Profile</h3>
-            <p class="text-sm text-sand-11">Update your business name, description, and contact info</p>
-          </div>
-          <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
+    @section('content')
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+          <h1 class="text-2xl font-bold text-sand-12">
+            Settings
+          </h1>
+          <p class="text-sand-11 mt-1">
+            Manage your business settings
+          </p>
         </div>
-      </a>
 
-      <a href="{{ route('settings.cancellation') }}" class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center">
-            <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="font-medium text-sand-12">Cancellation Policy</h3>
-            <p class="text-sm text-sand-11">Set your cancellation and rescheduling rules</p>
-          </div>
-          <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </div>
-      </a>
+        <div class="space-y-4">
+          <a
+            href="{{ route('settings.profile') }}"
+            class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors"
+          >
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium text-sand-12">
+                  Business Profile
+                </h3>
+                <p class="text-sm text-sand-11">
+                  Update your business name, description, and contact info
+                </p>
+              </div>
+              <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
 
-      <a href="{{ route('settings.payments') }}" class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
-            <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="font-medium text-sand-12">Payment Settings</h3>
-            <p class="text-sm text-sand-11">Configure Paystack and payment options</p>
-          </div>
-          <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </div>
-      </a>
+          <a
+            href="{{ route('settings.cancellation') }}"
+            class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors"
+          >
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium text-sand-12">
+                  Cancellation Policy
+                </h3>
+                <p class="text-sm text-sand-11">
+                  Set your cancellation and rescheduling rules
+                </p>
+              </div>
+              <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
 
-      <a href="{{ route('settings.booking-page') }}" class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="font-medium text-sand-12">Booking Page</h3>
-            <p class="text-sm text-sand-11">View and share your booking page link</p>
-          </div>
-          <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </div>
-      </a>
+          <a
+            href="{{ route('settings.payments') }}"
+            class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors"
+          >
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium text-sand-12">
+                  Payment Settings
+                </h3>
+                <p class="text-sm text-sand-11">
+                  Configure Paystack and payment options
+                </p>
+              </div>
+              <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
 
-      <a href="{{ route('settings.theme') }}" class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
-            <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="font-medium text-sand-12">Theme & Design</h3>
-            <p class="text-sm text-sand-11">Customize your booking page appearance</p>
-          </div>
-          <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
+          <a
+            href="{{ route('settings.booking-page') }}"
+            class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors"
+          >
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium text-sand-12">
+                  Booking Page
+                </h3>
+                <p class="text-sm text-sand-11">
+                  View and share your booking page link
+                </p>
+              </div>
+              <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a
+            href="{{ route('settings.theme') }}"
+            class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors"
+          >
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium text-sand-12">
+                  Theme & Design
+                </h3>
+                <p class="text-sm text-sand-11">
+                  Customize your booking page appearance
+                </p>
+              </div>
+              <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
         </div>
-      </a>
-    </div>
-  </div>
-@endsection
+
+        <div class="mt-12 pt-8 border-t border-sand-7">
+          <div class="bg-error/5 border border-error/20 rounded-xl p-5">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-error/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium text-sand-12 mb-1">
+                  Delete Account
+                </h3>
+                <p class="text-sm text-sand-11 mb-4">
+                  Permanently delete your account and all associated data. This action cannot be undone.
+                </p>
+                <a
+                  href="{{ route('auth.account.delete.show') }}"
+                  class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-error bg-white border border-error/30 rounded-lg hover:bg-error/5 transition-colors"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Delete Account
+            </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    @endsection
 

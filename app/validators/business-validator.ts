@@ -3,8 +3,27 @@ import vine from '@vinejs/vine'
 export const businessDetailsValidator = vine.compile(
   vine.object({
     name: vine.string().minLength(2).maxLength(100),
-    description: vine.string().maxLength(500).optional(),
-    phone: vine.string().minLength(10).maxLength(15).optional(),
+    description: vine
+      .string()
+      .trim()
+      .maxLength(500)
+      .optional()
+      .transform((value) => {
+        if (!value || value === '' || value === 'null' || value === null) {
+          return undefined
+        }
+        return value
+      }),
+    phone: vine
+      .string()
+      .trim()
+      .optional()
+      .transform((value) => {
+        if (!value || value === '' || value === 'null' || value === null) {
+          return undefined
+        }
+        return value
+      }),
     cancellationHours: vine.number().min(0).max(168),
   })
 )

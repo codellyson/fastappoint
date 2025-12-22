@@ -1,875 +1,1076 @@
 @layout('layouts/app')
 
-@set('title', 'FastAppoint - Online Booking for Your Business')
+  @set('title', 'FastAppoint - Online Booking for Your Business')
 
-@section('content')
-  {{-- Hero Section --}}
-  <div class="bg-gradient-to-br from-primary/5 to-primary/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-      <div class="text-center max-w-3xl mx-auto">
-        <h1 class="text-4xl md:text-6xl font-bold text-sand-12 mb-6">
-          Your booking page,
+    @section('content')
+      {{-- Hero Section --}}
+      <div class="bg-gradient-to-br from-primary/5 to-primary/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div class="text-center max-w-3xl mx-auto">
+            <h1 class="text-4xl md:text-6xl font-bold text-sand-12 mb-6">
+              Your booking page,
           <span class="text-primary">live in minutes</span>
-        </h1>
-        <p class="text-xl text-sand-11 mb-8">
-          Create your personalized booking page, accept payments, and manage appointments—all in one place. Perfect for salons, photographers, and service businesses.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          @if(auth.isAuthenticated)
-            <a href="{{ route('dashboard') }}" class="px-8 py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors text-lg">
-              Go to Dashboard
+            </h1>
+            <p class="text-xl text-sand-11 mb-8">
+              Create your personalized booking page, accept payments, and manage appointments—all in one place. Perfect for salons, photographers, and service businesses.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              @if(auth.isAuthenticated)
+                <a
+                  href="{{ route('dashboard') }}"
+                  class="px-8 py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors text-lg"
+                >
+                  Go to Dashboard
             </a>
-          @else
-            <a href="{{ route('auth.signup.show') }}" class="px-8 py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors text-lg">
-              Start 7-Day Free Trial
-            </a>
-          @endif
-          <a href="#how-it-works" class="px-8 py-4 border border-sand-7 text-sand-12 font-semibold rounded-lg hover:bg-sand-2 transition-colors text-lg">
-            See How It Works
-          </a>
-        </div>
-        @if(!auth.isAuthenticated)
-          <p class="mt-4 text-sm text-sand-11">7-day free trial • No credit card required • Cancel anytime</p>
-        @endif
-      </div>
-    </div>
-  </div>
-
-  {{-- Featured Workspaces Carousel --}}
-  <div class="py-16 bg-white overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-      <div class="text-center">
-        <h2 class="text-2xl font-bold text-sand-12 mb-2">Trusted by amazing businesses</h2>
-        <p class="text-sand-11">See workspaces that are thriving with FastAppoint</p>
-      </div>
-    </div>
-
-    <div class="relative">
-      <div class="carousel-container">
-        <div class="carousel-track">
-          {{-- First set: Real featured businesses from database --}}
-          @each(featured in featuredBusinesses)
-            <a href="/book/{{ featured.business.slug }}" class="carousel-slide">
-              @if(featured.workspaceImage)
-                <img src="{{ featured.workspaceImage }}" alt="{{ featured.displayName || featured.business.name }}" class="carousel-image" />
               @else
-                <div class="carousel-image bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
-                  <span class="text-4xl font-bold text-primary/60">{{ (featured.displayName || featured.business.name).charAt(0) }}</span>
-                </div>
-              @endif
-              <div class="featured-badge">
-                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                Featured
-              </div>
-              <div class="carousel-overlay">
-                <span class="carousel-label">{{ featured.displayName || featured.business.name }}</span>
-              </div>
+                <a
+                  href="{{ route('auth.signup.show') }}"
+                  class="px-8 py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors text-lg"
+                >
+                  Start 7-Day Free Trial
             </a>
-          @endeach
-
-          {{-- CTA slot --}}
-          <a href="{{ auth.isAuthenticated ? route('featured.index') : route('auth.signup.show') }}" class="carousel-slide carousel-empty">
-            <div class="empty-slot-content">
-              <div class="empty-slot-icon">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg>
-              </div>
-              <span class="empty-slot-text">Your business here</span>
-              <span class="empty-slot-cta">Click to get featured →</span>
-            </div>
-          </a>
-
-          {{-- Duplicate set for seamless loop: Real featured businesses --}}
-          @each(featured in featuredBusinesses)
-            <a href="/book/{{ featured.business.slug }}" class="carousel-slide">
-              @if(featured.workspaceImage)
-                <img src="{{ featured.workspaceImage }}" alt="{{ featured.displayName || featured.business.name }}" class="carousel-image" />
-              @else
-                <div class="carousel-image bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
-                  <span class="text-4xl font-bold text-primary/60">{{ (featured.displayName || featured.business.name).charAt(0) }}</span>
-                </div>
               @endif
-              <div class="featured-badge">
-                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                Featured
-              </div>
-              <div class="carousel-overlay">
-                <span class="carousel-label">{{ featured.displayName || featured.business.name }}</span>
-              </div>
-            </a>
-          @endeach
-
-          {{-- Duplicate CTA slot --}}
-          <a href="{{ auth.isAuthenticated ? route('featured.index') : route('auth.signup.show') }}" class="carousel-slide carousel-empty">
-            <div class="empty-slot-content">
-              <div class="empty-slot-icon">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg>
-              </div>
-              <span class="empty-slot-text">Your business here</span>
-              <span class="empty-slot-cta">Click to get featured →</span>
-            </div>
+              <a
+                href="#how-it-works"
+                class="px-8 py-4 border border-sand-7 text-sand-12 font-semibold rounded-lg hover:bg-sand-2 transition-colors text-lg"
+              >
+                See How It Works
           </a>
+            </div>
+            @if(!auth.isAuthenticated)
+              <p class="mt-4 text-sm text-sand-11">
+                7-day free trial • No credit card required • Cancel anytime
+              </p>
+            @endif
+          </div>
         </div>
       </div>
 
-      {{-- Gradient overlays for smooth edges --}}
-      <div class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent pointer-events-none z-10"></div>
-      <div class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent pointer-events-none z-10"></div>
-    </div>
+      {{-- Featured Workspaces Carousel --}}
+      <div class="py-20 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+          <div class="text-center">
+            <h2 class="text-3xl font-bold text-sand-12 mb-2">
+              Trusted by amazing businesses
+            </h2>
+            <p class="text-lg text-sand-11">
+              See workspaces that are thriving with FastAppoint
+            </p>
+          </div>
+        </div>
 
-    <style>
-      .carousel-container {
-        width: 100%;
-        overflow: hidden;
-      }
-
-      .carousel-track {
-        display: flex;
-        gap: 1.5rem;
-        animation: scroll 40s linear infinite;
-        width: max-content;
-      }
-
-      .carousel-track:hover {
-        animation-play-state: paused;
-      }
-
-      .carousel-slide {
-        position: relative;
-        flex-shrink: 0;
-        width: 420px;
-        height: 300px;
-        border-radius: 1.25rem;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-
-      .carousel-slide:hover {
-        transform: scale(1.02);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-      }
-
-      .carousel-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .carousel-overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 1.25rem;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-      }
-
-      .carousel-label {
-        color: white;
-        font-weight: 600;
-        font-size: 1.1rem;
-      }
-
-      .featured-badge {
-        position: absolute;
-        top: 1rem;
-        left: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.4rem 0.75rem;
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        color: white;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        border-radius: 9999px;
-        box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
-      }
-
-      .carousel-empty {
-        background: linear-gradient(135deg, #f5f5f4 0%, #e7e5e4 100%);
-        border: 2px dashed #a8a29e;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        cursor: pointer;
-      }
-
-      .carousel-empty:hover {
-        border-color: var(--color-primary, #2563eb);
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      }
-
-      .carousel-empty:hover .empty-slot-icon {
-        color: var(--color-primary, #2563eb);
-        transform: scale(1.1);
-      }
-
-      .carousel-empty:hover .empty-slot-cta {
-        color: var(--color-primary, #2563eb);
-      }
-
-      .empty-slot-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 2rem;
-        text-align: center;
-      }
-
-      .empty-slot-icon {
-        color: #a8a29e;
-        transition: all 0.3s ease;
-      }
-
-      .empty-slot-text {
-        color: #78716c;
-        font-size: 1rem;
-        font-weight: 500;
-      }
-
-      .empty-slot-cta {
-        color: #57534e;
-        font-size: 0.875rem;
-        font-weight: 600;
-        transition: color 0.3s ease;
-      }
-
-      @keyframes scroll {
-        0% {
-          transform: translateX(0);
-        }
-        100% {
-          transform: translateX(calc(-420px * 11 - 1.5rem * 11));
-        }
-      }
-
-      @media (max-width: 768px) {
-        .carousel-slide {
-          width: 340px;
-          height: 240px;
-        }
-
-        .empty-slot-content {
-          padding: 1.5rem;
-        }
-
-        .empty-slot-icon svg {
-          width: 2rem;
-          height: 2rem;
-        }
-
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(calc(-340px * 11 - 1.5rem * 11));
-          }
-        }
-      }
-
-      @media (max-width: 480px) {
-        .carousel-slide {
-          width: 280px;
-          height: 200px;
-        }
-
-        .empty-slot-content {
-          padding: 1rem;
-          gap: 0.5rem;
-        }
-
-        .empty-slot-icon svg {
-          width: 1.5rem;
-          height: 1.5rem;
-        }
-
-        .empty-slot-text {
-          font-size: 0.875rem;
-        }
-
-        .empty-slot-cta {
-          font-size: 0.75rem;
-        }
-
-        .featured-badge {
-          padding: 0.3rem 0.5rem;
-          font-size: 0.65rem;
-        }
-
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(calc(-280px * 11 - 1.5rem * 11));
-          }
-        }
-      }
-    </style>
-
-    <script>
-      (async function loadFeaturedBusinesses() {
-        try {
-          const response = await fetch('/api/featured')
-          const featured = await response.json()
-
-          if (featured.length > 0) {
-            const track = document.querySelector('.carousel-track')
-            if (!track) return
-
-            const featuredBadgeSvg = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>'
-
-            const createSlide = (business, isLink = true) => {
-              const defaultImage = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=450&fit=crop&q=80'
-              const tag = isLink ? 'a' : 'div'
-              const href = isLink ? `href="/book/${business.slug}"` : ''
-
-              return `
-                <${tag} ${href} class="carousel-slide carousel-featured-real">
-                  <img src="${business.image || defaultImage}" alt="${business.name}" class="carousel-image" onerror="this.src='${defaultImage}'" />
-                  <div class="featured-badge featured-badge-real">
-                    ${featuredBadgeSvg}
+        <div class="relative">
+          <div class="carousel-container">
+            <div class="carousel-track">
+              {{-- First set: Real featured businesses from database --}}
+              @each(featured in featuredBusinesses)
+                <a href="/book/{{ featured.business.slug }}" class="carousel-slide">
+                  @if(featured.workspaceImage)
+                    <img
+                      src="{{ featured.workspaceImage }}"
+                      alt="{{ featured.displayName || featured.business.name }}"
+                      class="carousel-image"
+                    />
+                  @else
+                    <div
+                      class="carousel-image bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center"
+                    >
+                      <span class="text-4xl font-bold text-primary/60">{{ (featured.displayName || featured.business.name).charAt(0) }}</span>
+                    </div>
+                  @endif
+                  <div class="featured-badge">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                      />
+                    </svg>
                     Featured
                   </div>
                   <div class="carousel-overlay">
-                    <span class="carousel-label">${business.name}</span>
+                    <span class="carousel-label">{{ featured.displayName || featured.business.name }}</span>
                   </div>
-                </${tag}>
-              `
+                </a>
+              @endeach
+
+              {{-- CTA slot --}}
+              <a
+                href="{{ auth.isAuthenticated ? route('featured.index') : route('auth.signup.show') }}"
+                class="carousel-slide carousel-empty"
+              >
+                <div class="empty-slot-content">
+                  <div class="empty-slot-icon">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </div>
+                  <span class="empty-slot-text">Your business here</span>
+                  <span class="empty-slot-cta">Click to get featured →</span>
+                </div>
+              </a>
+
+              {{-- Duplicate set for seamless loop: Real featured businesses --}}
+              @each(featured in featuredBusinesses)
+                <a href="/book/{{ featured.business.slug }}" class="carousel-slide">
+                  @if(featured.workspaceImage)
+                    <img
+                      src="{{ featured.workspaceImage }}"
+                      alt="{{ featured.displayName || featured.business.name }}"
+                      class="carousel-image"
+                    />
+                  @else
+                    <div
+                      class="carousel-image bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center"
+                    >
+                      <span class="text-4xl font-bold text-primary/60">{{ (featured.displayName || featured.business.name).charAt(0) }}</span>
+                    </div>
+                  @endif
+                  <div class="featured-badge">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                      />
+                    </svg>
+                    Featured
+                  </div>
+                  <div class="carousel-overlay">
+                    <span class="carousel-label">{{ featured.displayName || featured.business.name }}</span>
+                  </div>
+                </a>
+              @endeach
+
+              {{-- Duplicate CTA slot --}}
+              <a
+                href="{{ auth.isAuthenticated ? route('featured.index') : route('auth.signup.show') }}"
+                class="carousel-slide carousel-empty"
+              >
+                <div class="empty-slot-content">
+                  <div class="empty-slot-icon">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </div>
+                  <span class="empty-slot-text">Your business here</span>
+                  <span class="empty-slot-cta">Click to get featured →</span>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          {{-- Gradient overlays for smooth edges --}}
+          <div
+            class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent pointer-events-none z-10"
+          >
+          </div>
+          <div
+            class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent pointer-events-none z-10"
+          >
+          </div>
+        </div>
+
+        <style>
+          .carousel-container {
+            width: 100%;
+            overflow: hidden;
+          }
+
+          .carousel-track {
+            display: flex;
+            gap: 1.5rem;
+            animation: scroll 40s linear infinite;
+            width: max-content;
+          }
+
+          .carousel-track:hover {
+            animation-play-state: paused;
+          }
+
+          .carousel-slide {
+            position: relative;
+            flex-shrink: 0;
+            width: 520px;
+            height: 380px;
+            border-radius: 1.25rem;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+          }
+
+          .carousel-slide:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+          }
+
+          .carousel-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+
+          .carousel-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.25rem;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+          }
+
+          .carousel-label {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+          }
+
+          .featured-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 0.75rem;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 9999px;
+            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+          }
+
+          .carousel-empty {
+            background: linear-gradient(135deg, #f5f5f4 0%, #e7e5e4 100%);
+            border: 2px dashed #a8a29e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            cursor: pointer;
+          }
+
+          .carousel-empty:hover {
+            border-color: var(--color-primary, #2563eb);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+          }
+
+          .carousel-empty:hover .empty-slot-icon {
+            color: var(--color-primary, #2563eb);
+            transform: scale(1.1);
+          }
+
+          .carousel-empty:hover .empty-slot-cta {
+            color: var(--color-primary, #2563eb);
+          }
+
+          .empty-slot-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+          }
+
+          .empty-slot-icon {
+            color: #a8a29e;
+            transition: all 0.3s ease;
+          }
+
+          .empty-slot-text {
+            color: #78716c;
+            font-size: 1rem;
+            font-weight: 500;
+          }
+
+          .empty-slot-cta {
+            color: #57534e;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: color 0.3s ease;
+          }
+
+          @keyframes scroll {
+            0% {
+              transform: translateX(0);
             }
 
-            let slidesHtml = ''
-            featured.forEach(business => {
-              slidesHtml += createSlide(business)
-            })
-            slidesHtml += slidesHtml
-
-            track.insertAdjacentHTML('afterbegin', slidesHtml)
-
-            const realSlides = document.querySelectorAll('.carousel-featured-real')
-            realSlides.forEach(slide => {
-              slide.style.border = '2px solid transparent'
-              slide.style.background = 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #f59e0b, #d97706) border-box'
-            })
-          }
-        } catch (error) {
-          console.log('Featured businesses not loaded:', error)
-        }
-      })()
-    </script>
-  </div>
-
-  {{-- Features --}}
-  <div class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold text-sand-12 mb-4">Everything you need to manage bookings</h2>
-        <p class="text-lg text-sand-11">Simple tools that help you focus on what you do best</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="text-center p-6">
-          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold text-sand-12 mb-2">Custom Booking Page</h3>
-          <p class="text-sand-11">Get your own branded booking page at yourbusiness.{{ appDomain }}. Share it anywhere.</p>
-        </div>
-
-        <div class="text-center p-6">
-          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold text-sand-12 mb-2">Online Payments</h3>
-          <p class="text-sand-11">Accept payments securely via card or bank transfer. No more chasing payments.</p>
-        </div>
-
-        <div class="text-center p-6">
-          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold text-sand-12 mb-2">Instant Notifications</h3>
-          <p class="text-sand-11">Get notified instantly when someone books. Your customers get reminders too.</p>
-        </div>
-
-        <div class="text-center p-6">
-          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold text-sand-12 mb-2">Smart Scheduling</h3>
-          <p class="text-sand-11">Set your availability once. The system handles conflicts automatically.</p>
-        </div>
-
-        <div class="text-center p-6">
-          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold text-sand-12 mb-2">Team Management</h3>
-          <p class="text-sand-11">Add your staff, assign services, and let customers choose who they want.</p>
-        </div>
-
-        <div class="text-center p-6">
-          <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold text-sand-12 mb-2">Business Insights</h3>
-          <p class="text-sand-11">Track bookings, revenue, and popular services. Make data-driven decisions.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {{-- How It Works --}}
-  <div id="how-it-works" class="py-20 bg-sand-2">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold text-sand-12 mb-4">Up and running in 3 steps</h2>
-        <p class="text-lg text-sand-11">It takes less than 5 minutes to set up</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="bg-white rounded-xl p-8 border border-sand-7">
-          <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">1</div>
-          <h3 class="text-xl font-semibold text-sand-12 mb-2">Sign up & add services</h3>
-          <p class="text-sand-11">Create your account, add the services you offer with prices and duration.</p>
-        </div>
-
-        <div class="bg-white rounded-xl p-8 border border-sand-7">
-          <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">2</div>
-          <h3 class="text-xl font-semibold text-sand-12 mb-2">Set your availability</h3>
-          <p class="text-sand-11">Tell us when you're available for bookings. Set different hours for each day.</p>
-        </div>
-
-        <div class="bg-white rounded-xl p-8 border border-sand-7">
-          <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">3</div>
-          <h3 class="text-xl font-semibold text-sand-12 mb-2">Share your link</h3>
-          <p class="text-sand-11">Share your booking page on Instagram, WhatsApp, or anywhere. Start getting bookings!</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {{-- Industries --}}
-  <div class="py-20 bg-sand-2 overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-sand-12 mb-4">Built for service businesses</h2>
-        <p class="text-lg text-sand-11">Whether you're a solo professional or a growing team</p>
-      </div>
-    </div>
-
-    <div class="business-slideshow" x-data="businessSlideshow()">
-      <div class="slideshow-container">
-        <div class="slideshow-track" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
-          <div class="slideshow-slide">
-            <div class="slide-image-wrapper">
-              <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=500&fit=crop&q=80" alt="Hair Salon" class="slide-image" />
-              <div class="slide-overlay">
-                <span class="slide-category">Hair Salons</span>
-                <p class="slide-description">Manage appointments, stylists, and keep clients coming back</p>
-              </div>
-            </div>
-          </div>
-          <div class="slideshow-slide">
-            <div class="slide-image-wrapper">
-              <img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&h=500&fit=crop&q=80" alt="Nail Tech" class="slide-image" />
-              <div class="slide-overlay">
-                <span class="slide-category">Nail Technicians</span>
-                <p class="slide-description">Schedule manicures, pedicures, and nail art sessions effortlessly</p>
-              </div>
-            </div>
-          </div>
-          <div class="slideshow-slide">
-            <div class="slide-image-wrapper">
-              <img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&h=500&fit=crop&q=80" alt="Photographer" class="slide-image" />
-              <div class="slide-overlay">
-                <span class="slide-category">Photographers</span>
-                <p class="slide-description">Book photoshoots, manage sessions, and collect deposits easily</p>
-              </div>
-            </div>
-          </div>
-          <div class="slideshow-slide">
-            <div class="slide-image-wrapper">
-              <img src="https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=800&h=500&fit=crop&q=80" alt="Makeup Artist" class="slide-image" />
-              <div class="slide-overlay">
-                <span class="slide-category">Makeup Artists</span>
-                <p class="slide-description">Schedule bridal, editorial, and everyday glam appointments</p>
-              </div>
-            </div>
-          </div>
-          <div class="slideshow-slide">
-            <div class="slide-image-wrapper">
-              <img src="https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=800&h=500&fit=crop&q=80" alt="Videographer" class="slide-image" />
-              <div class="slide-overlay">
-                <span class="slide-category">Videographers</span>
-                <p class="slide-description">Manage video projects, weddings, and content creation bookings</p>
-              </div>
-            </div>
-          </div>
-          <div class="slideshow-slide">
-            <div class="slide-image-wrapper">
-              <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=500&fit=crop&q=80" alt="Personal Trainer" class="slide-image" />
-              <div class="slide-overlay">
-                <span class="slide-category">Personal Trainers</span>
-                <p class="slide-description">Schedule training sessions and track client progress</p>
-              </div>
-            </div>
-          </div>
-          <div class="slideshow-slide">
-            <div class="slide-image-wrapper">
-              <img src="https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?w=800&h=500&fit=crop&q=80" alt="DJ" class="slide-image" />
-              <div class="slide-overlay">
-                <span class="slide-category">DJs & Musicians</span>
-                <p class="slide-description">Book events, manage gigs, and collect deposits upfront</p>
-              </div>
-            </div>
-          </div>
-          <div class="slideshow-slide">
-            <div class="slide-image-wrapper">
-              <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=500&fit=crop&q=80" alt="Consultant" class="slide-image" />
-              <div class="slide-overlay">
-                <span class="slide-category">Consultants</span>
-                <p class="slide-description">Schedule consultations and manage client meetings seamlessly</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="slideshow-controls">
-        <button @click="prev()" class="slideshow-btn" aria-label="Previous slide">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-        </button>
-        <div class="slideshow-dots">
-          <template x-for="(slide, index) in totalSlides" :key="index">
-            <button
-              @click="goTo(index)"
-              :class="{ 'dot-active': currentSlide === index }"
-              class="slideshow-dot"
-              :aria-label="`Go to slide ${index + 1}`"
-            ></button>
-          </template>
-        </div>
-        <button @click="next()" class="slideshow-btn" aria-label="Next slide">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <style>
-      .business-slideshow {
-        position: relative;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 1rem;
-      }
-
-      .slideshow-container {
-        overflow: hidden;
-        border-radius: 1.5rem;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-      }
-
-      .slideshow-track {
-        display: flex;
-        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      .slideshow-slide {
-        flex-shrink: 0;
-        width: 100%;
-      }
-
-      .slide-image-wrapper {
-        position: relative;
-        aspect-ratio: 16 / 10;
-        overflow: hidden;
-      }
-
-      .slide-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.7s ease;
-      }
-
-      .slideshow-slide:hover .slide-image {
-        transform: scale(1.05);
-      }
-
-      .slide-overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 2rem;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
-      }
-
-      .slide-category {
-        display: inline-block;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: white;
-        margin-bottom: 0.5rem;
-      }
-
-      .slide-description {
-        font-size: 1rem;
-        color: rgba(255, 255, 255, 0.85);
-        max-width: 400px;
-      }
-
-      .slideshow-controls {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1.5rem;
-        margin-top: 1.5rem;
-      }
-
-      .slideshow-btn {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background: white;
-        border: 1px solid var(--color-sand-7, #d7d3d0);
-        color: var(--color-sand-12, #1c1917);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .slideshow-btn:hover {
-        background: var(--color-primary, #2563eb);
-        border-color: var(--color-primary, #2563eb);
-        color: white;
-        transform: scale(1.05);
-      }
-
-      .slideshow-dots {
-        display: flex;
-        gap: 0.5rem;
-      }
-
-      .slideshow-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--color-sand-6, #e7e5e4);
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .slideshow-dot:hover {
-        background: var(--color-sand-8, #a8a29e);
-      }
-
-      .dot-active {
-        background: var(--color-primary, #2563eb) !important;
-        transform: scale(1.2);
-      }
-
-      @media (max-width: 640px) {
-        .slide-category {
-          font-size: 1.25rem;
-        }
-
-        .slide-description {
-          font-size: 0.875rem;
-        }
-
-        .slide-overlay {
-          padding: 1.25rem;
-        }
-
-        .slideshow-btn {
-          width: 40px;
-          height: 40px;
-        }
-      }
-    </style>
-
-    <script>
-      function businessSlideshow() {
-        return {
-          currentSlide: 0,
-          totalSlides: 8,
-          autoplayInterval: null,
-
-          init() {
-            this.startAutoplay()
-          },
-
-          startAutoplay() {
-            this.autoplayInterval = setInterval(() => {
-              this.next()
-            }, 4000)
-          },
-
-          stopAutoplay() {
-            if (this.autoplayInterval) {
-              clearInterval(this.autoplayInterval)
+            100% {
+              transform: translateX(-50%);
             }
-          },
-
-          next() {
-            this.currentSlide = (this.currentSlide + 1) % this.totalSlides
-          },
-
-          prev() {
-            this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides
-          },
-
-          goTo(index) {
-            this.stopAutoplay()
-            this.currentSlide = index
-            this.startAutoplay()
           }
-        }
-      }
-    </script>
-  </div>
 
-  {{-- Pricing Preview --}}
-  @if(!auth.isAuthenticated)
-    <div class="py-20 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-sand-12 mb-4">Simple, Transparent Pricing</h2>
-          <p class="text-lg text-sand-11">Start with a 7-day free trial. No credit card required.</p>
+          @media (max-width: 768px) {
+            .carousel-slide {
+              width: 400px;
+              height: 300px;
+            }
+
+            .empty-slot-content {
+              padding: 1.5rem;
+            }
+
+            .empty-slot-icon svg {
+              width: 2rem;
+              height: 2rem;
+            }
+
+          @keyframes scroll {
+              0% {
+                transform: translateX(0);
+              }
+
+              100% {
+                transform: translateX(-50%);
+              }
+          }
+          }
+
+          @media (max-width: 480px) {
+            .carousel-slide {
+              width: 320px;
+              height: 240px;
+            }
+
+            .empty-slot-content {
+              padding: 1rem;
+              gap: 0.5rem;
+            }
+
+            .empty-slot-icon svg {
+              width: 1.5rem;
+              height: 1.5rem;
+            }
+
+            .empty-slot-text {
+              font-size: 0.875rem;
+            }
+
+            .empty-slot-cta {
+              font-size: 0.75rem;
+            }
+
+            .featured-badge {
+              padding: 0.3rem 0.5rem;
+              font-size: 0.65rem;
+            }
+
+          @keyframes scroll {
+              0% {
+                transform: translateX(0);
+              }
+
+              100% {
+                transform: translateX(-50%);
+              }
+          }
+          }
+        </style>
+
+        <script>
+          (async function loadFeaturedBusinesses() {
+            try {
+              const response = await fetch("/api/featured");
+              const featured = await response.json();
+              if (featured.length > 0) {
+                const track = document.querySelector(".carousel-track");
+                if (!track) return;
+                const featuredBadgeSvg = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>';
+                const createSlide = (business, isLink = true) => {
+                  const defaultImage = "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=450&fit=crop&q=80";
+                  const tag = isLink ? "a" : "div";
+                  const href = isLink ? `href="/book/${business.slug}"` : "";
+                  return `
+                                    <${tag} ${href} class="carousel-slide carousel-featured-real">
+                                      <img src="${business.image || defaultImage}" alt="${business.name}" class="carousel-image" onerror="this.src='${defaultImage}'" />
+                                      <div class="featured-badge featured-badge-real">
+                                        ${featuredBadgeSvg}
+                                        Featured
+                                      </div>
+                                      <div class="carousel-overlay">
+                                        <span class="carousel-label">${business.name}</span>
+                                      </div>
+                                    </${tag}>
+                                  `;
+                };
+                let slidesHtml = "";
+                featured.forEach(business => {
+                  slidesHtml += createSlide(business);
+                });
+                const ctaSlide = track.querySelector(".carousel-empty");
+                const ctaHtml = ctaSlide ? ctaSlide.outerHTML : "";
+                slidesHtml = slidesHtml + ctaHtml + slidesHtml + ctaHtml;
+                track.innerHTML = slidesHtml;
+                const realSlides = document.querySelectorAll(".carousel-featured-real");
+                realSlides.forEach(slide => {
+                  slide.style.border = "2px solid transparent";
+                  slide.style.background = "linear-gradient(white, white) padding-box, linear-gradient(135deg, #f59e0b, #d97706) border-box";
+                });
+              }
+            } catch (error) {
+              console.log("Featured businesses not loaded:", error);
+            }
+          })();
+        </script>
+      </div>
+
+      {{-- Features --}}
+      <div class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-sand-12 mb-4">
+              Everything you need to manage bookings
+            </h2>
+            <p class="text-lg text-sand-11">
+              Simple tools that help you focus on what you do best
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center p-6">
+              <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-sand-12 mb-2">
+                Custom Booking Page
+              </h3>
+              <p class="text-sand-11">
+                Get your own branded booking page at yourbusiness.{{ appDomain }}. Share it anywhere.
+              </p>
+            </div>
+
+            <div class="text-center p-6">
+              <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-sand-12 mb-2">
+                Online Payments
+              </h3>
+              <p class="text-sand-11">
+                Accept payments securely via card or bank transfer. No more chasing payments.
+              </p>
+            </div>
+
+            <div class="text-center p-6">
+              <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-sand-12 mb-2">
+                Instant Notifications
+              </h3>
+              <p class="text-sand-11">
+                Get notified instantly when someone books. Your customers get reminders too.
+              </p>
+            </div>
+
+            <div class="text-center p-6">
+              <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-sand-12 mb-2">
+                Smart Scheduling
+              </h3>
+              <p class="text-sand-11">
+                Set your availability once. The system handles conflicts automatically.
+              </p>
+            </div>
+
+            <div class="text-center p-6">
+              <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-sand-12 mb-2">
+                Team Management
+              </h3>
+              <p class="text-sand-11">
+                Add your staff, assign services, and let customers choose who they want.
+              </p>
+            </div>
+
+            <div class="text-center p-6">
+              <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-sand-12 mb-2">
+                Business Insights
+              </h3>
+              <p class="text-sand-11">
+                Track bookings, revenue, and popular services. Make data-driven decisions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{-- How It Works --}}
+      <div id="how-it-works" class="py-20 bg-sand-2">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-sand-12 mb-4">
+              Up and running in 3 steps
+            </h2>
+            <p class="text-lg text-sand-11">
+              It takes less than 5 minutes to set up
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-xl p-8 border border-sand-7">
+              <div
+                class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4"
+              >
+                1
+              </div>
+              <h3 class="text-xl font-semibold text-sand-12 mb-2">
+                Sign up & add services
+              </h3>
+              <p class="text-sand-11">
+                Create your account, add the services you offer with prices and duration.
+              </p>
+            </div>
+
+            <div class="bg-white rounded-xl p-8 border border-sand-7">
+              <div
+                class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4"
+              >
+                2
+              </div>
+              <h3 class="text-xl font-semibold text-sand-12 mb-2">
+                Set your availability
+              </h3>
+              <p class="text-sand-11">
+                Tell us when you're available for bookings. Set different hours for each day.
+              </p>
+            </div>
+
+            <div class="bg-white rounded-xl p-8 border border-sand-7">
+              <div
+                class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4"
+              >
+                3
+              </div>
+              <h3 class="text-xl font-semibold text-sand-12 mb-2">
+                Share your link
+              </h3>
+              <p class="text-sand-11">
+                Share your booking page on Instagram, WhatsApp, or anywhere. Start getting bookings!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{-- Industries --}}
+      <div class="py-20 bg-sand-2 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-sand-12 mb-4">
+              Built for service businesses
+            </h2>
+            <p class="text-lg text-sand-11">
+              Whether you're a solo professional or a growing team
+            </p>
+          </div>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-8">
-          <div class="bg-white border border-sand-7 rounded-xl p-6">
-            <h3 class="text-xl font-bold text-sand-12 mb-2">Starter</h3>
-            <div class="mb-4">
-              <span class="text-3xl font-bold text-sand-12">₦5,000</span>
-              <span class="text-sand-11">/month</span>
+        <div class="business-slideshow" x-data="businessSlideshow()">
+          <div class="slideshow-container">
+            <div class="slideshow-track" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
+              <div class="slideshow-slide">
+                <div class="slide-image-wrapper">
+                  <img
+                    src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=500&fit=crop&q=80"
+                    alt="Hair Salon"
+                    class="slide-image"
+                  />
+                  <div class="slide-overlay">
+                    <span class="slide-category">Hair Salons</span>
+                    <p class="slide-description">
+                      Manage appointments, stylists, and keep clients coming back
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="slideshow-slide">
+                <div class="slide-image-wrapper">
+                  <img
+                    src="https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&h=500&fit=crop&q=80"
+                    alt="Nail Tech"
+                    class="slide-image"
+                  />
+                  <div class="slide-overlay">
+                    <span class="slide-category">Nail Technicians</span>
+                    <p class="slide-description">
+                      Schedule manicures, pedicures, and nail art sessions effortlessly
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="slideshow-slide">
+                <div class="slide-image-wrapper">
+                  <img
+                    src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&h=500&fit=crop&q=80"
+                    alt="Photographer"
+                    class="slide-image"
+                  />
+                  <div class="slide-overlay">
+                    <span class="slide-category">Photographers</span>
+                    <p class="slide-description">
+                      Book photoshoots, manage sessions, and collect deposits easily
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="slideshow-slide">
+                <div class="slide-image-wrapper">
+                  <img
+                    src="https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=800&h=500&fit=crop&q=80"
+                    alt="Makeup Artist"
+                    class="slide-image"
+                  />
+                  <div class="slide-overlay">
+                    <span class="slide-category">Makeup Artists</span>
+                    <p class="slide-description">
+                      Schedule bridal, editorial, and everyday glam appointments
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="slideshow-slide">
+                <div class="slide-image-wrapper">
+                  <img
+                    src="https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=800&h=500&fit=crop&q=80"
+                    alt="Videographer"
+                    class="slide-image"
+                  />
+                  <div class="slide-overlay">
+                    <span class="slide-category">Videographers</span>
+                    <p class="slide-description">
+                      Manage video projects, weddings, and content creation bookings
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="slideshow-slide">
+                <div class="slide-image-wrapper">
+                  <img
+                    src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=500&fit=crop&q=80"
+                    alt="Personal Trainer"
+                    class="slide-image"
+                  />
+                  <div class="slide-overlay">
+                    <span class="slide-category">Personal Trainers</span>
+                    <p class="slide-description">
+                      Schedule training sessions and track client progress
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="slideshow-slide">
+                <div class="slide-image-wrapper">
+                  <img
+                    src="https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?w=800&h=500&fit=crop&q=80"
+                    alt="DJ"
+                    class="slide-image"
+                  />
+                  <div class="slide-overlay">
+                    <span class="slide-category">DJs & Musicians</span>
+                    <p class="slide-description">
+                      Book events, manage gigs, and collect deposits upfront
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="slideshow-slide">
+                <div class="slide-image-wrapper">
+                  <img
+                    src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=500&fit=crop&q=80"
+                    alt="Consultant"
+                    class="slide-image"
+                  />
+                  <div class="slide-overlay">
+                    <span class="slide-category">Consultants</span>
+                    <p class="slide-description">
+                      Schedule consultations and manage client meetings seamlessly
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <ul class="space-y-2 text-sm text-sand-11 mb-6">
-              <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Up to 3 staff
-              </li>
-              <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Unlimited bookings
-              </li>
-            </ul>
           </div>
 
-          <div class="bg-white border-2 border-primary rounded-xl p-6 ring-2 ring-primary/20">
-            <div class="text-center mb-2">
-              <span class="inline-block px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full">Most Popular</span>
+          <div class="slideshow-controls">
+            <button @click="prev()" class="slideshow-btn" aria-label="Previous slide">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div class="slideshow-dots">
+              <template x-for="(slide, index) in totalSlides" :key="index">
+                <button
+                  @click="goTo(index)"
+                  :class="{ 'dot-active': currentSlide === index }"
+                  class="slideshow-dot"
+                  :aria-label="`Go to slide ${index + 1}`"
+                ></button>
+              </template>
             </div>
-            <h3 class="text-xl font-bold text-sand-12 mb-2">Pro</h3>
-            <div class="mb-4">
-              <span class="text-3xl font-bold text-sand-12">₦15,000</span>
-              <span class="text-sand-11">/month</span>
-            </div>
-            <ul class="space-y-2 text-sm text-sand-11 mb-6">
-              <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Up to 10 staff
-              </li>
-              <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                SMS notifications
-              </li>
-              <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Analytics & Custom domain
-              </li>
-            </ul>
-          </div>
-
-          <div class="bg-white border border-sand-7 rounded-xl p-6">
-            <h3 class="text-xl font-bold text-sand-12 mb-2">Business</h3>
-            <div class="mb-4">
-              <span class="text-3xl font-bold text-sand-12">₦40,000</span>
-              <span class="text-sand-11">/month</span>
-            </div>
-            <ul class="space-y-2 text-sm text-sand-11 mb-6">
-              <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Unlimited staff
-              </li>
-              <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                API access & Priority support
-              </li>
-            </ul>
+            <button @click="next()" class="slideshow-btn" aria-label="Next slide">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
         </div>
 
-        <div class="text-center">
-          <a href="{{ route('subscriptions.index') }}" class="text-primary hover:underline font-medium">
-            View all plans and features →
+        <style>
+          .business-slideshow {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1rem;
+          }
+
+          .slideshow-container {
+            overflow: hidden;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+          }
+
+          .slideshow-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+
+          .slideshow-slide {
+            flex-shrink: 0;
+            width: 100%;
+          }
+
+          .slide-image-wrapper {
+            position: relative;
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+          }
+
+          .slide-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+          }
+
+          .slideshow-slide:hover .slide-image {
+            transform: scale(1.05);
+          }
+
+          .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+          }
+
+          .slide-category {
+            display: inline-block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+          }
+
+          .slide-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.85);
+            max-width: 400px;
+          }
+
+          .slideshow-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+          }
+
+          .slideshow-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid var(--color-sand-7, #d7d3d0);
+            color: var(--color-sand-12, #1c1917);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          }
+
+          .slideshow-btn:hover {
+            background: var(--color-primary, #2563eb);
+            border-color: var(--color-primary, #2563eb);
+            color: white;
+            transform: scale(1.05);
+          }
+
+          .slideshow-dots {
+            display: flex;
+            gap: 0.5rem;
+          }
+
+          .slideshow-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--color-sand-6, #e7e5e4);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+
+          .slideshow-dot:hover {
+            background: var(--color-sand-8, #a8a29e);
+          }
+
+          .dot-active {
+            background: var(--color-primary, #2563eb) !important;
+            transform: scale(1.2);
+          }
+
+          @media (max-width: 640px) {
+            .slide-category {
+              font-size: 1.25rem;
+            }
+
+            .slide-description {
+              font-size: 0.875rem;
+            }
+
+            .slide-overlay {
+              padding: 1.25rem;
+            }
+
+            .slideshow-btn {
+              width: 40px;
+              height: 40px;
+            }
+          }
+        </style>
+
+        <script>
+          function businessSlideshow() {
+            return {
+              currentSlide: 0,
+              totalSlides: 8,
+              autoplayInterval: null,
+              init() {
+                this.startAutoplay();
+              },
+              startAutoplay() {
+                this.autoplayInterval = setInterval(() => {
+                  this.next();
+                }, 4e3);
+              },
+              stopAutoplay() {
+                if (this.autoplayInterval) {
+                  clearInterval(this.autoplayInterval);
+                }
+              },
+              next() {
+                this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+              },
+              prev() {
+                this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+              },
+              goTo(index) {
+                this.stopAutoplay();
+                this.currentSlide = index;
+                this.startAutoplay();
+              }
+            };
+          }
+        </script>
+      </div>
+
+      {{-- Pricing Preview --}}
+      @if(!auth.isAuthenticated)
+        <div class="py-20 bg-white">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+              <h2 class="text-3xl font-bold text-sand-12 mb-4">
+                Simple, Transparent Pricing
+              </h2>
+              <p class="text-lg text-sand-11">
+                Start with a 7-day free trial. No credit card required.
+              </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-8">
+              <div class="bg-white border border-sand-7 rounded-xl p-6">
+                <h3 class="text-xl font-bold text-sand-12 mb-2">
+                  Starter
+                </h3>
+                <div class="mb-4">
+                  <span class="text-3xl font-bold text-sand-12">₦5,000</span>
+                  <span class="text-sand-11">/month</span>
+                </div>
+                <ul class="space-y-2 text-sm text-sand-11 mb-6">
+                  <li class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Up to 3 staff
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Unlimited bookings
+                  </li>
+                </ul>
+              </div>
+
+              <div class="bg-white border-2 border-primary rounded-xl p-6 ring-2 ring-primary/20">
+                <div class="text-center mb-2">
+                  <span class="inline-block px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full">Most Popular</span>
+                </div>
+                <h3 class="text-xl font-bold text-sand-12 mb-2">
+                  Pro
+                </h3>
+                <div class="mb-4">
+                  <span class="text-3xl font-bold text-sand-12">₦15,000</span>
+                  <span class="text-sand-11">/month</span>
+                </div>
+                <ul class="space-y-2 text-sm text-sand-11 mb-6">
+                  <li class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Up to 10 staff
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    SMS notifications
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Analytics & Custom domain
+                  </li>
+                </ul>
+              </div>
+
+              <div class="bg-white border border-sand-7 rounded-xl p-6">
+                <h3 class="text-xl font-bold text-sand-12 mb-2">
+                  Business
+                </h3>
+                <div class="mb-4">
+                  <span class="text-3xl font-bold text-sand-12">₦40,000</span>
+                  <span class="text-sand-11">/month</span>
+                </div>
+                <ul class="space-y-2 text-sm text-sand-11 mb-6">
+                  <li class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Unlimited staff
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    API access & Priority support
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="text-center">
+              <a href="{{ route('subscriptions.index') }}" class="text-primary hover:underline font-medium">
+                View all plans and features →
           </a>
+            </div>
+          </div>
+        </div>
+      @endif
+
+      {{-- CTA --}}
+      <div class="py-20 bg-primary">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            Ready to simplify your bookings?
+          </h2>
+          <p class="text-xl text-white/80 mb-8">
+            @if(auth.isAuthenticated)
+              Manage your appointments and grow your business with ease.
+            @else
+              Start your 7-day free trial today. No credit card required. Experience all features risk-free.
+            @endif
+          </p>
+          @if(auth.isAuthenticated)
+            <a
+              href="{{ route('dashboard') }}"
+              class="inline-block px-8 py-4 bg-white text-primary font-semibold rounded-lg hover:bg-sand-1 transition-colors text-lg"
+            >
+              Go to Dashboard
+        </a>
+          @else
+            <a
+              href="{{ route('auth.signup.show') }}"
+              class="inline-block px-8 py-4 bg-white text-primary font-semibold rounded-lg hover:bg-sand-1 transition-colors text-lg"
+            >
+              Start Your 7-Day Free Trial
+        </a>
+          @endif
         </div>
       </div>
-    </div>
-  @endif
-
-  {{-- CTA --}}
-  <div class="py-20 bg-primary">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-        Ready to simplify your bookings?
-      </h2>
-      <p class="text-xl text-white/80 mb-8">
-        @if(auth.isAuthenticated)
-          Manage your appointments and grow your business with ease.
-        @else
-          Start your 7-day free trial today. No credit card required. Experience all features risk-free.
-        @endif
-      </p>
-      @if(auth.isAuthenticated)
-        <a href="{{ route('dashboard') }}" class="inline-block px-8 py-4 bg-white text-primary font-semibold rounded-lg hover:bg-sand-1 transition-colors text-lg">
-          Go to Dashboard
-        </a>
-      @else
-        <a href="{{ route('auth.signup.show') }}" class="inline-block px-8 py-4 bg-white text-primary font-semibold rounded-lg hover:bg-sand-1 transition-colors text-lg">
-          Start Your 7-Day Free Trial
-        </a>
-      @endif
-    </div>
-  </div>
-@endsection
+    @endsection

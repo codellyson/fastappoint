@@ -41,6 +41,11 @@ export default class OnboardingController {
     try {
       const data = await request.validateUsing(businessDetailsValidator)
 
+      if (data.phone && (data.phone.length < 10 || data.phone.length > 15)) {
+        session.flash('error', 'Phone number must be between 10 and 15 characters')
+        return response.redirect().back()
+      }
+
       const business = await Business.findOrFail(user.businessId)
       business.merge({
         name: data.name,
@@ -159,8 +164,11 @@ export default class OnboardingController {
     const bookingUrl = isDev
       ? `http://${business.slug}.localhost:${port}`
       : `https://${business.slug}.${env.get('APP_DOMAIN', 'fastappoint.com')}`
-    
-    session.flash('success', `Your booking page is live at ${bookingUrl.replace('http://', '').replace('https://', '')}!`)
+
+    session.flash(
+      'success',
+      `Your booking page is live at ${bookingUrl.replace('http://', '').replace('https://', '')}!`
+    )
     return response.redirect().toRoute('dashboard')
   }
 }

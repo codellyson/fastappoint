@@ -34,7 +34,7 @@ const shieldConfig = defineConfig({
 
   csrf: {
     enabled: true,
-    exceptRoutes: ['/api/*', '/webhooks/*'],
+    exceptRoutes: ['/api/*', '/webhooks/*', '/reset-password'],
     enableXsrfCookie: false,
     methods: ['POST', 'PUT', 'PATCH', 'DELETE'],
   },

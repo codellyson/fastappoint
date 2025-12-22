@@ -21,8 +21,9 @@ export default await Env.create(new URL('../', import.meta.url), {
   PAYSTACK_SECRET_KEY: Env.schema.string.optional(),
   PAYSTACK_PUBLIC_KEY: Env.schema.string.optional(),
 
-  RESEND_API_KEY: Env.schema.string.optional(),
+  BREVO_API_KEY: Env.schema.string.optional(),
   FROM_EMAIL: Env.schema.string.optional(),
+  FROM_NAME: Env.schema.string.optional(),
 
   TERMII_API_KEY: Env.schema.string.optional(),
   TERMII_SENDER_ID: Env.schema.string.optional(),

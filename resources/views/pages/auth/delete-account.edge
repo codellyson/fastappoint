@@ -1,0 +1,160 @@
+@layout('layouts/app')
+
+  @set('title', 'Delete Account - FastAppoint')
+
+    @section('content')
+      <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+          <div class="text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-error/10 mb-4">
+              <svg class="h-6 w-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-sand-12">
+              Delete Your Account
+            </h2>
+            <p class="mt-2 text-sm text-sand-11">
+              This action cannot be undone. All your data will be permanently deleted.
+            </p>
+          </div>
+
+          @if(flashMessages.has('error'))
+            <div class="bg-error/10 border border-error text-error rounded-lg p-4 text-sm">
+              {{ flashMessages.get('error') }}
+            </div>
+          @endif
+
+          <div class="bg-error/5 border border-error/20 rounded-xl p-6 space-y-4">
+            <h3 class="font-semibold text-sand-12">
+              What will be deleted:
+            </h3>
+            <ul class="space-y-2 text-sm text-sand-11">
+              @if(business)
+                <li class="flex items-start gap-2">
+                  <svg
+                    class="w-5 h-5 text-error mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span>Your business account and all associated data</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg
+                    class="w-5 h-5 text-error mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span>All services, bookings, and customer data</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg
+                    class="w-5 h-5 text-error mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span>All staff members and their data</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg
+                    class="w-5 h-5 text-error mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span>Subscription and payment information</span>
+                </li>
+              @else
+                <li class="flex items-start gap-2">
+                  <svg
+                    class="w-5 h-5 text-error mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span>Your user account</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg
+                    class="w-5 h-5 text-error mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span>Your availability and time-off records</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg
+                    class="w-5 h-5 text-error mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span>Your service assignments</span>
+                </li>
+              @endif
+            </ul>
+          </div>
+
+          <form
+            method="POST"
+            action="{{ route('auth.account.delete') }}"
+            x-data="{ loading: false }"
+            @submit="loading = true"
+          >
+            {{ csrfField() }}
+            <div class="space-y-4">
+              <button
+                type="submit"
+                :disabled="loading"
+                class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-error hover:bg-error/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-error disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span x-show="!loading">Yes, Delete My Account</span>
+                <span x-show="loading" class="flex items-center gap-2">
+                  <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" />
+
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+
+                  </svg>
+                  Deleting...
+            </span>
+              </button>
+
+              <a
+                href="{{ route('settings.index') }}"
+                class="block w-full text-center py-3 px-4 border border-sand-7 text-sm font-medium rounded-lg text-sand-12 bg-white hover:bg-sand-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                Cancel
+          </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    @endsection

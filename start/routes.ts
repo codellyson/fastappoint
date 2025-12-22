@@ -47,6 +47,15 @@ router.post('/logout', [AuthController, 'logout']).as('auth.logout').use(middlew
 
 router
   .group(() => {
+    router
+      .get('/account/delete', [AuthController, 'showDeleteAccount'])
+      .as('auth.account.delete.show')
+    router.post('/account/delete', [AuthController, 'deleteAccount']).as('auth.account.delete')
+  })
+  .use(middleware.auth())
+
+router
+  .group(() => {
     router.get('/onboarding', [OnboardingController, 'show']).as('onboarding.show')
     router
       .post('/onboarding/details', [OnboardingController, 'updateDetails'])
@@ -154,20 +163,34 @@ router
     router.get('/featured/:id/cancel', [FeaturedController, 'cancel']).as('featured.cancel')
 
     router.get('/subscriptions', [SubscriptionsController, 'index']).as('subscriptions.index')
-    router.get('/subscriptions/select', [SubscriptionsController, 'select']).as('subscriptions.select')
-    router.get('/subscriptions/manage', [SubscriptionsController, 'manage']).as('subscriptions.manage')
-    router.post('/subscriptions/subscribe', [SubscriptionsController, 'subscribe']).as('subscriptions.subscribe')
-    router.get('/subscriptions/:planId/payment', [SubscriptionsController, 'payment']).as('subscriptions.payment')
-    router.get('/subscriptions/:planId/verify', [SubscriptionsController, 'verify']).as('subscriptions.verify')
-    router.post('/subscriptions/cancel', [SubscriptionsController, 'cancel']).as('subscriptions.cancel')
-    router.post('/subscriptions/resume', [SubscriptionsController, 'resume']).as('subscriptions.resume')
-    router.post('/subscriptions/change', [SubscriptionsController, 'change']).as('subscriptions.change')
+    router
+      .get('/subscriptions/select', [SubscriptionsController, 'select'])
+      .as('subscriptions.select')
+    router
+      .get('/subscriptions/manage', [SubscriptionsController, 'manage'])
+      .as('subscriptions.manage')
+    router
+      .post('/subscriptions/subscribe', [SubscriptionsController, 'subscribe'])
+      .as('subscriptions.subscribe')
+    router
+      .get('/subscriptions/:planId/payment', [SubscriptionsController, 'payment'])
+      .as('subscriptions.payment')
+    router
+      .get('/subscriptions/:planId/verify', [SubscriptionsController, 'verify'])
+      .as('subscriptions.verify')
+    router
+      .post('/subscriptions/cancel', [SubscriptionsController, 'cancel'])
+      .as('subscriptions.cancel')
+    router
+      .post('/subscriptions/resume', [SubscriptionsController, 'resume'])
+      .as('subscriptions.resume')
+    router
+      .post('/subscriptions/change', [SubscriptionsController, 'change'])
+      .as('subscriptions.change')
   })
   .use(middleware.auth())
 
-router
-  .get('/book/find', [BookingController, 'findBooking'])
-  .as('book.find')
+router.get('/book/find', [BookingController, 'findBooking']).as('book.find')
 router
   .post('/book/lookup', [BookingController, 'lookupBooking'])
   .as('book.lookup')

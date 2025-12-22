@@ -1,242 +1,345 @@
 @layout('layouts/app')
 
-@set('title', 'Setup Your Booking Page - FastAppoint')
+  @set('title', 'Setup Your Booking Page - FastAppoint')
 
-@section('content')
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold text-sand-12">Set up your booking page</h1>
-      <p class="text-sand-11 mt-1">Complete these steps to start accepting bookings</p>
-    </div>
+    @section('content')
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+          <h1 class="text-2xl font-bold text-sand-12">
+            Set up your booking page
+          </h1>
+          <p class="text-sand-11 mt-1">
+            Complete these steps to start accepting bookings
+          </p>
+        </div>
 
-    @if(flashMessages.has('success'))
-      <div class="mb-6 bg-success/10 border border-success text-success rounded-lg p-4 text-sm">
-        {{ flashMessages.get('success') }}
-      </div>
-    @endif
-
-    @if(flashMessages.has('error'))
-      <div class="mb-6 bg-error/10 border border-error text-error rounded-lg p-4 text-sm">
-        {{ flashMessages.get('error') }}
-      </div>
-    @endif
-
-    {{-- Progress Steps --}}
-    <div class="flex items-center justify-between mb-8 bg-white border border-sand-7 rounded-xl p-4">
-      <a href="?step=1" class="flex items-center gap-2 {{ step === 1 ? '' : 'opacity-60 hover:opacity-100' }}">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium {{ step === 1 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11' }}">1</div>
-        <span class="text-sm font-medium text-sand-12 hidden sm:block">Details</span>
-      </a>
-      <div class="flex-1 h-px bg-sand-6 mx-2"></div>
-      <a href="?step=2" class="flex items-center gap-2 {{ step === 2 ? '' : 'opacity-60 hover:opacity-100' }}">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium {{ step === 2 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11' }}">2</div>
-        <span class="text-sm font-medium text-sand-12 hidden sm:block">Services</span>
-      </a>
-      <div class="flex-1 h-px bg-sand-6 mx-2"></div>
-      <a href="?step=3" class="flex items-center gap-2 {{ step === 3 ? '' : 'opacity-60 hover:opacity-100' }}">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium {{ step === 3 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11' }}">3</div>
-        <span class="text-sm font-medium text-sand-12 hidden sm:block">Hours</span>
-      </a>
-      <div class="flex-1 h-px bg-sand-6 mx-2"></div>
-      <a href="?step=4" class="flex items-center gap-2 {{ step === 4 ? '' : 'opacity-60 hover:opacity-100' }}">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium {{ step === 4 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11' }}">4</div>
-        <span class="text-sm font-medium text-sand-12 hidden sm:block">Launch</span>
-      </a>
-    </div>
-
-    {{-- Step 1: Business Details --}}
-    @if(step === 1)
-      <div class="bg-white border border-sand-7 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-sand-12 mb-4">Business Details</h2>
-        <form method="POST" action="{{ route('onboarding.details') }}">
-          {{ csrfField() }}
-          <div class="space-y-4">
-            <div>
-              <label for="name" class="block text-sm font-medium text-sand-12 mb-2">Business Name</label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                value="{{ business.name }}"
-                class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-
-            <div>
-              <label for="description" class="block text-sm font-medium text-sand-12 mb-2">
-                Description <span class="text-sand-9">(optional)</span>
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                rows="3"
-                class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Tell customers about your business..."
-              >{{ business.description }}</textarea>
-            </div>
-
-            <div>
-              <label for="phone" class="block text-sm font-medium text-sand-12 mb-2">
-                Phone Number <span class="text-sand-9">(optional)</span>
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                value="{{ business.phone }}"
-                class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="+234 800 000 0000"
-              />
-            </div>
-
-            <div>
-              <label for="cancellationHours" class="block text-sm font-medium text-sand-12 mb-2">
-                Cancellation Notice (hours)
-              </label>
-              <input
-                id="cancellationHours"
-                name="cancellationHours"
-                type="number"
-                min="0"
-                max="168"
-                value="{{ business.cancellationHours }}"
-                class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <p class="mt-1 text-xs text-sand-11">How many hours before an appointment can customers cancel?</p>
-            </div>
+        @if(flashMessages.has('success'))
+          <div class="mb-6 bg-success/10 border border-success text-success rounded-lg p-4 text-sm">
+            {{ flashMessages.get('success') }}
           </div>
+        @endif
 
-          <div class="mt-6 flex justify-end">
-            <button type="submit" class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
-              Save & Continue →
-            </button>
+        @if(flashMessages.has('error'))
+          <div class="mb-6 bg-error/10 border border-error text-error rounded-lg p-4 text-sm">
+            {{ flashMessages.get('error') }}
           </div>
-        </form>
-      </div>
-    @endif
+        @endif
 
-    {{-- Step 2: Services --}}
-    @if(step === 2)
-      <div class="space-y-6">
-        <div class="bg-white border border-sand-7 rounded-xl p-6">
-          <h2 class="text-lg font-semibold text-sand-12 mb-4">Add Your Services</h2>
-          <p class="text-sm text-sand-11 mb-6">What do you offer? Add at least one service to continue.</p>
-
-          @if(business.services.length > 0)
-            <div class="space-y-3 mb-6">
-              @each(service in business.services)
-                <div class="flex items-center justify-between p-4 bg-sand-2 rounded-lg">
-                  <div>
-                    <p class="font-medium text-sand-12">{{ service.name }}</p>
-                    <p class="text-sm text-sand-11">{{ service.durationMinutes }}min • ₦{{ Number(service.price).toLocaleString() }}</p>
-                  </div>
-                  <form method="POST" action="{{ route('onboarding.service.delete', { id: service.id }) }}" onsubmit="return confirm('Remove this service?')">
-                    {{ csrfField() }}
-                    <button type="submit" class="p-2 text-sand-11 hover:text-error hover:bg-error/10 rounded-lg">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                      </svg>
-                    </button>
-                  </form>
-                </div>
-              @endeach
+        {{-- Progress Steps --}}
+        <div class="flex items-center justify-between mb-8 bg-white border border-sand-7 rounded-xl p-4">
+          <a
+            href="?step=1"
+            class="flex items-center gap-2 {{ step === 1 ? '' : 'opacity-60 hover:opacity-100' }}"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium {{ step === 1 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11' }}"
+            >
+              1
             </div>
-          @endif
+            <span class="text-sm font-medium text-sand-12 hidden sm:block">Details</span>
+          </a>
+          <div class="flex-1 h-px bg-sand-6 mx-2">
+          </div>
+          <a
+            href="?step=2"
+            class="flex items-center gap-2 {{ step === 2 ? '' : 'opacity-60 hover:opacity-100' }}"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium {{ step === 2 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11' }}"
+            >
+              2
+            </div>
+            <span class="text-sm font-medium text-sand-12 hidden sm:block">Services</span>
+          </a>
+          <div class="flex-1 h-px bg-sand-6 mx-2">
+          </div>
+          <a
+            href="?step=3"
+            class="flex items-center gap-2 {{ step === 3 ? '' : 'opacity-60 hover:opacity-100' }}"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium {{ step === 3 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11' }}"
+            >
+              3
+            </div>
+            <span class="text-sm font-medium text-sand-12 hidden sm:block">Hours</span>
+          </a>
+          <div class="flex-1 h-px bg-sand-6 mx-2">
+          </div>
+          <a
+            href="?step=4"
+            class="flex items-center gap-2 {{ step === 4 ? '' : 'opacity-60 hover:opacity-100' }}"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium {{ step === 4 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11' }}"
+            >
+              4
+            </div>
+            <span class="text-sm font-medium text-sand-12 hidden sm:block">Launch</span>
+          </a>
+        </div>
 
-          <form method="POST" action="{{ route('onboarding.service.add') }}" x-data="{ showForm: {{ business.services.length === 0 ? 'true' : 'false' }} }">
-            {{ csrfField() }}
-            <button type="button" x-show="!showForm" @click="showForm = true" class="w-full py-3 border-2 border-dashed border-sand-7 rounded-lg text-sand-11 hover:border-primary hover:text-primary transition-colors">
-              + Add Service
-            </button>
-
-            <div x-show="showForm" class="space-y-4 p-4 bg-sand-2 rounded-lg">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {{-- Step 1: Business Details --}}
+        @if(step === 1)
+          <div class="bg-white border border-sand-7 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-sand-12 mb-4">
+              Business Details
+            </h2>
+            <form method="POST" action="{{ route('onboarding.details') }}">
+              {{ csrfField() }}
+              <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-sand-12 mb-2">Service Name</label>
+                  <label for="name" class="block text-sm font-medium text-sand-12 mb-2">Business Name</label>
                   <input
+                    id="name"
                     name="name"
                     type="text"
                     required
-                    class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary bg-white"
-                    placeholder="e.g., Haircut"
+                    value="{{ business.name }}"
+                    class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
+
                 <div>
-                  <label class="block text-sm font-medium text-sand-12 mb-2">Price (₦)</label>
+                  <label for="description" class="block text-sm font-medium text-sand-12 mb-2">
+                    Description <span class="text-sand-9">(optional)</span>
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    rows="3"
+                    class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Tell customers about your business..."
+                  >{{ business.description || '' }}</textarea>
+                </div>
+
+                <div>
+                  <label for="phone" class="block text-sm font-medium text-sand-12 mb-2">
+                    Phone Number <span class="text-sand-9">(optional)</span>
+                  </label>
                   <input
-                    name="price"
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value="{{ business.phone || '' }}"
+                    class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="+234 800 000 0000"
+                  />
+                </div>
+
+                <div>
+                  <label for="cancellationHours" class="block text-sm font-medium text-sand-12 mb-2">
+                    Cancellation Notice (hours)
+              </label>
+                  <input
+                    id="cancellationHours"
+                    name="cancellationHours"
                     type="number"
                     min="0"
-                    step="100"
-                    required
-                    class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary bg-white"
-                    placeholder="5000"
+                    max="168"
+                    value="{{ business.cancellationHours }}"
+                    class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
                   />
+                  <p class="mt-1 text-xs text-sand-11">
+                    How many hours before an appointment can customers cancel?
+                  </p>
                 </div>
               </div>
 
-              <div>
-                <label class="block text-sm font-medium text-sand-12 mb-2">Duration (minutes)</label>
-                <select name="durationMinutes" required class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary bg-white">
-                  <option value="15">15 min</option>
-                  <option value="30">30 min</option>
-                  <option value="45">45 min</option>
-                  <option value="60" selected>1 hour</option>
-                  <option value="90">1.5 hours</option>
-                  <option value="120">2 hours</option>
-                  <option value="180">3 hours</option>
-                  <option value="240">4 hours</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-sand-12 mb-2">Description <span class="text-sand-9">(optional)</span></label>
-                <textarea
-                  name="description"
-                  rows="2"
-                  class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary bg-white"
-                  placeholder="Describe this service..."
-                ></textarea>
-              </div>
-
-              <div class="flex gap-3">
-                <button type="button" @click="showForm = false" class="px-4 py-2 border border-sand-7 text-sand-12 rounded-lg hover:bg-sand-3" {{ business.services.length === 0 ? 'disabled' : '' }}>
-                  Cancel
-                </button>
-                <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
-                  Add Service
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <div class="flex justify-between">
-          <a href="?step=1" class="px-6 py-3 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2">
-            ← Back
-          </a>
-          @if(business.services.length > 0)
-            <a href="?step=3" class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
-              Continue →
-            </a>
-          @else
-            <button disabled class="px-6 py-3 bg-primary/50 text-white font-medium rounded-lg cursor-not-allowed">
-              Add a service first
+              <div class="mt-6 flex justify-end">
+                <button type="submit" class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
+                  Save & Continue →
             </button>
-          @endif
-        </div>
-      </div>
-    @endif
+              </div>
+            </form>
+          </div>
+        @endif
 
-    {{-- Step 3: Availability --}}
-    @if(step === 3)
-      <div class="space-y-6">
-        <div class="bg-white border border-sand-7 rounded-xl p-6">
-          <h2 class="text-lg font-semibold text-sand-12 mb-4">Set Your Availability</h2>
-          <p class="text-sm text-sand-11 mb-6">When are you available for bookings?</p>
+        {{-- Step 2: Services --}}
+        @if(step === 2)
+          <div class="space-y-6">
+            <div class="bg-white border border-sand-7 rounded-xl p-6">
+              <h2 class="text-lg font-semibold text-sand-12 mb-4">
+                Add Your Services
+              </h2>
+              <p class="text-sm text-sand-11 mb-6">
+                What do you offer? Add at least one service to continue.
+              </p>
 
-          <form method="POST" action="{{ route('onboarding.availability') }}" x-data="{
+              @if(business.services.length > 0)
+                <div class="space-y-3 mb-6">
+                  @each(service in business.services)
+                    <div class="flex items-center justify-between p-4 bg-sand-2 rounded-lg">
+                      <div>
+                        <p class="font-medium text-sand-12">
+                          {{ service.name }}
+                        </p>
+                        <p class="text-sm text-sand-11">
+                          {{ service.durationMinutes }}min • ₦{{ Number(service.price).toLocaleString() }}
+                        </p>
+                      </div>
+                      <form
+                        method="POST"
+                        action="{{ route('onboarding.service.delete', { id: service.id }) }}"
+                        onsubmit="return confirm('Remove this service?')"
+                      >
+                        {{ csrfField() }}
+                    <button type="submit" class="p-2 text-sand-11 hover:text-error hover:bg-error/10 rounded-lg">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                      </form>
+                    </div>
+                  @endeach
+                </div>
+              @endif
+
+              <form
+                method="POST"
+                action="{{ route('onboarding.service.add') }}"
+                x-data="{ showForm: {{ business.services.length === 0 ? 'true' : 'false' }} }"
+              >
+                {{ csrfField() }}
+            <button
+                  type="button"
+                  x-show="!showForm"
+                  @click="showForm = true"
+                  class="w-full py-3 border-2 border-dashed border-sand-7 rounded-lg text-sand-11 hover:border-primary hover:text-primary transition-colors"
+                >
+                  + Add Service
+            </button>
+
+                <div x-show="showForm" class="space-y-4 p-4 bg-sand-2 rounded-lg">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-sand-12 mb-2">Service Name</label>
+                      <input
+                        name="name"
+                        type="text"
+                        required
+                        class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+                        placeholder="e.g., Haircut"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-sand-12 mb-2">Price (₦)</label>
+                      <input
+                        name="price"
+                        type="number"
+                        min="0"
+                        step="1"
+                        required
+                        class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+                        placeholder="5000"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-sand-12 mb-2">Duration (minutes)</label>
+                    <select
+                      name="durationMinutes"
+                      required
+                      class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+                    >
+                      <option value="15">
+                        15 min
+                      </option>
+                      <option value="30">
+                        30 min
+                      </option>
+                      <option value="45">
+                        45 min
+                      </option>
+                      <option value="60" selected>
+                        1 hour
+                      </option>
+                      <option value="90">
+                        1.5 hours
+                      </option>
+                      <option value="120">
+                        2 hours
+                      </option>
+                      <option value="180">
+                        3 hours
+                      </option>
+                      <option value="240">
+                        4 hours
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-sand-12 mb-2">Description <span class="text-sand-9">(optional)</span></label>
+                    <textarea
+                      name="description"
+                      rows="2"
+                      class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+                      placeholder="Describe this service..."
+                    ></textarea>
+                  </div>
+
+                  <div class="flex gap-3">
+                    <button
+                      type="button"
+                      @click="showForm = false"
+                      class="px-4 py-2 border border-sand-7 text-sand-12 rounded-lg hover:bg-sand-3"
+                      {{ business.services.length === 0 ? 'disabled' : '' }}
+                    >
+                      Cancel
+                </button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+                      Add Service
+                </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div class="flex justify-between">
+              <a
+                href="?step=1"
+                class="px-6 py-3 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2"
+              >
+                ← Back
+          </a>
+              @if(business.services.length > 0)
+                <a
+                  href="?step=3"
+                  class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90"
+                >
+                  Continue →
+            </a>
+              @else
+                <button disabled class="px-6 py-3 bg-primary/50 text-white font-medium rounded-lg cursor-not-allowed">
+                  Add a service first
+            </button>
+              @endif
+            </div>
+          </div>
+        @endif
+
+        {{-- Step 3: Availability --}}
+        @if(step === 3)
+          <div class="space-y-6">
+            <div class="bg-white border border-sand-7 rounded-xl p-6">
+              <h2 class="text-lg font-semibold text-sand-12 mb-4">
+                Set Your Availability
+              </h2>
+              <p class="text-sm text-sand-11 mb-6">
+                When are you available for bookings?
+              </p>
+
+              <form
+                method="POST"
+                action="{{ route('onboarding.availability') }}"
+                x-data="{
             days: [
               { name: 'Sunday', active: false, start: '09:00', end: '17:00' },
               { name: 'Monday', active: true, start: '09:00', end: '17:00' },
@@ -246,129 +349,175 @@
               { name: 'Friday', active: true, start: '09:00', end: '17:00' },
               { name: 'Saturday', active: false, start: '09:00', end: '17:00' }
             ]
-          }">
-            {{ csrfField() }}
-            <div class="space-y-3">
-              <template x-for="(day, index) in days" :key="index">
-                <div class="flex items-center gap-4 p-4 rounded-lg" :class="day.active ? 'bg-primary/5' : 'bg-sand-2'">
-                  <input type="hidden" :name="'availabilities[' + index + '][dayOfWeek]'" :value="index" />
-                  <input type="hidden" :name="'availabilities[' + index + '][isActive]'" :value="day.active" />
-                  <input type="hidden" :name="'availabilities[' + index + '][startTime]'" :value="day.start" />
-                  <input type="hidden" :name="'availabilities[' + index + '][endTime]'" :value="day.end" />
+          }"
+              >
+                {{ csrfField() }}
+                <div class="space-y-3">
+                  <template x-for="(day, index) in days" :key="index">
+                    <div
+                      class="flex items-center gap-4 p-4 rounded-lg"
+                      :class="day.active ? 'bg-primary/5' : 'bg-sand-2'"
+                    >
+                      <input type="hidden" :name="'availabilities[' + index + '][dayOfWeek]'" :value="index" />
+                      <input type="hidden" :name="'availabilities[' + index + '][isActive]'" :value="day.active" />
+                      <input type="hidden" :name="'availabilities[' + index + '][startTime]'" :value="day.start" />
+                      <input type="hidden" :name="'availabilities[' + index + '][endTime]'" :value="day.end" />
 
-                  <label class="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" x-model="day.active" class="w-5 h-5 rounded border-sand-7 text-primary focus:ring-primary" />
-                    <span class="w-24 font-medium text-sand-12" x-text="day.name"></span>
-                  </label>
+                      <label class="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          x-model="day.active"
+                          class="w-5 h-5 rounded border-sand-7 text-primary focus:ring-primary"
+                        />
+                        <span class="w-24 font-medium text-sand-12" x-text="day.name"></span>
+                      </label>
 
-                  <template x-if="day.active">
-                    <div class="flex items-center gap-2 flex-1">
-                      <input type="time" x-model="day.start" class="px-3 py-2 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary" />
-                      <span class="text-sand-11">to</span>
-                      <input type="time" x-model="day.end" class="px-3 py-2 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary" />
+                      <template x-if="day.active">
+                        <div class="flex items-center gap-2 flex-1">
+                          <input
+                            type="time"
+                            x-model="day.start"
+                            class="px-3 py-2 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+                          />
+                          <span class="text-sand-11">to</span>
+                          <input
+                            type="time"
+                            x-model="day.end"
+                            class="px-3 py-2 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+                          />
+                        </div>
+                      </template>
+
+                      <template x-if="!day.active">
+                        <span class="text-sand-11 italic">Closed</span>
+                      </template>
                     </div>
                   </template>
-
-                  <template x-if="!day.active">
-                    <span class="text-sand-11 italic">Closed</span>
-                  </template>
                 </div>
-              </template>
-            </div>
 
-            <div class="mt-6 flex justify-end">
-              <button type="submit" class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
-                Save Availability
+                <div class="mt-6 flex justify-end">
+                  <button type="submit" class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
+                    Save Availability
               </button>
+                </div>
+              </form>
             </div>
-          </form>
-        </div>
 
-        <div class="flex justify-between">
-          <a href="?step=2" class="px-6 py-3 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2">
-            ← Back
-          </a>
-          <a href="?step=4" class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
-            Continue →
-          </a>
-        </div>
-      </div>
-    @endif
-
-    {{-- Step 4: Go Live --}}
-    @if(step === 4)
-      <div class="space-y-6">
-        <div class="bg-white border border-sand-7 rounded-xl p-6 text-center">
-          <div class="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg class="w-10 h-10 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-          </div>
-
-          <h2 class="text-2xl font-bold text-sand-12 mb-2">You're all set!</h2>
-          <p class="text-sand-11 mb-6">Your booking page is ready. Here's your link:</p>
-
-          <div class="bg-sand-2 rounded-lg p-4 mb-6" x-data="{ copied: false }">
-            <div class="flex items-center justify-center gap-3">
-              <code class="text-lg font-mono text-primary">{{ bookingUrl(business.slug).replace('http://', '').replace('https://', '') }}</code>
-              <button
-                @click="navigator.clipboard.writeText('{{ bookingUrl(business.slug) }}'); copied = true; setTimeout(() => copied = false, 2000)"
-                class="p-2 hover:bg-sand-4 rounded-lg transition-colors"
+            <div class="flex justify-between">
+              <a
+                href="?step=2"
+                class="px-6 py-3 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2"
               >
-                <svg x-show="!copied" class="w-5 h-5 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                </svg>
-                <svg x-show="copied" class="w-5 h-5 text-success" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {{-- Summary --}}
-          <div class="text-left mb-6 space-y-3">
-            <div class="flex items-center justify-between p-3 bg-sand-2 rounded-lg">
-              <span class="text-sand-11">Services</span>
-              <span class="font-medium text-sand-12">{{ business.services.length }} added</span>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-sand-2 rounded-lg">
-              <span class="text-sand-11">Availability</span>
-              <span class="font-medium text-sand-12">{{ business.availabilities.length }} days set</span>
-            </div>
-          </div>
-
-          @if(business.services.length === 0 || business.availabilities.length === 0)
-            <div class="bg-warning/10 border border-warning text-warning rounded-lg p-4 mb-6">
-              <p class="font-medium">Before you launch:</p>
-              <ul class="text-sm mt-1">
-                @if(business.services.length === 0)
-                  <li>• Add at least one service</li>
-                @endif
-                @if(business.availabilities.length === 0)
-                  <li>• Set your availability</li>
-                @endif
-              </ul>
-            </div>
-          @endif
-
-          <form method="POST" action="{{ route('onboarding.complete') }}">
-            {{ csrfField() }}
-            <button
-              type="submit"
-              {{ business.services.length === 0 || business.availabilities.length === 0 ? 'disabled' : '' }}
-              class="w-full px-6 py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              🚀 Launch My Booking Page
-            </button>
-          </form>
-        </div>
-
-        <div class="flex justify-start">
-          <a href="?step=3" class="px-6 py-3 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2">
-            ← Back
+                ← Back
           </a>
-        </div>
+              <a
+                href="?step=4"
+                class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90"
+              >
+                Continue →
+          </a>
+            </div>
+          </div>
+        @endif
+
+        {{-- Step 4: Go Live --}}
+        @if(step === 4)
+          <div class="space-y-6">
+            <div class="bg-white border border-sand-7 rounded-xl p-6 text-center">
+              <div class="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+
+              <h2 class="text-2xl font-bold text-sand-12 mb-2">
+                You're all set!
+              </h2>
+              <p class="text-sand-11 mb-6">
+                Your booking page is ready. Here's your link:
+              </p>
+
+              <div class="bg-sand-2 rounded-lg p-4 mb-6" x-data="{ copied: false }">
+                <div class="flex items-center justify-center gap-3">
+                  <code class="text-lg font-mono text-primary">{{ bookingUrl(business.slug).replace('http://', '').replace('https://', '') }}</code>
+                  <button
+                    @click="navigator.clipboard.writeText('{{ bookingUrl(business.slug) }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                    class="p-2 hover:bg-sand-4 rounded-lg transition-colors"
+                  >
+                    <svg
+                      x-show="!copied"
+                      class="w-5 h-5 text-sand-11"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <svg x-show="copied" class="w-5 h-5 text-success" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {{-- Summary --}}
+              <div class="text-left mb-6 space-y-3">
+                <div class="flex items-center justify-between p-3 bg-sand-2 rounded-lg">
+                  <span class="text-sand-11">Services</span>
+                  <span class="font-medium text-sand-12">{{ business.services.length }} added</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-sand-2 rounded-lg">
+                  <span class="text-sand-11">Availability</span>
+                  <span class="font-medium text-sand-12">{{ business.availabilities.length }} days set</span>
+                </div>
+              </div>
+
+              @if(business.services.length === 0 || business.availabilities.length === 0)
+                <div class="bg-warning/10 border border-warning text-warning rounded-lg p-4 mb-6">
+                  <p class="font-medium">
+                    Before you launch:
+                  </p>
+                  <ul class="text-sm mt-1">
+                    @if(business.services.length === 0)
+                      <li>
+                        • Add at least one service
+                      </li>
+                    @endif
+                    @if(business.availabilities.length === 0)
+                      <li>
+                        • Set your availability
+                      </li>
+                    @endif
+                  </ul>
+                </div>
+              @endif
+
+              <form method="POST" action="{{ route('onboarding.complete') }}">
+                {{ csrfField() }}
+            <button
+                  type="submit"
+                  class="w-full px-6 py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  {{ business.services.length === 0 || business.availabilities.length === 0 ? 'disabled' : '' }}
+                >
+                  🚀 Launch My Booking Page
+            </button>
+              </form>
+            </div>
+
+            <div class="flex justify-start">
+              <a
+                href="?step=3"
+                class="px-6 py-3 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2"
+              >
+                ← Back
+          </a>
+            </div>
+          </div>
+        @endif
       </div>
-    @endif
-  </div>
-@endsection
+    @endsection
