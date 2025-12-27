@@ -2,11 +2,8 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
       <div class="flex items-center gap-8">
-        <a href="{{ auth.isAuthenticated ? route('dashboard') : route('home') }}" class="flex items-center gap-2">
-          <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-          </svg>
-          <span class="font-bold text-xl text-sand-12">FastAppoint</span>
+        <a href="{{ auth.isAuthenticated ? route('dashboard') : route('home') }}" class="flex items-center">
+          <img src="/logo/svg/logo-full.svg" alt="FastAppoint" class="h-10 md:h-12 w-auto" />
         </a>
 
         @if(auth.isAuthenticated)

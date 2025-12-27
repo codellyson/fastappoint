@@ -1,0 +1,10 @@
+<svg width="200" height="200" viewBox="0 0 500 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- FastAppoint Text Logo - Light Version (for dark backgrounds) -->
+  <text x="250" y="120" 
+        font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" 
+        font-size="52" 
+        font-weight="700" 
+        letter-spacing="-2" 
+        text-anchor="middle"
+        fill="#ffffff">FastAppoint</text>
+</svg>

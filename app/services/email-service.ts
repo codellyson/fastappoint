@@ -543,7 +543,10 @@ class EmailService {
   <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
     <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
       <div style="background: #5A45FF; padding: 30px; text-align: center;">
-        <h1 style="color: white; margin: 0; font-size: 24px;">Welcome to FastAppoint! 🎉</h1>
+        <div style="margin-bottom: 12px;">
+          <span style="color: white; font-size: 28px; font-weight: 700; letter-spacing: -1px;">FastAppoint</span>
+        </div>
+        <h1 style="color: white; margin: 0; font-size: 24px;">Welcome! 🎉</h1>
       </div>
       <div style="padding: 30px;">
         <p style="color: #21201c; font-size: 16px; margin-bottom: 20px;">

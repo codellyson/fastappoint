@@ -7,6 +7,9 @@
       <div class="bg-gradient-to-br from-primary/5 to-primary/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div class="text-center max-w-3xl mx-auto">
+            <div class="mb-8 flex justify-center">
+              <img src="/logo/svg/logo-full.svg" alt="FastAppoint" class="h-12 md:h-16 w-auto" />
+            </div>
             <h1 class="text-4xl md:text-6xl font-bold text-sand-12 mb-6">
               Your booking page,
           <span class="text-primary">live in minutes</span>
@@ -30,12 +33,6 @@
                   Start 7-Day Free Trial
             </a>
               @endif
-              <a
-                href="#how-it-works"
-                class="px-8 py-4 border border-sand-7 text-sand-12 font-semibold rounded-lg hover:bg-sand-2 transition-colors text-lg"
-              >
-                See How It Works
-          </a>
             </div>
             @if(!auth.isAuthenticated)
               <p class="mt-4 text-sm text-sand-11">
@@ -60,153 +57,174 @@
         </div>
 
         <div class="relative">
-          <div class="carousel-container">
-            <div class="carousel-track">
-              {{-- First set: Real featured businesses from database --}}
+          <div class="swiper featured-swiper">
+            <div class="swiper-wrapper py-10 px-4">
+              {{-- Featured businesses slides --}}
               @each(featured in featuredBusinesses)
-                <a href="/book/{{ featured.business.slug }}" class="carousel-slide">
-                  @if(featured.workspaceImage)
-                    <img
-                      src="{{ featured.workspaceImage }}"
-                      alt="{{ featured.displayName || featured.business.name }}"
-                      class="carousel-image"
-                    />
-                  @else
-                    <div
-                      class="carousel-image bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center"
-                    >
-                      <span class="text-4xl font-bold text-primary/60">{{ (featured.displayName || featured.business.name).charAt(0) }}</span>
-                    </div>
-                  @endif
-                  <div class="featured-badge">
-                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                <div class="swiper-slide">
+                  <a href="/book/{{ featured.business.slug }}" class="featured-slide">
+                    @if(featured.workspaceImage)
+                      <img
+                        src="{{ featured.workspaceImage }}"
+                        alt="{{ featured.displayName || featured.business.name }}"
+                        class="featured-slide-image"
                       />
-                    </svg>
-                    Featured
-                  </div>
-                  <div class="carousel-overlay">
-                    <span class="carousel-label">{{ featured.displayName || featured.business.name }}</span>
-                  </div>
-                </a>
+                    @else
+                      <div class="featured-slide-image bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+                        <span class="text-4xl font-bold text-primary/60">{{ (featured.displayName || featured.business.name).charAt(0) }}</span>
+                      </div>
+                    @endif
+                    <div class="featured-badge">
+                      <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                      Featured
+                    </div>
+                    <div class="featured-slide-overlay">
+                      <span class="featured-slide-label">{{ featured.displayName || featured.business.name }}</span>
+                    </div>
+                  </a>
+                </div>
               @endeach
 
-              {{-- CTA slot --}}
-              <a
-                href="{{ auth.isAuthenticated ? route('featured.index') : route('auth.signup.show') }}"
-                class="carousel-slide carousel-empty"
-              >
-                <div class="empty-slot-content">
-                  <div class="empty-slot-icon">
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
-                    </svg>
-                  </div>
-                  <span class="empty-slot-text">Your business here</span>
-                  <span class="empty-slot-cta">Click to get featured →</span>
-                </div>
-              </a>
-
-              {{-- Duplicate set for seamless loop: Real featured businesses --}}
-              @each(featured in featuredBusinesses)
-                <a href="/book/{{ featured.business.slug }}" class="carousel-slide">
-                  @if(featured.workspaceImage)
-                    <img
-                      src="{{ featured.workspaceImage }}"
-                      alt="{{ featured.displayName || featured.business.name }}"
-                      class="carousel-image"
-                    />
-                  @else
-                    <div
-                      class="carousel-image bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center"
-                    >
-                      <span class="text-4xl font-bold text-primary/60">{{ (featured.displayName || featured.business.name).charAt(0) }}</span>
+              {{-- CTA slide --}}
+              <div class="swiper-slide">
+                <a
+                  href="{{ auth.isAuthenticated ? route('featured.index') : route('auth.signup.show') }}"
+                  class="featured-slide featured-slide-cta"
+                >
+                  <div class="empty-slot-content">
+                    <div class="empty-slot-icon">
+                      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
+                      </svg>
                     </div>
-                  @endif
-                  <div class="featured-badge">
-                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                      />
-                    </svg>
-                    Featured
-                  </div>
-                  <div class="carousel-overlay">
-                    <span class="carousel-label">{{ featured.displayName || featured.business.name }}</span>
+                    <span class="empty-slot-text">Your business here</span>
+                    <span class="empty-slot-cta">Click to get featured →</span>
                   </div>
                 </a>
-              @endeach
-
-              {{-- Duplicate CTA slot --}}
-              <a
-                href="{{ auth.isAuthenticated ? route('featured.index') : route('auth.signup.show') }}"
-                class="carousel-slide carousel-empty"
-              >
-                <div class="empty-slot-content">
-                  <div class="empty-slot-icon">
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
-                    </svg>
+              </div>
+              <div class="swiper-slide">
+                <a
+                  href="{{ auth.isAuthenticated ? route('featured.index') : route('auth.signup.show') }}"
+                  class="featured-slide featured-slide-cta"
+                >
+                  <div class="empty-slot-content">
+                    <div class="empty-slot-icon">
+                      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                    <span class="empty-slot-text">Your business here</span>
+                    <span class="empty-slot-cta">Click to get featured →</span>
                   </div>
-                  <span class="empty-slot-text">Your business here</span>
-                  <span class="empty-slot-cta">Click to get featured →</span>
-                </div>
-              </a>
+                </a>
+              </div>
+              <div class="swiper-slide">
+                <a
+                  href="{{ auth.isAuthenticated ? route('featured.index') : route('auth.signup.show') }}"
+                  class="featured-slide featured-slide-cta"
+                >
+                  <div class="empty-slot-content">
+                    <div class="empty-slot-icon">
+                      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                    <span class="empty-slot-text">Your business here</span>
+                    <span class="empty-slot-cta">Click to get featured →</span>
+                  </div>
+                </a>
+              </div>
+              <div class="swiper-slide">
+                <a
+                  href="{{ auth.isAuthenticated ? route('featured.index') : route('auth.signup.show') }}"
+                  class="featured-slide featured-slide-cta"
+                >
+                  <div class="empty-slot-content">
+                    <div class="empty-slot-icon">
+                      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                    <span class="empty-slot-text">Your business here</span>
+                    <span class="empty-slot-cta">Click to get featured →</span>
+                  </div>
+                </a>
+              </div>
+              <div class="swiper-slide">
+                <a
+                  href="{{ auth.isAuthenticated ? route('featured.index') : route('auth.signup.show') }}"
+                  class="featured-slide featured-slide-cta"
+                >
+                  <div class="empty-slot-content">
+                    <div class="empty-slot-icon">
+                      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                    <span class="empty-slot-text">Your business here</span>
+                    <span class="empty-slot-cta">Click to get featured →</span>
+                  </div>
+                </a>
+              </div>
             </div>
-          </div>
-
-          {{-- Gradient overlays for smooth edges --}}
-          <div
-            class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent pointer-events-none z-10"
-          >
-          </div>
-          <div
-            class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent pointer-events-none z-10"
-          >
           </div>
         </div>
 
         <style>
-          .carousel-container {
+          .featured-swiper {
             width: 100%;
+            padding: 20px 0 40px;
             overflow: hidden;
           }
 
-          .carousel-track {
+          .featured-swiper .swiper-wrapper {
             display: flex;
-            gap: 1.5rem;
-            animation: scroll 40s linear infinite;
-            width: max-content;
           }
 
-          .carousel-track:hover {
-            animation-play-state: paused;
-          }
-
-          .carousel-slide {
-            position: relative;
-            flex-shrink: 0;
-            width: 520px;
+          .featured-swiper .swiper-slide {
+            width: auto;
             height: 380px;
+            flex-shrink: 0;
+          }
+
+          .featured-slide {
+            position: relative;
+            display: block;
+            width: 520px;
+            height: 100%;
             border-radius: 1.25rem;
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
           }
 
-          .carousel-slide:hover {
+          @media (max-width: 768px) {
+            .featured-slide {
+              width: 400px;
+            }
+          }
+
+          @media (max-width: 480px) {
+            .featured-slide {
+              width: 320px;
+            }
+          }
+
+          .featured-slide:hover {
             transform: scale(1.02);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
           }
 
-          .carousel-image {
+          .featured-slide-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
           }
 
-          .carousel-overlay {
+          .featured-slide-overlay {
             position: absolute;
             bottom: 0;
             left: 0;
@@ -215,7 +233,7 @@
             background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
           }
 
-          .carousel-label {
+          .featured-slide-label {
             color: white;
             font-weight: 600;
             font-size: 1.1rem;
@@ -237,9 +255,10 @@
             letter-spacing: 0.05em;
             border-radius: 9999px;
             box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+            z-index: 10;
           }
 
-          .carousel-empty {
+          .featured-slide-cta {
             background: linear-gradient(135deg, #f5f5f4 0%, #e7e5e4 100%);
             border: 2px dashed #a8a29e;
             display: flex;
@@ -249,18 +268,18 @@
             cursor: pointer;
           }
 
-          .carousel-empty:hover {
-            border-color: var(--color-primary, #2563eb);
+          .featured-slide-cta:hover {
+            border-color: #5A45FF;
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
           }
 
-          .carousel-empty:hover .empty-slot-icon {
-            color: var(--color-primary, #2563eb);
+          .featured-slide-cta:hover .empty-slot-icon {
+            color: #5A45FF;
             transform: scale(1.1);
           }
 
-          .carousel-empty:hover .empty-slot-cta {
-            color: var(--color-primary, #2563eb);
+          .featured-slide-cta:hover .empty-slot-cta {
+            color: #5A45FF;
           }
 
           .empty-slot-content {
@@ -290,19 +309,8 @@
             transition: color 0.3s ease;
           }
 
-          @keyframes scroll {
-            0% {
-              transform: translateX(0);
-            }
-
-            100% {
-              transform: translateX(-50%);
-            }
-          }
-
           @media (max-width: 768px) {
-            .carousel-slide {
-              width: 400px;
+            .featured-swiper .swiper-slide {
               height: 300px;
             }
 
@@ -314,21 +322,10 @@
               width: 2rem;
               height: 2rem;
             }
-
-          @keyframes scroll {
-              0% {
-                transform: translateX(0);
-              }
-
-              100% {
-                transform: translateX(-50%);
-              }
-          }
           }
 
           @media (max-width: 480px) {
-            .carousel-slide {
-              width: 320px;
+            .featured-swiper .swiper-slide {
               height: 240px;
             }
 
@@ -354,58 +351,160 @@
               padding: 0.3rem 0.5rem;
               font-size: 0.65rem;
             }
-
-          @keyframes scroll {
-              0% {
-                transform: translateX(0);
-              }
-
-              100% {
-                transform: translateX(-50%);
-              }
           }
-          }
+
         </style>
 
+        {{-- Swiper.js Library --}}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
         <script>
+          let featuredSwiper;
+
+          // Initialize Swiper after DOM is ready
+          function initFeaturedSwiper() {
+            // Wait for DOM to be ready
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', function() {
+                initializeSwiper();
+              });
+            } else {
+              initializeSwiper();
+            }
+          }
+
+          function initializeSwiper() {
+            // Check if Swiper library is loaded
+            if (typeof Swiper === 'undefined') {
+              console.error('Swiper library not loaded');
+              return;
+            }
+
+            const swiperEl = document.querySelector('.featured-swiper');
+            if (!swiperEl) {
+              console.error('Swiper element not found');
+              return;
+            }
+
+            // Check if swiper already exists and destroy it
+            if (featuredSwiper) {
+              featuredSwiper.destroy(true, true);
+            }
+
+            // Count slides
+            const slides = swiperEl.querySelectorAll('.swiper-slide');
+            console.log('Number of slides:', slides.length);
+
+            // For loop to work, we need at least 2 slides
+            if (slides.length < 2) {
+              console.warn('Not enough slides for loop mode');
+              // Still initialize without loop
+            }
+
+            featuredSwiper = new Swiper('.featured-swiper', {
+              slidesPerView: 'auto',
+              spaceBetween: 24,
+              loop: slides.length >= 2,
+              autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              },
+              speed: 1000,
+              grabCursor: true,
+              allowTouchMove: true,
+              watchOverflow: true,
+              breakpoints: {
+                320: {
+                  slidesPerView: 'auto',
+                  spaceBetween: 16,
+                },
+                640: {
+                  slidesPerView: 'auto',
+                  spaceBetween: 20,
+                },
+                768: {
+                  slidesPerView: 'auto',
+                  spaceBetween: 24,
+                },
+                1024: {
+                  slidesPerView: 'auto',
+                  spaceBetween: 24,
+                },
+                1280: {
+                  slidesPerView: 'auto',
+                  spaceBetween: 24,
+                },
+              },
+            });
+
+            console.log('Swiper initialized:', featuredSwiper);
+            if (featuredSwiper.autoplay) {
+              console.log('Autoplay running:', featuredSwiper.autoplay.running);
+            }
+          }
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" onload="initFeaturedSwiper()"></script>
+
+        <script>
+          // Fallback: if Swiper loads after DOMContentLoaded
+          document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Swiper !== 'undefined') {
+              initFeaturedSwiper();
+            } else {
+              // Wait for Swiper to load
+              const checkSwiper = setInterval(function() {
+                if (typeof Swiper !== 'undefined') {
+                  clearInterval(checkSwiper);
+                  initFeaturedSwiper();
+                }
+              }, 100);
+
+              // Timeout after 5 seconds
+              setTimeout(function() {
+                clearInterval(checkSwiper);
+              }, 5000);
+            }
+          });
+
+          // Load featured businesses dynamically if needed
           (async function loadFeaturedBusinesses() {
             try {
               const response = await fetch("/api/featured");
               const featured = await response.json();
-              if (featured.length > 0) {
-                const track = document.querySelector(".carousel-track");
-                if (!track) return;
+              if (featured.length > 0 && featuredSwiper) {
+                const wrapper = document.querySelector('.featured-swiper .swiper-wrapper');
+                if (!wrapper) return;
+
                 const featuredBadgeSvg = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>';
-                const createSlide = (business, isLink = true) => {
-                  const defaultImage = "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=450&fit=crop&q=80";
-                  const tag = isLink ? "a" : "div";
-                  const href = isLink ? `href="/book/${business.slug}"` : "";
-                  return `
-                                    <${tag} ${href} class="carousel-slide carousel-featured-real">
-                                      <img src="${business.image || defaultImage}" alt="${business.name}" class="carousel-image" onerror="this.src='${defaultImage}'" />
-                                      <div class="featured-badge featured-badge-real">
-                                        ${featuredBadgeSvg}
-                                        Featured
-                                      </div>
-                                      <div class="carousel-overlay">
-                                        <span class="carousel-label">${business.name}</span>
-                                      </div>
-                                    </${tag}>
-                                  `;
-                };
-                let slidesHtml = "";
+                const defaultImage = "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=450&fit=crop&q=80";
+
+                // Add featured businesses as slides
                 featured.forEach(business => {
-                  slidesHtml += createSlide(business);
+                  const slide = document.createElement('div');
+                  slide.className = 'swiper-slide';
+                  slide.innerHTML = `
+                    <a href="/book/${business.slug}" class="featured-slide">
+                      <img src="${business.image || defaultImage}" alt="${business.name}" class="featured-slide-image" onerror="this.src='${defaultImage}'" />
+                      <div class="featured-badge">
+                        ${featuredBadgeSvg}
+                        Featured
+                      </div>
+                      <div class="featured-slide-overlay">
+                        <span class="featured-slide-label">${business.name}</span>
+                      </div>
+                    </a>
+                  `;
+                  // Insert before the CTA slide (last slide)
+                  wrapper.insertBefore(slide, wrapper.lastElementChild);
                 });
-                const ctaSlide = track.querySelector(".carousel-empty");
-                const ctaHtml = ctaSlide ? ctaSlide.outerHTML : "";
-                slidesHtml = slidesHtml + ctaHtml + slidesHtml + ctaHtml;
-                track.innerHTML = slidesHtml;
-                const realSlides = document.querySelectorAll(".carousel-featured-real");
-                realSlides.forEach(slide => {
-                  slide.style.border = "2px solid transparent";
-                  slide.style.background = "linear-gradient(white, white) padding-box, linear-gradient(135deg, #f59e0b, #d97706) border-box";
-                });
+
+                // Destroy and reinitialize Swiper to ensure proper looping
+                if (featuredSwiper) {
+                  featuredSwiper.destroy(true, true);
+                }
+                initializeSwiper();
               }
             } catch (error) {
               console.log("Featured businesses not loaded:", error);
@@ -538,64 +637,6 @@
               </h3>
               <p class="text-sand-11">
                 Track bookings, revenue, and popular services. Make data-driven decisions.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {{-- How It Works --}}
-      <div id="how-it-works" class="py-20 bg-sand-2">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold text-sand-12 mb-4">
-              Up and running in 3 steps
-            </h2>
-            <p class="text-lg text-sand-11">
-              It takes less than 5 minutes to set up
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white rounded-xl p-8 border border-sand-7">
-              <div
-                class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4"
-              >
-                1
-              </div>
-              <h3 class="text-xl font-semibold text-sand-12 mb-2">
-                Sign up & add services
-              </h3>
-              <p class="text-sand-11">
-                Create your account, add the services you offer with prices and duration.
-              </p>
-            </div>
-
-            <div class="bg-white rounded-xl p-8 border border-sand-7">
-              <div
-                class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4"
-              >
-                2
-              </div>
-              <h3 class="text-xl font-semibold text-sand-12 mb-2">
-                Set your availability
-              </h3>
-              <p class="text-sand-11">
-                Tell us when you're available for bookings. Set different hours for each day.
-              </p>
-            </div>
-
-            <div class="bg-white rounded-xl p-8 border border-sand-7">
-              <div
-                class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4"
-              >
-                3
-              </div>
-              <h3 class="text-xl font-semibold text-sand-12 mb-2">
-                Share your link
-              </h3>
-              <p class="text-sand-11">
-                Share your booking page on Instagram, WhatsApp, or anywhere. Start getting bookings!
               </p>
             </div>
           </div>
@@ -1073,4 +1114,5 @@
           @endif
         </div>
       </div>
+
     @endsection
