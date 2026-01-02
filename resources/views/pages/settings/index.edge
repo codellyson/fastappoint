@@ -3,24 +3,24 @@
   @set('title', 'Settings - FastAppoint')
 
     @section('content')
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="mb-8">
-          <h1 class="text-2xl font-bold text-sand-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div class="mb-6 sm:mb-8">
+          <h1 class="text-xl sm:text-2xl font-bold text-sand-12">
             Settings
           </h1>
-          <p class="text-sand-11 mt-1">
+          <p class="text-sm sm:text-base text-sand-11 mt-1">
             Manage your business settings
           </p>
         </div>
 
-        <div class="space-y-4">
+        <div class="space-y-3 sm:space-y-4">
           <a
             href="{{ route('settings.profile') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors"
+            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
           >
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-3 sm:gap-4">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -29,15 +29,15 @@
                   />
                 </svg>
               </div>
-              <div class="flex-1">
-                <h3 class="font-medium text-sand-12">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
                   Business Profile
                 </h3>
-                <p class="text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-sand-11">
                   Update your business name, description, and contact info
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
@@ -45,11 +45,11 @@
 
           <a
             href="{{ route('settings.cancellation') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors"
+            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
           >
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-3 sm:gap-4">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-warning/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -58,15 +58,15 @@
                   />
                 </svg>
               </div>
-              <div class="flex-1">
-                <h3 class="font-medium text-sand-12">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
                   Cancellation Policy
                 </h3>
-                <p class="text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-sand-11">
                   Set your cancellation and rescheduling rules
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
@@ -74,11 +74,11 @@
 
           <a
             href="{{ route('settings.payments') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors"
+            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
           >
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-3 sm:gap-4">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-success/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -87,15 +87,44 @@
                   />
                 </svg>
               </div>
-              <div class="flex-1">
-                <h3 class="font-medium text-sand-12">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
                   Payment Settings
                 </h3>
-                <p class="text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-sand-11">
                   Configure Paystack and payment options
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a
+            href="{{ route('settings.withdrawals.index') }}"
+            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
+          >
+            <div class="flex items-center gap-3 sm:gap-4">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
+                  Withdrawals
+                </h3>
+                <p class="text-xs sm:text-sm text-sand-11">
+                  Manage earnings and withdraw to your bank
+                </p>
+              </div>
+              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
@@ -103,11 +132,11 @@
 
           <a
             href="{{ route('settings.booking-page') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors"
+            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
           >
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-3 sm:gap-4">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -116,15 +145,15 @@
                   />
                 </svg>
               </div>
-              <div class="flex-1">
-                <h3 class="font-medium text-sand-12">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
                   Booking Page
                 </h3>
-                <p class="text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-sand-11">
                   View and share your booking page link
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
@@ -132,11 +161,11 @@
 
           <a
             href="{{ route('settings.theme') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-5 hover:border-primary transition-colors"
+            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
           >
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-3 sm:gap-4">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -145,26 +174,26 @@
                   />
                 </svg>
               </div>
-              <div class="flex-1">
-                <h3 class="font-medium text-sand-12">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
                   Theme & Design
                 </h3>
-                <p class="text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-sand-11">
                   Customize your booking page appearance
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
           </a>
         </div>
 
-        <div class="mt-12 pt-8 border-t border-sand-7">
-          <div class="bg-error/5 border border-error/20 rounded-xl p-5">
-            <div class="flex items-start gap-4">
-              <div class="w-12 h-12 bg-error/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-sand-7">
+          <div class="bg-error/5 border border-error/20 rounded-xl p-4 sm:p-5">
+            <div class="flex items-start gap-3 sm:gap-4">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-error/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -173,16 +202,16 @@
                   />
                 </svg>
               </div>
-              <div class="flex-1">
-                <h3 class="font-medium text-sand-12 mb-1">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-sand-12 mb-1 text-sm sm:text-base">
                   Delete Account
                 </h3>
-                <p class="text-sm text-sand-11 mb-4">
+                <p class="text-xs sm:text-sm text-sand-11 mb-3 sm:mb-4">
                   Permanently delete your account and all associated data. This action cannot be undone.
                 </p>
                 <a
                   href="{{ route('auth.account.delete.show') }}"
-                  class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-error bg-white border border-error/30 rounded-lg hover:bg-error/5 transition-colors"
+                  class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-error bg-white border border-error/30 rounded-lg hover:bg-error/5 transition-colors min-h-[44px]"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path

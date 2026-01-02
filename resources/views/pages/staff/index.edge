@@ -4,27 +4,27 @@
 
 @section('content')
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8 flex items-center justify-between">
+    <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-sand-12">Staff</h1>
-        <p class="text-sand-11 mt-1">Manage your team members</p>
+        <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Staff</h1>
+        <p class="text-sm sm:text-base text-sand-11 mt-1">Manage your team members</p>
       </div>
-      <a href="{{ route('staff.create') }}" class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
+      <a href="{{ route('staff.create') }}" class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm sm:text-base min-h-[44px] flex items-center justify-center sm:inline-flex">
         + Add Staff
       </a>
     </div>
 
     @if(staff.length > 0)
-      <div class="space-y-4">
+      <div class="space-y-3 sm:space-y-4">
         @each(member in staff)
-          <div class="bg-white border border-sand-7 rounded-xl p-5 flex items-center justify-between {{ !member.isActive ? 'opacity-60' : '' }}">
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-lg">
+          <div class="bg-white border border-sand-7 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 {{ !member.isActive ? 'opacity-60' : '' }}">
+            <div class="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-base sm:text-lg flex-shrink-0">
                 {{ member.fullName.charAt(0).toUpperCase() }}
               </div>
-              <div class="flex-1">
-                <div class="flex items-center gap-2">
-                  <h3 class="font-medium text-sand-12">{{ member.fullName }}</h3>
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="font-medium text-sand-12 text-sm sm:text-base">{{ member.fullName }}</h3>
                   <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ member.role === 'owner' ? 'bg-primary/10 text-primary' : member.role === 'admin' ? 'bg-warning/10 text-warning' : 'bg-sand-4 text-sand-11' }}">
                     {{ member.role.charAt(0).toUpperCase() + member.role.slice(1) }}
                   </span>
@@ -34,7 +34,7 @@
                     </span>
                   @endif
                 </div>
-                <p class="text-sm text-sand-11 mt-0.5">{{ member.email }}</p>
+                <p class="text-xs sm:text-sm text-sand-11 mt-0.5 truncate">{{ member.email }}</p>
                 @if(member.services && member.services.length > 0)
                   <div class="flex flex-wrap gap-1 mt-2">
                     @each(service in member.services)
@@ -46,8 +46,8 @@
                 @endif
               </div>
             </div>
-            <div class="flex items-center gap-2">
-              <a href="{{ route('staff.edit', { id: member.id }) }}" class="p-2 hover:bg-sand-3 rounded-lg" title="Edit">
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <a href="{{ route('staff.edit', { id: member.id }) }}" class="p-2 hover:bg-sand-3 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="Edit">
                 <svg class="w-5 h-5 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
@@ -55,7 +55,7 @@
               @if(member.role !== 'owner')
                 <form method="POST" action="{{ route('staff.toggle', { id: member.id }) }}">
                   {{ csrfField() }}
-                  <button type="submit" class="p-2 hover:bg-sand-3 rounded-lg" title="{{ member.isActive ? 'Deactivate' : 'Activate' }}">
+                  <button type="submit" class="p-2 hover:bg-sand-3 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ member.isActive ? 'Deactivate' : 'Activate' }}">
                     @if(member.isActive)
                       <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -70,7 +70,7 @@
                 </form>
                 <form method="POST" action="{{ route('staff.destroy', { id: member.id }) }}" onsubmit="return confirm('Remove this staff member?')">
                   {{ csrfField() }}
-                  <button type="submit" class="p-2 hover:bg-error/10 rounded-lg" title="Remove">
+                  <button type="submit" class="p-2 hover:bg-error/10 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="Remove">
                     <svg class="w-5 h-5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>

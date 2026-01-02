@@ -9,6 +9,8 @@ import TimeOff from '#models/time-off'
 import Booking from '#models/booking'
 import BusinessTheme from '#models/business-theme'
 import Subscription from '#models/subscription'
+import BusinessBankAccount from '#models/business-bank-account'
+import WithdrawalRequest from '#models/withdrawal-request'
 
 export default class Business extends BaseModel {
   @column({ isPrimary: true })
@@ -94,6 +96,12 @@ export default class Business extends BaseModel {
 
   @hasOne(() => Subscription)
   declare subscription: HasOne<typeof Subscription>
+
+  @hasMany(() => BusinessBankAccount)
+  declare bankAccounts: HasMany<typeof BusinessBankAccount>
+
+  @hasMany(() => WithdrawalRequest)
+  declare withdrawalRequests: HasMany<typeof WithdrawalRequest>
 
   get bookingUrl() {
     const isDev = env.get('NODE_ENV') === 'development'

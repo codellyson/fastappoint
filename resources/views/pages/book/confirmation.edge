@@ -125,6 +125,24 @@
       <p class="font-mono font-medium text-sand-12">{{ booking.paymentReference.substring(0, 8).toUpperCase() }}</p>
     </div>
 
+    {{-- Receipt Download --}}
+    @if(receiptAvailable && transaction)
+      <div class="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-sand-12">Payment Receipt</p>
+            <p class="text-xs text-sand-11">Download your official receipt</p>
+          </div>
+          <a
+            href="{{ route('book.receipt', { slug: booking.business.slug, bookingId: booking.id }) }}"
+            class="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90"
+          >
+            Download PDF
+          </a>
+        </div>
+      </div>
+    @endif
+
     {{-- Info --}}
     <div class="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6">
       <p class="text-sm text-sand-12">

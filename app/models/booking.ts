@@ -48,6 +48,18 @@ export default class Booking extends BaseModel {
   @column()
   declare paymentReference: string | null
 
+  @column.dateTime()
+  declare paymentExpiresAt: DateTime | null
+
+  @column()
+  declare paymentAttempts: number
+
+  @column()
+  declare lastPaymentError: string | null
+
+  @column()
+  declare idempotencyKey: string | null
+
   @column()
   declare notes: string | null
 
@@ -88,5 +100,14 @@ export default class Booking extends BaseModel {
 
   get isUpcoming() {
     return !this.isPast && this.status === 'confirmed'
+  }
+
+  get isPaymentExpired() {
+    if (!this.paymentExpiresAt) return false
+    return DateTime.now() > this.paymentExpiresAt
+  }
+
+  get canRetryPayment() {
+    return this.paymentAttempts < 3 && !this.isPaymentExpired
   }
 }

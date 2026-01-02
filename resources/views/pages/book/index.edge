@@ -78,139 +78,139 @@
     </script>
   </head>
   <body class="bg-sand-2 text-sand-12 min-h-screen font-sans">
-    <div x-data="bookingApp()" class="max-w-2xl mx-auto px-4 py-8">
+    <div x-data="bookingApp()" class="max-w-2xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
       {{-- Business Header --}}
-      <div class="text-center mb-8">
+      <div class="text-center mb-6 sm:mb-8">
         @if(business.logo)
           <img
             src="{{ business.logo }}"
             alt="{{ business.name }}"
-            class="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
+            class="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-3 sm:mb-4 object-cover"
           />
         @else
-          <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <span class="text-3xl font-bold text-primary">{{ business.name.charAt(0) }}</span>
+          <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+            <span class="text-2xl sm:text-3xl font-bold text-primary">{{ business.name.charAt(0) }}</span>
           </div>
         @endif
-        <h1 class="text-2xl font-bold text-sand-12">
+        <h1 class="text-xl sm:text-2xl font-bold text-sand-12">
           {{ business.name }}
         </h1>
         @if(business.description)
-          <p class="text-sand-11 mt-2">
+          <p class="text-sm sm:text-base text-sand-11 mt-2 px-2">
             {{ business.description }}
           </p>
         @endif
-        <p class="text-sm text-sand-10 mt-1">
+        <p class="text-xs sm:text-sm text-sand-10 mt-1">
           {{ business.category }}
         </p>
       </div>
 
       {{-- Step Indicator --}}
-      <div class="flex items-center justify-center gap-2 mb-8">
-        <div class="flex items-center gap-2">
+      <div class="flex items-center justify-center gap-1 sm:gap-2 mb-6 sm:mb-8">
+        <div class="flex items-center gap-1 sm:gap-2">
           <div
             :class="step >= 1 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11'"
-            class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium"
           >
             1
           </div>
-          <span class="text-sm text-sand-11 hidden sm:block">Service</span>
+          <span class="text-xs sm:text-sm text-sand-11 hidden sm:block">Service</span>
         </div>
-        <div class="w-8 h-px bg-sand-6">
+        <div class="w-4 sm:w-8 h-px bg-sand-6">
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1 sm:gap-2">
           <div
             :class="step >= 2 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11'"
-            class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium"
           >
             2
           </div>
-          <span class="text-sm text-sand-11 hidden sm:block">Staff</span>
+          <span class="text-xs sm:text-sm text-sand-11 hidden sm:block">Staff</span>
         </div>
-        <div class="w-8 h-px bg-sand-6">
+        <div class="w-4 sm:w-8 h-px bg-sand-6">
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1 sm:gap-2">
           <div
             :class="step >= 3 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11'"
-            class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium"
           >
             3
           </div>
-          <span class="text-sm text-sand-11 hidden sm:block">Date & Time</span>
+          <span class="text-xs sm:text-sm text-sand-11 hidden sm:block">Date & Time</span>
         </div>
-        <div class="w-8 h-px bg-sand-6">
+        <div class="w-4 sm:w-8 h-px bg-sand-6">
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1 sm:gap-2">
           <div
             :class="step >= 4 ? 'bg-primary text-white' : 'bg-sand-4 text-sand-11'"
-            class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium"
           >
             4
           </div>
-          <span class="text-sm text-sand-11 hidden sm:block">Details</span>
+          <span class="text-xs sm:text-sm text-sand-11 hidden sm:block">Details</span>
         </div>
       </div>
 
       {{-- Step 1: Select Service --}}
-      <div x-show="step === 1" class="space-y-4">
-        <h2 class="text-lg font-semibold text-sand-12">
+      <div x-show="step === 1" class="space-y-3 sm:space-y-4">
+        <h2 class="text-base sm:text-lg font-semibold text-sand-12">
           Select a service
         </h2>
         @each(service in business.services)
           <button
             @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.durationMinutes }}, {{ service.price }}, {{ JSON.stringify(service.staff ? service.staff.map(s => ({ id: s.id, fullName: s.fullName })) : []) }})"
-            class="w-full text-left p-4 bg-white border border-sand-7 rounded-xl hover:border-primary transition-colors"
+            class="w-full text-left p-3 sm:p-4 bg-white border border-sand-7 rounded-xl hover:border-primary transition-colors min-h-[44px]"
             :class="selectedService?.id === {{ service.id }} ? 'border-primary ring-2 ring-primary/20' : ''"
           >
-            <div class="flex justify-between items-start">
-              <div>
-                <h3 class="font-medium text-sand-12">
+            <div class="flex justify-between items-start gap-3">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
                   {{ service.name }}
                 </h3>
                 @if(service.description)
-                  <p class="text-sm text-sand-11 mt-1">
+                  <p class="text-xs sm:text-sm text-sand-11 mt-1">
                     {{ service.description }}
                   </p>
                 @endif
-                <p class="text-sm text-sand-10 mt-2">
+                <p class="text-xs sm:text-sm text-sand-10 mt-2">
                   {{ service.formattedDuration }}
                 </p>
               </div>
-              <span class="font-semibold text-primary">₦{{ Number(service.price).toLocaleString() }}</span>
+              <span class="font-semibold text-primary text-sm sm:text-base flex-shrink-0">₦{{ Number(service.price).toLocaleString() }}</span>
             </div>
           </button>
         @endeach
       </div>
 
       {{-- Step 2: Select Staff --}}
-      <div x-show="step === 2" class="space-y-6">
-        <button @click="step = 1" class="text-sm text-primary hover:underline">← Back to services</button>
+      <div x-show="step === 2" class="space-y-4 sm:space-y-6">
+        <button @click="step = 1" class="text-xs sm:text-sm text-primary hover:underline min-h-[44px] flex items-center">← Back to services</button>
 
-        <div class="bg-white border border-sand-7 rounded-xl p-4">
-          <p class="text-sm text-sand-11 mb-1">
+        <div class="bg-white border border-sand-7 rounded-xl p-3 sm:p-4">
+          <p class="text-xs sm:text-sm text-sand-11 mb-1">
             Selected service:
           </p>
-          <p class="font-medium text-sand-12" x-text="selectedService?.name">
+          <p class="font-medium text-sand-12 text-sm sm:text-base" x-text="selectedService?.name">
           </p>
           <p
-            class="text-sm text-sand-10"
+            class="text-xs sm:text-sm text-sand-10"
             x-text="selectedService?.duration + ' min • ₦' + selectedService?.price.toLocaleString()"
           >
           </p>
         </div>
 
         <div>
-          <h3 class="font-medium text-sand-12 mb-3">
+          <h3 class="font-medium text-sand-12 mb-3 text-sm sm:text-base">
             Choose your provider
           </h3>
-          <div class="space-y-3">
+          <div class="space-y-2 sm:space-y-3">
             <button
               @click="selectStaff(null, 'Any available')"
-              class="w-full text-left p-4 bg-white border border-sand-7 rounded-xl hover:border-primary transition-colors"
+              class="w-full text-left p-3 sm:p-4 bg-white border border-sand-7 rounded-xl hover:border-primary transition-colors min-h-[44px]"
               :class="selectedStaff === null && staffSelected ? 'border-primary ring-2 ring-primary/20' : ''"
             >
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-sand-3 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-full bg-sand-3 flex items-center justify-center flex-shrink-0">
                   <svg class="w-5 h-5 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
@@ -220,11 +220,11 @@
                     />
                   </svg>
                 </div>
-                <div>
-                  <p class="font-medium text-sand-12">
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-sand-12 text-sm sm:text-base">
                     Any available
                   </p>
-                  <p class="text-sm text-sand-11">
+                  <p class="text-xs sm:text-sm text-sand-11">
                     We'll assign the first available staff member
                   </p>
                 </div>
@@ -234,17 +234,17 @@
             <template x-for="staff in availableStaff" :key="staff.id">
               <button
                 @click="selectStaff(staff.id, staff.fullName)"
-                class="w-full text-left p-4 bg-white border border-sand-7 rounded-xl hover:border-primary transition-colors"
+                class="w-full text-left p-3 sm:p-4 bg-white border border-sand-7 rounded-xl hover:border-primary transition-colors min-h-[44px]"
                 :class="selectedStaff === staff.id ? 'border-primary ring-2 ring-primary/20' : ''"
               >
                 <div class="flex items-center gap-3">
                   <div
-                    class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold"
+                    class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold flex-shrink-0"
                     x-text="staff.fullName.charAt(0).toUpperCase()"
                   >
                   </div>
-                  <div>
-                    <p class="font-medium text-sand-12" x-text="staff.fullName">
+                  <div class="flex-1 min-w-0">
+                    <p class="font-medium text-sand-12 text-sm sm:text-base truncate" x-text="staff.fullName">
                     </p>
                   </div>
                 </div>
@@ -255,43 +255,43 @@
       </div>
 
       {{-- Step 3: Select Date & Time --}}
-      <div x-show="step === 3" class="space-y-6">
-        <button @click="step = 2" class="text-sm text-primary hover:underline">← Back to staff</button>
+      <div x-show="step === 3" class="space-y-4 sm:space-y-6">
+        <button @click="step = 2" class="text-xs sm:text-sm text-primary hover:underline min-h-[44px] flex items-center">← Back to staff</button>
 
-        <div class="bg-white border border-sand-7 rounded-xl p-4">
-          <p class="text-sm text-sand-11 mb-1">
+        <div class="bg-white border border-sand-7 rounded-xl p-3 sm:p-4">
+          <p class="text-xs sm:text-sm text-sand-11 mb-1">
             Selected service:
           </p>
-          <p class="font-medium text-sand-12" x-text="selectedService?.name">
+          <p class="font-medium text-sand-12 text-sm sm:text-base" x-text="selectedService?.name">
           </p>
           <p
-            class="text-sm text-sand-10"
+            class="text-xs sm:text-sm text-sand-10"
             x-text="selectedService?.duration + ' min • ₦' + selectedService?.price.toLocaleString()"
           >
           </p>
-          <p class="text-sm text-sand-11 mt-2">
+          <p class="text-xs sm:text-sm text-sand-11 mt-2">
             With: <span class="font-medium text-sand-12" x-text="selectedStaffName"></span>
           </p>
         </div>
 
         {{-- Date Picker --}}
         <div class="date-picker-container">
-          <h3 class="font-medium text-sand-12 mb-3">
+          <h3 class="font-medium text-sand-12 mb-3 text-sm sm:text-base">
             Select a date
           </h3>
           <button
             type="button"
             @click="datePickerOpen = !datePickerOpen"
-            class="w-full px-4 py-3.5 border-2 border-sand-6 rounded-xl bg-white text-left flex items-center justify-between gap-3 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            class="w-full px-3 sm:px-4 py-3 sm:py-3.5 border-2 border-sand-6 rounded-xl bg-white text-left flex items-center justify-between gap-2 sm:gap-3 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all min-h-[44px]"
             :class="{ 'border-primary': datePickerOpen }"
           >
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
               <div
-                class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 :class="selectedDate ? 'bg-primary text-white' : 'bg-sand-3'"
               >
                 <svg
-                  class="w-5 h-5"
+                  class="w-4 h-4 sm:w-5 sm:h-5"
                   :class="selectedDate ? '' : 'text-sand-11'"
                   fill="none"
                   stroke="currentColor"
@@ -305,12 +305,12 @@
                   />
                 </svg>
               </div>
-              <div>
+              <div class="flex-1 min-w-0">
                 <p class="text-xs text-sand-10 font-medium">
                   Select Date
                 </p>
                 <p
-                  class="text-sand-12 font-semibold"
+                  class="text-xs sm:text-sm text-sand-12 font-semibold truncate"
                   x-text="selectedDate ? formatDate(selectedDate) : 'Choose a date'"
                 >
                 </p>
@@ -334,18 +334,18 @@
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 -translate-y-2"
             x-transition:enter-end="opacity-100 translate-y-0"
-            class="mt-2 bg-white border-2 border-sand-6 rounded-xl shadow-xl overflow-hidden"
+            class="mt-2 bg-white border-2 border-sand-6 rounded-xl shadow-xl overflow-hidden z-50"
           >
-            <div class="p-4">
-              <div class="flex items-center justify-between mb-4">
-                <button @click="prevCalMonth()" type="button" class="p-2 hover:bg-sand-2 rounded-lg transition-colors">
+            <div class="p-3 sm:p-4">
+              <div class="flex items-center justify-between mb-3 sm:mb-4">
+                <button @click="prevCalMonth()" type="button" class="p-2 hover:bg-sand-2 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
                   <svg class="w-5 h-5 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
-                <h4 class="font-semibold text-sand-12" x-text="calMonthYearDisplay">
+                <h4 class="font-semibold text-sand-12 text-sm sm:text-base" x-text="calMonthYearDisplay">
                 </h4>
-                <button @click="nextCalMonth()" type="button" class="p-2 hover:bg-sand-2 rounded-lg transition-colors">
+                <button @click="nextCalMonth()" type="button" class="p-2 hover:bg-sand-2 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
                   <svg class="w-5 h-5 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
@@ -354,7 +354,7 @@
 
               <div class="grid grid-cols-7 gap-1 mb-2">
                 <template x-for="day in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']" :key="day">
-                  <div class="text-center text-xs font-medium text-sand-9 py-2" x-text="day">
+                  <div class="text-center text-xs font-medium text-sand-9 py-1 sm:py-2" x-text="day">
                   </div>
                 </template>
               </div>
@@ -373,23 +373,23 @@
                     'text-transparent': !day.date,
                     'ring-2 ring-primary ring-offset-1': day.today && !day.selected
                   }"
-                    class="aspect-square rounded-lg flex items-center justify-center text-sm transition-all"
+                    class="aspect-square rounded-lg flex items-center justify-center text-xs sm:text-sm transition-all min-h-[36px] sm:min-h-[44px]"
                     x-text="day.day || ''"
                   ></button>
                 </template>
               </div>
             </div>
 
-            <div class="border-t border-sand-6 px-4 py-2.5 bg-sand-2 flex items-center justify-between">
+            <div class="border-t border-sand-6 px-3 sm:px-4 py-2 sm:py-2.5 bg-sand-2 flex items-center justify-between">
               <button
                 @click="goToToday()"
                 type="button"
-                class="text-sm text-primary font-medium hover:text-primary/80"
+                class="text-xs sm:text-sm text-primary font-medium hover:text-primary/80 min-h-[44px] flex items-center"
               >Today</button>
               <button
                 @click="selectedDate = ''; datePickerOpen = false; selectedTime = ''; slots = []"
                 type="button"
-                class="text-sm text-sand-11 hover:text-sand-12"
+                class="text-xs sm:text-sm text-sand-11 hover:text-sand-12 min-h-[44px] flex items-center"
               >Clear</button>
             </div>
           </div>
@@ -398,7 +398,7 @@
         {{-- Time Slots --}}
         <div x-show="selectedDate">
           <div class="flex items-center gap-2 mb-3">
-            <div class="w-8 h-8 rounded-lg bg-sand-3 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-lg bg-sand-3 flex items-center justify-center flex-shrink-0">
               <svg class="w-4 h-4 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -408,7 +408,7 @@
                 />
               </svg>
             </div>
-            <h3 class="font-medium text-sand-12">
+            <h3 class="font-medium text-sand-12 text-sm sm:text-base">
               Select a time
             </h3>
           </div>
@@ -441,29 +441,29 @@
                 type="button"
                 @click="timeFilter = 'all'"
                 :class="timeFilter === 'all' ? 'bg-sand-12 text-white' : 'bg-sand-3 text-sand-11 hover:bg-sand-4'"
-                class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
+                class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors min-h-[36px]"
               >All</button>
               <button
                 type="button"
                 @click="timeFilter = 'morning'"
                 :class="timeFilter === 'morning' ? 'bg-sand-12 text-white' : 'bg-sand-3 text-sand-11 hover:bg-sand-4'"
-                class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
+                class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors min-h-[36px]"
               >🌅 Morning</button>
               <button
                 type="button"
                 @click="timeFilter = 'afternoon'"
                 :class="timeFilter === 'afternoon' ? 'bg-sand-12 text-white' : 'bg-sand-3 text-sand-11 hover:bg-sand-4'"
-                class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
+                class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors min-h-[36px]"
               >☀️ Afternoon</button>
               <button
                 type="button"
                 @click="timeFilter = 'evening'"
                 :class="timeFilter === 'evening' ? 'bg-sand-12 text-white' : 'bg-sand-3 text-sand-11 hover:bg-sand-4'"
-                class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
+                class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors min-h-[36px]"
               >🌙 Evening</button>
             </div>
 
-            <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
               <template x-for="slot in filteredSlots" :key="slot.time">
                 <button
                   type="button"
@@ -474,7 +474,7 @@
                   'bg-white hover:border-primary': slot.available && selectedTime !== slot.time,
                   'bg-sand-3 text-sand-9 cursor-not-allowed line-through': !slot.available
                 }"
-                  class="px-3 py-2.5 border border-sand-6 rounded-lg text-sm font-medium transition-all"
+                  class="px-3 py-2.5 border border-sand-6 rounded-lg text-xs sm:text-sm font-medium transition-all min-h-[44px]"
                   x-text="formatTime(slot.time)"
                 ></button>
               </template>
@@ -514,18 +514,18 @@
         <button
           x-show="selectedDate && selectedTime"
           @click="step = 4"
-          class="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90"
+          class="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm sm:text-base min-h-[44px]"
         >
           Continue →
       </button>
       </div>
 
       {{-- Step 4: Customer Details --}}
-      <div x-show="step === 4" class="space-y-6">
-        <button @click="step = 3" class="text-sm text-primary hover:underline">← Back to date & time</button>
+      <div x-show="step === 4" class="space-y-4 sm:space-y-6">
+        <button @click="step = 3" class="text-xs sm:text-sm text-primary hover:underline min-h-[44px] flex items-center">← Back to date & time</button>
 
         {{-- Booking Summary --}}
-        <div class="bg-white border border-sand-7 rounded-xl p-4 space-y-3">
+        <div class="bg-white border border-sand-7 rounded-xl p-3 sm:p-4 space-y-3">
           <div class="flex items-start gap-3">
             <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
               <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -537,10 +537,10 @@
                 />
               </svg>
             </div>
-            <div class="flex-1">
-              <p class="font-semibold text-sand-12" x-text="selectedService?.name">
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-sand-12 text-sm sm:text-base" x-text="selectedService?.name">
               </p>
-              <p class="text-sm text-sand-11 mt-0.5">
+              <p class="text-xs sm:text-sm text-sand-11 mt-0.5">
                 With <span class="font-medium text-sand-12" x-text="selectedStaffName"></span>
               </p>
             </div>
@@ -557,11 +557,11 @@
                 />
               </svg>
             </div>
-            <div>
-              <p class="font-medium text-sand-12" x-text="formatDate(selectedDate)">
+            <div class="flex-1 min-w-0">
+              <p class="font-medium text-sand-12 text-sm sm:text-base" x-text="formatDate(selectedDate)">
               </p>
               <p
-                class="text-sm text-sand-11"
+                class="text-xs sm:text-sm text-sand-11"
                 x-text="getTimeRange() + ' (' + selectedService?.duration + ' min)'"
               >
               </p>
@@ -569,8 +569,8 @@
           </div>
 
           <div class="border-t border-sand-6 pt-3 mt-3 flex items-center justify-between">
-            <span class="text-sand-11">Total</span>
-            <span class="text-lg font-bold text-primary" x-text="'₦' + selectedService?.price.toLocaleString()"></span>
+            <span class="text-sm sm:text-base text-sand-11">Total</span>
+            <span class="text-base sm:text-lg font-bold text-primary" x-text="'₦' + selectedService?.price.toLocaleString()"></span>
           </div>
         </div>
 
@@ -586,45 +586,45 @@
           <input type="hidden" name="endTime" x-bind:value="getEndTime()" />
           <input type="hidden" name="staffId" x-bind:value="selectedStaff" />
 
-          <div class="space-y-4">
+          <div class="space-y-3 sm:space-y-4">
             <div>
-              <label class="block text-sm font-medium text-sand-12 mb-2">Your Name</label>
+              <label class="block text-xs sm:text-sm font-medium text-sand-12 mb-2">Your Name</label>
               <input
                 type="text"
                 name="customerName"
                 required
-                class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+                class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-sand-7 rounded-lg text-sm sm:text-base text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                 placeholder="John Doe"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-sand-12 mb-2">Email Address</label>
+              <label class="block text-xs sm:text-sm font-medium text-sand-12 mb-2">Email Address</label>
               <input
                 type="email"
                 name="customerEmail"
                 required
-                class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+                class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-sand-7 rounded-lg text-sm sm:text-base text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                 placeholder="john@example.com"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-sand-12 mb-2">Phone Number <span class="text-sand-9">(optional)</span></label>
+              <label class="block text-xs sm:text-sm font-medium text-sand-12 mb-2">Phone Number <span class="text-sand-9">(optional)</span></label>
               <input
                 type="tel"
                 name="customerPhone"
-                class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+                class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-sand-7 rounded-lg text-sm sm:text-base text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                 placeholder="+234 800 000 0000"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-sand-12 mb-2">Notes <span class="text-sand-9">(optional)</span></label>
+              <label class="block text-xs sm:text-sm font-medium text-sand-12 mb-2">Notes <span class="text-sand-9">(optional)</span></label>
               <textarea
                 name="notes"
                 rows="2"
-                class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+                class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-sand-7 rounded-lg text-sm sm:text-base text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                 placeholder="Any special requests..."
               ></textarea>
             </div>
@@ -632,7 +632,7 @@
 
           <button
             type="submit"
-            class="w-full mt-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90"
+            class="w-full mt-4 sm:mt-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm sm:text-base min-h-[44px]"
           >
             Proceed to Payment →
         </button>

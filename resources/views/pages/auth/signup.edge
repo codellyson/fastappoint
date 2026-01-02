@@ -3,11 +3,11 @@
 @set('title', 'Sign Up - FastAppoint')
 
 @section('content')
-  <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full">
-      <div class="text-center mb-8">
-        <h2 class="text-2xl font-bold text-sand-12">Get started in 2 minutes</h2>
-        <p class="mt-2 text-sm text-sand-11">
+      <div class="text-center mb-6 sm:mb-8">
+        <h2 class="text-xl sm:text-2xl font-bold text-sand-12">Get started in 2 minutes</h2>
+        <p class="mt-2 text-xs sm:text-sm text-sand-11">
           Create your account and start accepting bookings
         </p>
       </div>
@@ -29,7 +29,7 @@
       @endif
 
       <form
-        class="bg-white border border-sand-7 rounded-xl p-6 space-y-5"
+        class="bg-white border border-sand-7 rounded-xl p-4 sm:p-6 space-y-4 sm:space-y-5"
         method="POST"
         action="{{ route('auth.signup') }}"
         x-data="{ loading: false }"
@@ -38,7 +38,7 @@
         {{ csrfField() }}
 
         <div>
-          <label for="fullName" class="block text-sm font-medium text-sand-12 mb-1.5">
+          <label for="fullName" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1.5">
             Your Name
           </label>
           <input
@@ -47,16 +47,16 @@
             type="text"
             required
             value="{{ flashMessages.get('fullName') || '' }}"
-            class="w-full px-4 py-2.5 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg placeholder-sand-9 text-sm sm:text-base text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[44px]"
             placeholder="John Doe"
           />
           @error('fullName')
-            <p class="mt-1 text-sm text-error">{{ $message }}</p>
+            <p class="mt-1 text-xs sm:text-sm text-error">{{ $message }}</p>
           @enderror
         </div>
 
         <div>
-          <label for="email" class="block text-sm font-medium text-sand-12 mb-1.5">
+          <label for="email" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1.5">
             Email
           </label>
           <input
@@ -65,16 +65,16 @@
             type="email"
             required
             autocomplete="email"
-            class="w-full px-4 py-2.5 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg placeholder-sand-9 text-sm sm:text-base text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[44px]"
             placeholder="john@example.com"
           />
           @error('email')
-            <p class="mt-1 text-sm text-error">{{ $message }}</p>
+            <p class="mt-1 text-xs sm:text-sm text-error">{{ $message }}</p>
           @enderror
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-sand-12 mb-1.5">
+          <label for="password" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1.5">
             Password
           </label>
           <input
@@ -83,20 +83,20 @@
             type="password"
             required
             autocomplete="new-password"
-            class="w-full px-4 py-2.5 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg placeholder-sand-9 text-sm sm:text-base text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[44px]"
             placeholder="At least 8 characters"
           />
           @error('password')
-            <p class="mt-1 text-sm text-error">{{ $message }}</p>
+            <p class="mt-1 text-xs sm:text-sm text-error">{{ $message }}</p>
           @enderror
         </div>
 
-        <div class="border-t border-sand-6 pt-5">
-          <p class="text-xs font-medium text-sand-11 uppercase tracking-wider mb-4">Your Business</p>
+        <div class="border-t border-sand-6 pt-4 sm:pt-5">
+          <p class="text-xs font-medium text-sand-11 uppercase tracking-wider mb-3 sm:mb-4">Your Business</p>
           
-          <div class="space-y-5">
+          <div class="space-y-4 sm:space-y-5">
             <div>
-              <label for="businessName" class="block text-sm font-medium text-sand-12 mb-1.5">
+              <label for="businessName" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1.5">
                 Business Name
               </label>
               <input
@@ -104,23 +104,23 @@
                 name="businessName"
                 type="text"
                 required
-                class="w-full px-4 py-2.5 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg placeholder-sand-9 text-sm sm:text-base text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[44px]"
                 placeholder="Glow Beauty Salon"
               />
               @error('businessName')
-                <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                <p class="mt-1 text-xs sm:text-sm text-error">{{ $message }}</p>
               @enderror
             </div>
 
             <div>
-              <label for="category" class="block text-sm font-medium text-sand-12 mb-1.5">
+              <label for="category" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1.5">
                 Category
               </label>
               <select
                 id="category"
                 name="category"
                 required
-                class="w-full px-4 py-2.5 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
+                class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg text-sm sm:text-base text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white min-h-[44px]"
               >
                 <option value="">Choose a category</option>
                 <option value="beauty">💇 Beauty & Wellness</option>
@@ -131,7 +131,7 @@
                 <option value="other">🏢 Other Services</option>
               </select>
               @error('category')
-                <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                <p class="mt-1 text-xs sm:text-sm text-error">{{ $message }}</p>
               @enderror
             </div>
           </div>
@@ -140,7 +140,7 @@
         <button
           type="submit"
           :disabled="loading"
-          class="w-full py-3 px-4 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          class="w-full py-3 px-4 text-sm sm:text-base font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px]"
         >
           <span x-show="!loading">Create Account</span>
           <span x-show="loading" class="flex items-center justify-center gap-2">
@@ -153,7 +153,7 @@
         </button>
       </form>
 
-      <p class="mt-6 text-center text-sm text-sand-11">
+      <p class="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-sand-11">
         Already have an account?
         <a href="{{ route('auth.login.show') }}" class="font-medium text-primary hover:text-primary/80">
           Sign in

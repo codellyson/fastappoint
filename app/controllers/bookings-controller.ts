@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Booking from '#models/booking'
 import Business from '#models/business'
 import { DateTime } from 'luxon'
+import refundService from '#services/refund-service'
 
 export default class BookingsController {
   async index({ view, auth, request }: HttpContext) {
@@ -95,6 +96,46 @@ export default class BookingsController {
     await booking.save()
 
     session.flash('success', 'Booking cancelled')
+    return response.redirect().back()
+  }
+
+  async refund({ params, request, response, auth, session }: HttpContext) {
+    const user = auth.user!
+    const booking = await Booking.query()
+      .where('id', params.id)
+      .where('businessId', user.businessId!)
+      .preload('service')
+      .first()
+
+    if (!booking) {
+      return response.notFound('Booking not found')
+    }
+
+    if (booking.paymentStatus !== 'paid') {
+      session.flash('error', 'Only paid bookings can be refunded')
+      return response.redirect().back()
+    }
+
+    const { amount, reason } = request.only(['amount', 'reason'])
+
+    if (!reason || reason.trim().length === 0) {
+      session.flash('error', 'Refund reason is required')
+      return response.redirect().back()
+    }
+
+    const result = await refundService.processRefund({
+      bookingId: booking.id,
+      amount: amount ? Number.parseFloat(amount) : undefined,
+      reason: reason.trim(),
+      initiatedBy: 'business',
+    })
+
+    if (result.success) {
+      session.flash('success', result.message)
+    } else {
+      session.flash('error', result.message)
+    }
+
     return response.redirect().back()
   }
 }

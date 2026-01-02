@@ -3,64 +3,64 @@
 @set('title', 'Business Profile - FastAppoint')
 
 @section('content')
-  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-      <a href="{{ route('settings.index') }}" class="inline-flex items-center text-sm text-sand-11 hover:text-sand-12 mb-4">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <div class="mb-6 sm:mb-8">
+      <a href="{{ route('settings.index') }}" class="inline-flex items-center text-xs sm:text-sm text-sand-11 hover:text-sand-12 mb-3 sm:mb-4 min-h-[44px]">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
         Back to Settings
       </a>
-      <h1 class="text-2xl font-bold text-sand-12">Business Profile</h1>
-      <p class="text-sand-11 mt-1">Update your business information</p>
+      <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Business Profile</h1>
+      <p class="text-sm sm:text-base text-sand-11 mt-1">Update your business information</p>
     </div>
 
-    <form method="POST" action="{{ route('settings.profile.update') }}" class="bg-white border border-sand-7 rounded-xl p-6 space-y-6">
+    <form method="POST" action="{{ route('settings.profile.update') }}" class="bg-white border border-sand-7 rounded-xl p-4 sm:p-6 space-y-4 sm:space-y-6">
       {{ csrfField() }}
 
       <div>
-        <label for="name" class="block text-sm font-medium text-sand-12 mb-1">Business Name *</label>
+        <label for="name" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Business Name *</label>
         <input
           type="text"
           id="name"
           name="name"
           value="{{ business.name }}"
           required
-          class="w-full px-4 py-2.5 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[44px]"
         />
       </div>
 
       <div>
-        <label for="description" class="block text-sm font-medium text-sand-12 mb-1">Description</label>
+        <label for="description" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Description</label>
         <textarea
           id="description"
           name="description"
           rows="3"
-          class="w-full px-4 py-2.5 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
           placeholder="Tell customers about your business..."
         >{{ business.description || '' }}</textarea>
         <p class="text-xs text-sand-11 mt-1">This appears on your booking page</p>
       </div>
 
       <div>
-        <label for="phone" class="block text-sm font-medium text-sand-12 mb-1">Phone Number</label>
+        <label for="phone" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Phone Number</label>
         <input
           type="tel"
           id="phone"
           name="phone"
           value="{{ business.phone || '' }}"
-          class="w-full px-4 py-2.5 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[44px]"
           placeholder="+234 800 000 0000"
         />
       </div>
 
       <div>
-        <label for="category" class="block text-sm font-medium text-sand-12 mb-1">Category *</label>
+        <label for="category" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Category *</label>
         <select
           id="category"
           name="category"
           required
-          class="w-full px-4 py-2.5 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
+          class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white min-h-[44px]"
         >
           <option value="beauty" {{ business.category === 'beauty' ? 'selected' : '' }}>Beauty & Wellness</option>
           <option value="media" {{ business.category === 'media' ? 'selected' : '' }}>Media & Photography</option>
@@ -71,14 +71,14 @@
         </select>
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div>
-          <label for="timezone" class="block text-sm font-medium text-sand-12 mb-1">Timezone *</label>
+          <label for="timezone" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Timezone *</label>
           <select
             id="timezone"
             name="timezone"
             required
-            class="w-full px-4 py-2.5 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
+            class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white min-h-[44px]"
           >
             <option value="Africa/Lagos" {{ business.timezone === 'Africa/Lagos' ? 'selected' : '' }}>Africa/Lagos (WAT)</option>
             <option value="Europe/London" {{ business.timezone === 'Europe/London' ? 'selected' : '' }}>Europe/London (GMT)</option>
@@ -88,12 +88,12 @@
         </div>
 
         <div>
-          <label for="currency" class="block text-sm font-medium text-sand-12 mb-1">Currency *</label>
+          <label for="currency" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Currency *</label>
           <select
             id="currency"
             name="currency"
             required
-            class="w-full px-4 py-2.5 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
+            class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white min-h-[44px]"
           >
             <option value="NGN" {{ business.currency === 'NGN' ? 'selected' : '' }}>Nigerian Naira (₦)</option>
             <option value="USD" {{ business.currency === 'USD' ? 'selected' : '' }}>US Dollar ($)</option>
@@ -103,11 +103,11 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-3 pt-4">
-        <button type="submit" class="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4">
+        <button type="submit" class="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm sm:text-base min-h-[44px]">
           Save Changes
         </button>
-        <a href="{{ route('settings.index') }}" class="px-6 py-2.5 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2">
+        <a href="{{ route('settings.index') }}" class="px-6 py-2.5 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2 text-sm sm:text-base text-center min-h-[44px] flex items-center justify-center">
           Cancel
         </a>
       </div>

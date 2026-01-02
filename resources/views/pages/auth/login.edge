@@ -3,11 +3,11 @@
 @set('title', 'Sign In - PayFacilitator')
 
 @section('content')
-  <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
+  <div class="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-6 sm:space-y-8">
       <div class="text-center">
-        <h2 class="text-3xl font-bold text-sand-12">Sign in to your account</h2>
-        <p class="mt-2 text-sm text-sand-11">
+        <h2 class="text-2xl sm:text-3xl font-bold text-sand-12">Sign in to your account</h2>
+        <p class="mt-2 text-xs sm:text-sm text-sand-11">
           Don't have an account?
           <a href="{{ route('auth.signup.show') }}" class="font-medium text-primary hover:text-primary/80">Sign up</a>
         </p>
@@ -26,16 +26,16 @@
       @endif
 
       <form
-        class="mt-8 space-y-6"
+        class="mt-6 sm:mt-8 space-y-4 sm:space-y-6"
         method="POST"
         action="{{ route('auth.login') }}"
         x-data="{ loading: false }"
         @submit="loading = true"
       >
         {{ csrfField() }}
-        <div class="bg-white border border-sand-7 rounded-xl p-6 space-y-4">
+        <div class="bg-white border border-sand-7 rounded-xl p-4 sm:p-6 space-y-4">
           <div>
-            <label for="email" class="block text-sm font-medium text-sand-12 mb-2">
+            <label for="email" class="block text-xs sm:text-sm font-medium text-sand-12 mb-2">
               Email Address
             </label>
             <input
@@ -45,16 +45,16 @@
               required
               autocomplete="email"
               value="{{ old('email') || '' }}"
-              class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              class="appearance-none relative block w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sm sm:text-base text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent min-h-[44px]"
               placeholder="john@example.com"
             />
             @error('email')
-              <p class="mt-1 text-sm text-error">{{ $message }}</p>
+              <p class="mt-1 text-xs sm:text-sm text-error">{{ $message }}</p>
             @enderror
           </div>
 
           <div>
-            <label for="password" class="block text-sm font-medium text-sand-12 mb-2">
+            <label for="password" class="block text-xs sm:text-sm font-medium text-sand-12 mb-2">
               Password
             </label>
             <input
@@ -63,29 +63,29 @@
               type="password"
               required
               autocomplete="current-password"
-              class="appearance-none relative block w-full px-4 py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              class="appearance-none relative block w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-sand-7 rounded-lg placeholder-sand-9 text-sm sm:text-base text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent min-h-[44px]"
               placeholder="••••••••"
             />
             @error('password')
-              <p class="mt-1 text-sm text-error">{{ $message }}</p>
+              <p class="mt-1 text-xs sm:text-sm text-error">{{ $message }}</p>
             @enderror
           </div>
 
-          <div class="flex items-center justify-between">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
             <div class="flex items-center">
               <input
                 id="remember"
                 name="remember"
                 type="checkbox"
-                class="h-4 w-4 text-primary focus:ring-primary border-sand-7 rounded"
+                class="h-4 w-4 text-primary focus:ring-primary border-sand-7 rounded min-w-[44px] min-h-[44px]"
               />
-              <label for="remember" class="ml-2 block text-sm text-sand-11">
+              <label for="remember" class="ml-2 block text-xs sm:text-sm text-sand-11">
                 Remember me
               </label>
             </div>
 
-            <div class="text-sm">
-              <a href="{{ route('auth.forgot') }}" class="font-medium text-primary hover:text-primary/80">
+            <div class="text-xs sm:text-sm">
+              <a href="{{ route('auth.forgot') }}" class="font-medium text-primary hover:text-primary/80 min-h-[44px] flex items-center">
                 Forgot password?
               </a>
             </div>
@@ -96,7 +96,7 @@
           <button
             type="submit"
             :disabled="loading"
-            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm sm:text-base font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
           >
             <span x-show="!loading">Sign In</span>
             <span x-show="loading" class="flex items-center gap-2">

@@ -13,6 +13,7 @@ import { errors } from '@vinejs/vine'
 import { randomUUID } from 'node:crypto'
 import emailService from '#services/email-service'
 import subscriptionService from '#services/subscription-service'
+import receiptService from '#services/receipt-service'
 
 export default class BookingController {
   async show({ params, view, response, request }: HttpContext) {
@@ -318,6 +319,9 @@ export default class BookingController {
         return response.redirect().back()
       }
 
+      // Set payment expiration to 30 minutes from now
+      const paymentExpiresAt = DateTime.now().plus({ minutes: 30 })
+
       const booking = await Booking.create({
         businessId: business.id,
         serviceId: service.id,
@@ -332,6 +336,9 @@ export default class BookingController {
         amount: service.price,
         paymentStatus: 'pending',
         paymentReference: randomUUID(),
+        paymentExpiresAt,
+        paymentAttempts: 0,
+        idempotencyKey: randomUUID(),
       })
 
       const paymentUrl = `/book/${params.slug}/booking/${booking.id}/payment`
@@ -356,7 +363,7 @@ export default class BookingController {
     }
   }
 
-  async showPayment({ params, view, response }: HttpContext) {
+  async showPayment({ params, view, response, session }: HttpContext) {
     const booking = await Booking.query()
       .where('id', params.bookingId)
       .preload('business')
@@ -374,8 +381,34 @@ export default class BookingController {
       })
     }
 
+    // Check if payment expired
+    if (booking.isPaymentExpired) {
+      session.flash('error', 'Payment time has expired. Please create a new booking.')
+      return response.redirect().toRoute('book.show', {
+        slug: params.slug,
+      })
+    }
+
     const paystackPublicKey = env.get('PAYSTACK_PUBLIC_KEY', 'pk_test_xxxxx')
-    return view.render('pages/book/payment', { booking, paystackPublicKey })
+    
+    // Calculate time remaining
+    let timeRemaining: number | null = null
+    if (booking.paymentExpiresAt) {
+      const diff = booking.paymentExpiresAt.diff(DateTime.now(), 'seconds')
+      timeRemaining = Math.max(0, Math.floor(diff.seconds))
+    }
+
+    // Safely get error message from flash or booking
+    const flashError = session.flashMessages.get('error')
+    const errorMessage = flashError || booking.lastPaymentError || null
+
+    return view.render('pages/book/payment', {
+      booking,
+      paystackPublicKey,
+      timeRemaining,
+      canRetry: booking.canRetryPayment,
+      errorMessage,
+    })
   }
 
   async confirmBooking({ params, view, response }: HttpContext) {
@@ -389,11 +422,28 @@ export default class BookingController {
       return response.notFound('Booking not found')
     }
 
-    return view.render('pages/book/confirmation', { booking })
+    // Get transaction for receipt
+    const transaction = await Transaction.query()
+      .where('bookingId', booking.id)
+      .where('status', 'success')
+      .orderBy('createdAt', 'desc')
+      .first()
+
+    // Check if receipt exists
+    let receiptAvailable = false
+    if (transaction) {
+      const receiptNumber = `REC-${transaction.id}-${transaction.createdAt.toFormat('yyyyMMdd')}`
+      receiptAvailable = receiptService.receiptExists(receiptNumber)
+    }
+
+    return view.render('pages/book/confirmation', {
+      booking,
+      transaction,
+      receiptAvailable,
+    })
   }
 
-  async verifyPayment({ params, request, response, session }: HttpContext) {
-    const reference = request.qs().reference
+  async downloadReceipt({ params, response }: HttpContext) {
     const booking = await Booking.query()
       .where('id', params.bookingId)
       .preload('business')
@@ -404,6 +454,102 @@ export default class BookingController {
       return response.notFound('Booking not found')
     }
 
+    if (booking.paymentStatus !== 'paid') {
+      return response.badRequest('Receipt is only available for paid bookings')
+    }
+
+    const transaction = await Transaction.query()
+      .where('bookingId', booking.id)
+      .where('status', 'success')
+      .orderBy('createdAt', 'desc')
+      .first()
+
+    if (!transaction) {
+      return response.notFound('Transaction not found')
+    }
+
+    const receiptNumber = `REC-${transaction.id}-${transaction.createdAt.toFormat('yyyyMMdd')}`
+    const receiptPath = receiptService.getReceiptPath(receiptNumber)
+
+    // Generate receipt if it doesn't exist
+    if (!receiptService.receiptExists(receiptNumber)) {
+      try {
+        await receiptService.generateReceipt(booking, transaction)
+      } catch (error) {
+        console.error('[Receipt] Failed to generate receipt:', error)
+        return response.status(500).send('Failed to generate receipt. Please ensure pdfkit is installed: pnpm add pdfkit @types/pdfkit')
+      }
+    }
+
+    try {
+      const fileContent = readFileSync(receiptPath)
+      return response
+        .header('Content-Type', 'application/pdf')
+        .header('Content-Disposition', `attachment; filename="${receiptNumber}.pdf"`)
+        .send(fileContent)
+    } catch (error) {
+      console.error('[Receipt] Failed to read receipt file:', error)
+      return response.status(500).send('Failed to read receipt file')
+    }
+  }
+
+  async getPaymentStatus({ params, response }: HttpContext) {
+    const booking = await Booking.query()
+      .where('id', params.bookingId)
+      .first()
+
+    if (!booking || booking.business.slug !== params.slug) {
+      return response.notFound('Booking not found')
+    }
+
+    return response.json({
+      paymentStatus: booking.paymentStatus,
+      status: booking.status,
+      paymentAttempts: booking.paymentAttempts || 0,
+      lastPaymentError: booking.lastPaymentError,
+      isPaymentExpired: booking.isPaymentExpired,
+      canRetry: booking.canRetryPayment,
+      paymentExpiresAt: booking.paymentExpiresAt?.toISO() || null,
+    })
+  }
+
+  async verifyPayment({ params, request, response, session }: HttpContext) {
+    const reference = request.qs().reference
+
+    if (!reference) {
+      session.flash('error', 'Payment reference is required')
+      return response.redirect().toRoute('book.payment', {
+        slug: params.slug,
+        bookingId: params.bookingId,
+      })
+    }
+
+    const booking = await Booking.query()
+      .where('id', params.bookingId)
+      .preload('business')
+      .preload('service')
+      .first()
+
+    if (!booking || booking.business.slug !== params.slug) {
+      return response.notFound('Booking not found')
+    }
+
+    // Idempotency check: If already paid, redirect to confirmation
+    if (booking.paymentStatus === 'paid' && booking.status === 'confirmed') {
+      return response.redirect().toRoute('book.confirmation', {
+        slug: params.slug,
+        bookingId: booking.id,
+      })
+    }
+
+    // Check if payment expired
+    if (booking.isPaymentExpired) {
+      session.flash('error', 'Payment time has expired. Please create a new booking.')
+      return response.redirect().toRoute('book.show', {
+        slug: params.slug,
+      })
+    }
+
     const secretKey = env.get('PAYSTACK_SECRET_KEY')
     let paymentSuccess = false
     let transactionData: {
@@ -412,35 +558,136 @@ export default class BookingController {
       providerReference?: string
       paidAt?: string
     } = {}
+    let errorMessage: string | null = null
 
     if (secretKey) {
-      try {
-        const paystackResponse = await fetch(
-          `https://api.paystack.co/transaction/verify/${reference}`,
-          {
-            headers: {
-              Authorization: `Bearer ${secretKey}`,
-            },
-          }
-        )
-        const data = await paystackResponse.json()
+      // Retry logic: Try up to 3 times with exponential backoff
+      let retries = 0
+      const maxRetries = 3
+      let lastError: Error | null = null
 
-        if (data.status && data.data.status === 'success') {
-          booking.paymentStatus = 'paid'
-          booking.status = 'confirmed'
-          await booking.save()
-          paymentSuccess = true
-          transactionData = {
-            amount: data.data.amount / 100,
-            reference: booking.paymentReference || reference,
-            providerReference: data.data.reference,
-            paidAt: data.data.paid_at,
+      while (retries < maxRetries && !paymentSuccess) {
+        try {
+          const paystackResponse = await fetch(
+            `https://api.paystack.co/transaction/verify/${reference}`,
+            {
+              headers: {
+                Authorization: `Bearer ${secretKey}`,
+              },
+            }
+          )
+
+          if (!paystackResponse.ok) {
+            throw new Error(`Paystack API returned status ${paystackResponse.status}`)
+          }
+
+          const data = await paystackResponse.json()
+
+          // Handle different payment statuses
+          if (data.status && data.data) {
+            const paymentStatus = data.data.status
+
+            if (paymentStatus === 'success') {
+              // Check if transaction already exists (idempotency)
+              const existingTransaction = await Transaction.query()
+                .where('bookingId', booking.id)
+                .where('status', 'success')
+                .where('providerReference', data.data.reference)
+                .first()
+
+              if (existingTransaction) {
+                // Already processed, update booking if needed
+                if (booking.paymentStatus !== 'paid') {
+                  booking.paymentStatus = 'paid'
+                  booking.status = 'confirmed'
+                  await booking.save()
+                }
+                paymentSuccess = true
+                transactionData = {
+                  amount: data.data.amount / 100,
+                  reference: booking.paymentReference || reference,
+                  providerReference: data.data.reference,
+                  paidAt: data.data.paid_at,
+                }
+                break
+              }
+
+              // Use database transaction for atomicity
+              const trx = await Booking.transaction(async (trx) => {
+                // Double-check booking status within transaction
+                await booking.refresh()
+                if (booking.paymentStatus === 'paid') {
+                  return null // Already paid, skip
+                }
+
+                booking.paymentStatus = 'paid'
+                booking.status = 'confirmed'
+                await booking.useTransaction(trx).save()
+
+                const amount = data.data.amount / 100
+                const platformFee = Math.round(amount * 0.025)
+
+                const transaction = new Transaction()
+                transaction.businessId = booking.businessId
+                transaction.bookingId = booking.id
+                transaction.amount = amount
+                transaction.platformFee = platformFee
+                transaction.businessAmount = amount - platformFee
+                transaction.status = 'success'
+                transaction.provider = 'paystack'
+                transaction.reference = booking.paymentReference || reference
+                transaction.providerReference = data.data.reference
+                await transaction.useTransaction(trx).save()
+
+                return {
+                  amount,
+                  reference: booking.paymentReference || reference,
+                  providerReference: data.data.reference,
+                  paidAt: data.data.paid_at,
+                }
+              })
+
+              if (trx) {
+                paymentSuccess = true
+                transactionData = trx
+              }
+            } else if (paymentStatus === 'pending') {
+              errorMessage = 'Payment is still being processed. Please wait a moment and try again.'
+              booking.paymentAttempts = (booking.paymentAttempts || 0) + 1
+              booking.lastPaymentError = 'Payment pending'
+              await booking.save()
+              break
+            } else {
+              errorMessage = `Payment verification failed: ${data.data.gateway_response || 'Unknown error'}`
+              booking.paymentAttempts = (booking.paymentAttempts || 0) + 1
+              booking.lastPaymentError = errorMessage
+              await booking.save()
+            }
+          } else {
+            errorMessage = data.message || 'Payment verification failed'
+            booking.paymentAttempts = (booking.paymentAttempts || 0) + 1
+            booking.lastPaymentError = errorMessage
+            await booking.save()
+          }
+        } catch (error: any) {
+          lastError = error
+          retries++
+          if (retries < maxRetries) {
+            // Exponential backoff: wait 1s, 2s, 4s
+            const delay = Math.pow(2, retries - 1) * 1000
+            await new Promise((resolve) => setTimeout(resolve, delay))
+            console.log(`[PAYMENT] Retry ${retries}/${maxRetries} for booking #${booking.id}`)
+          } else {
+            errorMessage = `Payment verification failed after ${maxRetries} attempts: ${error.message}`
+            booking.paymentAttempts = (booking.paymentAttempts || 0) + 1
+            booking.lastPaymentError = errorMessage
+            await booking.save()
+            console.error('[PAYMENT] Payment verification error:', error)
           }
         }
-      } catch (error) {
-        console.error('Payment verification error:', error)
       }
     } else if (!app.inProduction) {
+      // Dev mode - auto confirm
       booking.paymentStatus = 'paid'
       booking.status = 'confirmed'
       await booking.save()
@@ -461,23 +708,23 @@ export default class BookingController {
     }
 
     if (paymentSuccess) {
-      const platformFee = Math.round(transactionData.amount! * 0.025)
-      await Transaction.create({
-        businessId: booking.businessId,
-        bookingId: booking.id,
-        amount: transactionData.amount!,
-        platformFee,
-        businessAmount: transactionData.amount! - platformFee,
-        status: 'success',
-        provider: 'paystack',
-        reference: transactionData.reference!,
-        providerReference: transactionData.providerReference,
-      })
-
       const dateFormatted = booking.date.toFormat('EEEE, MMMM d, yyyy')
-
       const appUrl = env.get('APP_URL', `https://${env.get('APP_DOMAIN', 'fastappoint.com')}`)
       const manageUrl = `${appUrl}/book/${params.slug}/booking/${booking.id}/manage`
+
+      // Get the transaction for receipt generation
+      const transaction = await Transaction.query()
+        .where('bookingId', booking.id)
+        .where('status', 'success')
+        .orderBy('createdAt', 'desc')
+        .first()
+
+      // Generate receipt asynchronously (don't block redirect)
+      if (transaction) {
+        receiptService.generateReceipt(booking, transaction).catch((error) => {
+          console.error('[Receipt] Failed to generate receipt:', error)
+        })
+      }
 
       await emailService.sendBookingConfirmation({
         customerName: booking.customerName,
@@ -503,12 +750,42 @@ export default class BookingController {
         time: `${booking.startTime} - ${booking.endTime}`,
         amount: booking.amount,
       })
-    }
 
-    return response.redirect().toRoute('book.confirmation', {
-      slug: params.slug,
-      bookingId: booking.id,
-    })
+      return response.redirect().toRoute('book.confirmation', {
+        slug: params.slug,
+        bookingId: booking.id,
+      })
+    } else {
+      // Payment failed or pending - send notification email
+      const appUrl = env.get('APP_URL', `https://${env.get('APP_DOMAIN', 'fastappoint.com')}`)
+      const paymentUrl = `${appUrl}/book/${params.slug}/booking/${booking.id}/payment`
+      const manageUrl = `${appUrl}/book/${params.slug}/booking/${booking.id}/manage`
+
+      if (errorMessage) {
+        // Send payment failure email
+        await emailService.sendPaymentFailureNotification({
+          customerName: booking.customerName,
+          customerEmail: booking.customerEmail,
+          businessName: booking.business.name,
+          serviceName: booking.service.name,
+          amount: booking.amount,
+          errorMessage: errorMessage,
+          bookingUrl: manageUrl,
+          paymentUrl: paymentUrl,
+        }).catch((error) => {
+          console.error('[Payment] Failed to send payment failure email:', error)
+        })
+
+        session.flash('error', errorMessage)
+      } else {
+        session.flash('error', 'Payment verification failed. Please try again or contact support if the issue persists.')
+      }
+
+      return response.redirect().toRoute('book.payment', {
+        slug: params.slug,
+        bookingId: booking.id,
+      })
+    }
   }
 
   async findBooking({ view }: HttpContext) {

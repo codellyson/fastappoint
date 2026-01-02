@@ -1,0 +1,248 @@
+@layout('layouts/app')
+
+@set('title', 'Add Bank Account - FastAppoint')
+
+@section('content')
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <div class="mb-6 sm:mb-8">
+      <a href="{{ route('settings.withdrawals.bank-accounts') }}" class="inline-flex items-center text-xs sm:text-sm text-sand-11 hover:text-sand-12 mb-3 sm:mb-4 min-h-[44px]">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Back to Bank Accounts
+      </a>
+      <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Add Bank Account</h1>
+      <p class="text-sm sm:text-base text-sand-11 mt-1">Add a new bank account for withdrawals</p>
+    </div>
+
+    <form method="POST" action="{{ route('settings.withdrawals.bank-accounts.store') }}" class="bg-white border border-sand-7 rounded-xl p-4 sm:p-6" id="addBankForm">
+      {{ csrfField() }}
+
+      <div class="space-y-5">
+        <div>
+          <label for="bankCode" class="block text-sm font-medium text-sand-12 mb-1">Bank</label>
+          <select
+            id="bankCode"
+            name="bankCode"
+            class="w-full px-4 py-2.5 border border-sand-7 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
+            required
+          >
+            <option value="">Select your bank</option>
+            @each(bank in banks)
+              <option value="{{ bank.code }}" data-name="{{ bank.name }}">{{ bank.name }}</option>
+            @endeach
+          </select>
+          <input type="hidden" name="bankName" id="bankName" value="" />
+        </div>
+
+        <div>
+          <label for="accountNumber" class="block text-sm font-medium text-sand-12 mb-1">Account Number</label>
+          <input
+            type="text"
+            id="accountNumber"
+            name="accountNumber"
+            maxlength="10"
+            pattern="[0-9]{10}"
+            placeholder="Enter 10-digit account number"
+            class="w-full px-4 py-2.5 border border-sand-7 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            required
+          />
+        </div>
+
+        <div id="verificationSection" class="hidden">
+          <div id="verifyingLoader" class="hidden bg-sand-2 border border-sand-6 rounded-lg p-4">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-primary animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span class="text-sm text-sand-11">Verifying account...</span>
+            </div>
+          </div>
+
+          <div id="verificationSuccess" class="hidden bg-success/10 border border-success/20 rounded-lg p-4">
+            <div class="flex items-start gap-3">
+              <svg class="w-5 h-5 text-success flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <div>
+                <p class="text-sm text-success font-medium">Account Verified</p>
+                <p id="verifiedAccountName" class="text-sm text-success mt-1"></p>
+              </div>
+            </div>
+          </div>
+
+          <div id="verificationError" class="hidden bg-error/10 border border-error/20 rounded-lg p-4">
+            <div class="flex items-start gap-3">
+              <svg class="w-5 h-5 text-error flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+              <div>
+                <p class="text-sm text-error font-medium">Verification Failed</p>
+                <p id="verificationErrorMessage" class="text-sm text-error/80 mt-1"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <input type="hidden" name="accountName" id="accountName" value="" />
+
+        <div class="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="isPrimary"
+            name="isPrimary"
+            value="true"
+            class="w-4 h-4 text-primary border-sand-7 rounded focus:ring-primary"
+          />
+          <label for="isPrimary" class="text-sm text-sand-12">Set as primary account</label>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4">
+          <button type="submit" id="submitBtn" class="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            Add Bank Account
+          </button>
+          <a href="{{ route('settings.withdrawals.bank-accounts') }}" class="px-6 py-2.5 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2 text-sm text-center min-h-[44px] flex items-center justify-center">
+            Cancel
+          </a>
+        </div>
+      </div>
+    </form>
+
+    <div class="mt-6 bg-sand-2 border border-sand-6 rounded-xl p-4">
+      <div class="flex items-start gap-3">
+        <svg class="w-5 h-5 text-sand-11 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+        <div class="text-sm text-sand-11">
+          <p class="font-medium text-sand-12 mb-1">Secure & Verified</p>
+          <p>We verify your bank account details with your bank to ensure withdrawals go to the right account. Your banking information is encrypted and never shared.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const bankCodeSelect = document.getElementById('bankCode');
+      const bankNameInput = document.getElementById('bankName');
+      const accountNumberInput = document.getElementById('accountNumber');
+      const accountNameInput = document.getElementById('accountName');
+      const submitBtn = document.getElementById('submitBtn');
+      const verificationSection = document.getElementById('verificationSection');
+      const verifyingLoader = document.getElementById('verifyingLoader');
+      const verificationSuccess = document.getElementById('verificationSuccess');
+      const verificationError = document.getElementById('verificationError');
+      const verifiedAccountName = document.getElementById('verifiedAccountName');
+      const verificationErrorMessage = document.getElementById('verificationErrorMessage');
+
+      let verifyTimeout = null;
+      let isVerified = false;
+
+      function updateBankName() {
+        const selectedOption = bankCodeSelect.options[bankCodeSelect.selectedIndex];
+        bankNameInput.value = selectedOption.dataset.name || '';
+      }
+
+      function resetVerification() {
+        isVerified = false;
+        submitBtn.disabled = true;
+        verificationSection.classList.add('hidden');
+        verifyingLoader.classList.add('hidden');
+        verificationSuccess.classList.add('hidden');
+        verificationError.classList.add('hidden');
+        accountNameInput.value = '';
+      }
+
+      function showLoader() {
+        verificationSection.classList.remove('hidden');
+        verifyingLoader.classList.remove('hidden');
+        verificationSuccess.classList.add('hidden');
+        verificationError.classList.add('hidden');
+      }
+
+      function showSuccess(accountName) {
+        verifyingLoader.classList.add('hidden');
+        verificationSuccess.classList.remove('hidden');
+        verifiedAccountName.textContent = accountName;
+        accountNameInput.value = accountName;
+        isVerified = true;
+        submitBtn.disabled = false;
+      }
+
+      function showError(message) {
+        verifyingLoader.classList.add('hidden');
+        verificationError.classList.remove('hidden');
+        verificationErrorMessage.textContent = message;
+        isVerified = false;
+        submitBtn.disabled = true;
+      }
+
+      async function verifyAccount() {
+        const bankCode = bankCodeSelect.value;
+        const accountNumber = accountNumberInput.value;
+
+        if (!bankCode || accountNumber.length !== 10) {
+          return;
+        }
+
+        showLoader();
+
+        try {
+          const response = await fetch('{{ route('settings.withdrawals.bank-accounts.verify') }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value,
+            },
+            body: JSON.stringify({
+              bankCode,
+              accountNumber,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.valid) {
+            showSuccess(data.accountName);
+          } else {
+            showError(data.error || 'Could not verify account');
+          }
+        } catch (error) {
+          showError('Network error. Please try again.');
+        }
+      }
+
+      bankCodeSelect.addEventListener('change', function() {
+        updateBankName();
+        resetVerification();
+
+        if (accountNumberInput.value.length === 10) {
+          clearTimeout(verifyTimeout);
+          verifyTimeout = setTimeout(verifyAccount, 500);
+        }
+      });
+
+      accountNumberInput.addEventListener('input', function() {
+        resetVerification();
+
+        // Only allow digits
+        this.value = this.value.replace(/\D/g, '');
+
+        if (this.value.length === 10 && bankCodeSelect.value) {
+          clearTimeout(verifyTimeout);
+          verifyTimeout = setTimeout(verifyAccount, 500);
+        }
+      });
+
+      // Prevent form submission if not verified
+      document.getElementById('addBankForm').addEventListener('submit', function(e) {
+        if (!isVerified) {
+          e.preventDefault();
+          alert('Please verify your bank account before submitting.');
+        }
+      });
+    })();
+  </script>
+@endsection
+

@@ -14,6 +14,7 @@ const FeaturedController = () => import('#controllers/featured-controller')
 const ThemeController = () => import('#controllers/theme-controller')
 const WebhookController = () => import('#controllers/webhook-controller')
 const SubscriptionsController = () => import('#controllers/subscriptions_controller')
+const WithdrawalsController = () => import('#controllers/withdrawals-controller')
 
 const HomeController = () => import('#controllers/home-controller')
 router.get('/', [HomeController, 'index']).as('home')
@@ -81,6 +82,7 @@ router
       .post('/bookings/:id/complete', [BookingsController, 'markComplete'])
       .as('bookings.complete')
     router.post('/bookings/:id/cancel', [BookingsController, 'cancel']).as('bookings.cancel')
+    router.post('/bookings/:id/refund', [BookingsController, 'refund']).as('bookings.refund')
 
     router.get('/services', [ServicesController, 'index']).as('services.index')
     router.get('/services/new', [ServicesController, 'create']).as('services.create')
@@ -122,6 +124,41 @@ router
     router
       .get('/settings/booking-page', [SettingsController, 'bookingPage'])
       .as('settings.booking-page')
+
+    // Withdrawals routes
+    router
+      .get('/settings/withdrawals', [WithdrawalsController, 'index'])
+      .as('settings.withdrawals.index')
+    router
+      .get('/settings/withdrawals/bank-accounts', [WithdrawalsController, 'bankAccounts'])
+      .as('settings.withdrawals.bank-accounts')
+    router
+      .get('/settings/withdrawals/bank-accounts/add', [WithdrawalsController, 'addBankAccountForm'])
+      .as('settings.withdrawals.bank-accounts.add')
+    router
+      .post('/settings/withdrawals/bank-accounts', [WithdrawalsController, 'storeBankAccount'])
+      .as('settings.withdrawals.bank-accounts.store')
+    router
+      .post('/settings/withdrawals/bank-accounts/:id/primary', [WithdrawalsController, 'setPrimaryBankAccount'])
+      .as('settings.withdrawals.bank-accounts.primary')
+    router
+      .post('/settings/withdrawals/bank-accounts/:id/delete', [WithdrawalsController, 'deleteBankAccount'])
+      .as('settings.withdrawals.bank-accounts.delete')
+    router
+      .post('/settings/withdrawals/bank-accounts/verify', [WithdrawalsController, 'verifyBankAccount'])
+      .as('settings.withdrawals.bank-accounts.verify')
+    router
+      .post('/settings/withdrawals/request', [WithdrawalsController, 'requestWithdrawal'])
+      .as('settings.withdrawals.request')
+    router
+      .post('/settings/withdrawals/:id/cancel', [WithdrawalsController, 'cancelWithdrawal'])
+      .as('settings.withdrawals.cancel')
+    router
+      .get('/settings/withdrawals/history', [WithdrawalsController, 'history'])
+      .as('settings.withdrawals.history')
+    router
+      .get('/api/banks', [WithdrawalsController, 'getBanks'])
+      .as('api.banks')
 
     router.get('/settings/theme', [ThemeController, 'index']).as('settings.theme')
     router
@@ -217,6 +254,12 @@ router
     router
       .get('/:slug/booking/:bookingId/confirmation', [BookingController, 'confirmBooking'])
       .as('book.confirmation')
+    router
+      .get('/:slug/booking/:bookingId/receipt', [BookingController, 'downloadReceipt'])
+      .as('book.receipt')
+    router
+      .get('/:slug/booking/:bookingId/payment-status', [BookingController, 'getPaymentStatus'])
+      .as('book.payment-status')
     router
       .get('/:slug/booking/:bookingId/manage', [BookingController, 'manageBooking'])
       .as('book.manage')

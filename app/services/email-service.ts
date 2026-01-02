@@ -63,6 +63,27 @@ interface BookingRescheduleData {
   manageUrl?: string
 }
 
+interface PaymentFailureData {
+  customerName: string
+  customerEmail: string
+  businessName: string
+  serviceName: string
+  amount: number
+  errorMessage: string
+  bookingUrl: string
+  paymentUrl: string
+}
+
+interface GenericEmailData {
+  to: string
+  subject: string
+  templateData: {
+    title: string
+    preheader?: string
+    content: string
+  }
+}
+
 class EmailService {
   private apiKey: string | null = null
   private fromEmail: string
@@ -189,6 +210,34 @@ class EmailService {
       to: [{ email: data.to }],
       subject: data.subject,
       htmlContent: data.html,
+    })
+  }
+
+  async sendGenericEmail(data: GenericEmailData) {
+    if (!this.apiKey) {
+      console.log('[Email Mock] Generic email to:', data.to)
+      console.log('[Email Mock] Subject:', data.subject)
+      return { success: true, mock: true }
+    }
+
+    return await this.sendViaBrevoApi({
+      to: [{ email: data.to }],
+      subject: data.subject,
+      htmlContent: this.getGenericEmailHtml(data.templateData),
+    })
+  }
+
+  async sendPaymentFailureNotification(data: PaymentFailureData) {
+    if (!this.apiKey) {
+      console.log('[Email Mock] Payment failure notification to:', data.customerEmail)
+      console.log('[Email Mock] Data:', JSON.stringify(data, null, 2))
+      return { success: true, mock: true }
+    }
+
+    return await this.sendViaBrevoApi({
+      to: [{ email: data.customerEmail }],
+      subject: `Payment Failed - ${data.businessName}`,
+      htmlContent: this.getPaymentFailureHtml(data),
     })
   }
 
@@ -736,6 +785,108 @@ class EmailService {
             </tr>
           </table>
         </div>
+      </div>
+      <div style="background: #f9f9f8; padding: 20px; text-align: center; border-top: 1px solid #e9e8e6;">
+        <p style="margin: 0; color: #82827c; font-size: 13px;">
+          Powered by <a href="${env.get('APP_URL', 'https://fastappoint.com')}" style="color: #5A45FF; text-decoration: none;">FastAppoint</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`
+  }
+
+  private getPaymentFailureHtml(data: PaymentFailureData): string {
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9f9f8;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <div style="background: #ef4444; padding: 30px; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 24px;">Payment Failed</h1>
+      </div>
+      <div style="padding: 30px;">
+        <p style="color: #21201c; font-size: 16px; margin-bottom: 20px;">
+          Hi ${data.customerName},
+        </p>
+        <p style="color: #63635e; font-size: 15px; line-height: 1.6;">
+          We encountered an issue processing your payment for your booking with <strong>${data.businessName}</strong>.
+        </p>
+
+        <div style="background: #fef2f2; border-left: 4px solid #ef4444; border-radius: 8px; padding: 16px; margin: 24px 0;">
+          <p style="margin: 0; color: #991b1b; font-size: 14px;">
+            <strong>Error:</strong> ${data.errorMessage}
+          </p>
+        </div>
+
+        <div style="background: #f9f9f8; border-radius: 12px; padding: 20px; margin: 24px 0;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #63635e; font-size: 14px;">Service</td>
+              <td style="padding: 8px 0; color: #21201c; font-size: 14px; text-align: right; font-weight: 500;">${data.serviceName}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #63635e; font-size: 14px;">Amount</td>
+              <td style="padding: 8px 0; color: #21201c; font-size: 14px; text-align: right; font-weight: 500;">₦${data.amount.toLocaleString()}</td>
+            </tr>
+          </table>
+        </div>
+
+        <p style="color: #63635e; font-size: 14px; line-height: 1.6;">
+          <strong>What to do next:</strong>
+        </p>
+        <ul style="color: #63635e; font-size: 14px; line-height: 1.8; padding-left: 20px;">
+          <li>Check that your payment method has sufficient funds</li>
+          <li>Verify your card details are correct</li>
+          <li>Try using a different payment method</li>
+          <li>Contact your bank if the issue persists</li>
+        </ul>
+
+        <div style="text-align: center; margin: 24px 0;">
+          <a href="${data.paymentUrl}" style="display: inline-block; background: #5A45FF; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">
+            Try Payment Again
+          </a>
+        </div>
+
+        <p style="color: #82827c; font-size: 13px; line-height: 1.6;">
+          If you continue to experience issues, please contact <strong>${data.businessName}</strong> directly or reach out to our support team.
+        </p>
+      </div>
+      <div style="background: #f9f9f8; padding: 20px; text-align: center; border-top: 1px solid #e9e8e6;">
+        <p style="margin: 0; color: #82827c; font-size: 13px;">
+          Powered by <a href="${env.get('APP_URL', 'https://fastappoint.com')}" style="color: #5A45FF; text-decoration: none;">FastAppoint</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`
+  }
+
+  private getGenericEmailHtml(data: { title: string; preheader?: string; content: string }): string {
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${data.preheader ? `<meta name="description" content="${data.preheader}">` : ''}
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9f9f8;">
+  ${data.preheader ? `<div style="display: none; max-height: 0; overflow: hidden;">${data.preheader}</div>` : ''}
+  <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <div style="background: #5A45FF; padding: 30px; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 24px;">${data.title}</h1>
+      </div>
+      <div style="padding: 30px; color: #21201c; font-size: 15px; line-height: 1.6;">
+        ${data.content}
       </div>
       <div style="background: #f9f9f8; padding: 20px; text-align: center; border-top: 1px solid #e9e8e6;">
         <p style="margin: 0; color: #82827c; font-size: 13px;">

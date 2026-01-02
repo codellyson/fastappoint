@@ -10,23 +10,23 @@
       </div>
     @endif
 
-    <div class="mb-8 flex items-center justify-between">
+    <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-sand-12">Services</h1>
-        <p class="text-sand-11 mt-1">Manage the services you offer</p>
+        <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Services</h1>
+        <p class="text-sm sm:text-base text-sand-11 mt-1">Manage the services you offer</p>
       </div>
-      <a href="{{ route('services.create') }}" class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
+      <a href="{{ route('services.create') }}" class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm sm:text-base min-h-[44px] flex items-center justify-center sm:inline-flex">
         + Add Service
       </a>
     </div>
 
     @if(services.length > 0)
-      <div class="space-y-4">
+      <div class="space-y-3 sm:space-y-4">
         @each(service in services)
-          <div class="bg-white border border-sand-7 rounded-xl p-5 flex items-center justify-between {{ !service.isActive ? 'opacity-60' : '' }}">
-            <div class="flex-1">
-              <div class="flex items-center gap-3">
-                <h3 class="font-medium text-sand-12">{{ service.name }}</h3>
+          <div class="bg-white border border-sand-7 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 {{ !service.isActive ? 'opacity-60' : '' }}">
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                <h3 class="font-medium text-sand-12 text-sm sm:text-base">{{ service.name }}</h3>
                 @if(!service.isActive)
                   <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sand-4 text-sand-11">
                     Disabled
@@ -34,23 +34,23 @@
                 @endif
               </div>
               @if(service.description)
-                <p class="text-sm text-sand-11 mt-1">{{ service.description }}</p>
+                <p class="text-xs sm:text-sm text-sand-11 mt-1">{{ service.description }}</p>
               @endif
-              <div class="flex items-center gap-4 mt-2 text-sm text-sand-11">
+              <div class="flex items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-sand-11">
                 <span>{{ service.formattedDuration }}</span>
                 <span>•</span>
                 <span class="font-medium text-sand-12">₦{{ Number(service.price).toLocaleString() }}</span>
               </div>
             </div>
-            <div class="flex items-center gap-2">
-              <a href="{{ route('services.edit', { id: service.id }) }}" class="p-2 hover:bg-sand-3 rounded-lg" title="Edit">
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <a href="{{ route('services.edit', { id: service.id }) }}" class="p-2 hover:bg-sand-3 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="Edit">
                 <svg class="w-5 h-5 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
               </a>
               <form method="POST" action="{{ route('services.toggle', { id: service.id }) }}">
                 {{ csrfField() }}
-                <button type="submit" class="p-2 hover:bg-sand-3 rounded-lg" title="{{ service.isActive ? 'Disable' : 'Enable' }}">
+                <button type="submit" class="p-2 hover:bg-sand-3 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ service.isActive ? 'Disable' : 'Enable' }}">
                   @if(service.isActive)
                     <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -65,7 +65,7 @@
               </form>
               <form method="POST" action="{{ route('services.destroy', { id: service.id }) }}" onsubmit="return confirm('Delete this service?')">
                 {{ csrfField() }}
-                <button type="submit" class="p-2 hover:bg-error/10 rounded-lg" title="Delete">
+                <button type="submit" class="p-2 hover:bg-error/10 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="Delete">
                   <svg class="w-5 h-5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                   </svg>

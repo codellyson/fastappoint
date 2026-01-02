@@ -5,6 +5,8 @@ import Booking from '#models/booking'
 import Transaction from '#models/transaction'
 import emailService from '#services/email-service'
 import subscriptionService from '#services/subscription-service'
+import receiptService from '#services/receipt-service'
+import withdrawalService from '#services/withdrawal-service'
 
 export default class WebhookController {
   async paystack({ request, response }: HttpContext) {
@@ -55,6 +57,15 @@ export default class WebhookController {
         case 'invoice.payment_succeeded':
           await subscriptionService.handleWebhook(event, data)
           break
+        case 'transfer.success':
+          await this.handleTransferSuccess(data)
+          break
+        case 'transfer.failed':
+          await this.handleTransferFailed(data)
+          break
+        case 'transfer.reversed':
+          await this.handleTransferReversed(data)
+          break
         default:
           console.log(`[WEBHOOK] Unhandled event: ${event}`)
       }
@@ -93,64 +104,112 @@ export default class WebhookController {
       return
     }
 
-    if (booking.paymentStatus === 'paid') {
-      console.log(`[WEBHOOK] Booking #${booking.id} already paid`)
-      return
-    }
-
-    booking.paymentStatus = 'paid'
-    booking.status = 'confirmed'
-    await booking.save()
-
-    const amount = (data.amount as number) / 100
-    const platformFee = Math.round(amount * 0.025)
-
+    // Idempotency check: Use provider reference to prevent duplicate processing
     const existingTransaction = await Transaction.query()
-      .where('bookingId', booking.id)
+      .where('providerReference', reference)
       .where('status', 'success')
       .first()
 
-    if (!existingTransaction) {
-      await Transaction.create({
-        businessId: booking.businessId,
-        bookingId: booking.id,
-        amount,
-        platformFee,
-        businessAmount: amount - platformFee,
-        status: 'success',
-        provider: 'paystack',
-        reference: booking.paymentReference || reference,
-        providerReference: reference,
-      })
+    if (existingTransaction) {
+      console.log(`[WEBHOOK] Transaction already processed for reference: ${reference}`)
+      // Ensure booking status is correct
+      if (booking.paymentStatus !== 'paid') {
+        booking.paymentStatus = 'paid'
+        booking.status = 'confirmed'
+        await booking.save()
+      }
+      return
     }
 
-    const dateFormatted = booking.date.toFormat('EEEE, MMMM d, yyyy')
+    // Use database transaction for atomicity
+    try {
+      await Booking.transaction(async (trx) => {
+        // Reload booking within transaction to get latest state
+        const bookingInTrx = await Booking.query({ client: trx })
+          .where('id', booking!.id)
+          .first()
 
-    await emailService.sendBookingConfirmation({
-      customerName: booking.customerName,
-      customerEmail: booking.customerEmail,
-      businessName: booking.business.name,
-      serviceName: booking.service.name,
-      date: dateFormatted,
-      time: `${booking.startTime} - ${booking.endTime}`,
-      duration: booking.service.formattedDuration,
-      amount: booking.amount,
-      reference: booking.paymentReference?.substring(0, 8).toUpperCase() || '',
-    })
+        if (!bookingInTrx) {
+          throw new Error('Booking not found in transaction')
+        }
 
-    await emailService.sendBusinessNotification({
-      businessEmail: booking.business.email,
-      businessName: booking.business.name,
-      customerName: booking.customerName,
-      customerEmail: booking.customerEmail,
-      customerPhone: booking.customerPhone,
-      serviceName: booking.service.name,
-      date: dateFormatted,
-      time: `${booking.startTime} - ${booking.endTime}`,
-      amount: booking.amount,
-    })
+        // Double-check payment status within transaction
+        if (bookingInTrx.paymentStatus === 'paid') {
+          console.log(`[WEBHOOK] Booking #${bookingInTrx.id} already paid (checked in transaction)`)
+          return
+        }
 
-    console.log(`[WEBHOOK] Booking #${booking.id} confirmed via webhook`)
+        // Update booking
+        bookingInTrx.paymentStatus = 'paid'
+        bookingInTrx.status = 'confirmed'
+        await bookingInTrx.useTransaction(trx).save()
+
+        // Create transaction record
+        const amount = (data.amount as number) / 100
+        const platformFee = Math.round(amount * 0.025)
+
+        const transaction = new Transaction()
+        transaction.businessId = bookingInTrx.businessId
+        transaction.bookingId = bookingInTrx.id
+        transaction.amount = amount
+        transaction.platformFee = platformFee
+        transaction.businessAmount = amount - platformFee
+        transaction.status = 'success'
+        transaction.provider = 'paystack'
+        transaction.reference = bookingInTrx.paymentReference || reference
+        transaction.providerReference = reference
+        await transaction.useTransaction(trx).save()
+
+        // Update booking reference for email
+        booking = bookingInTrx
+      })
+
+      // Get transaction for receipt generation
+      const transaction = await Transaction.query()
+        .where('bookingId', booking.id)
+        .where('status', 'success')
+        .where('providerReference', reference)
+        .first()
+
+      // Generate receipt asynchronously
+      if (transaction) {
+        receiptService.generateReceipt(booking, transaction).catch((error) => {
+          console.error('[WEBHOOK] Failed to generate receipt:', error)
+        })
+      }
+
+      // Send emails outside transaction
+      const dateFormatted = booking.date.toFormat('EEEE, MMMM d, yyyy')
+
+      await emailService.sendBookingConfirmation({
+        customerName: booking.customerName,
+        customerEmail: booking.customerEmail,
+        businessName: booking.business.name,
+        serviceName: booking.service.name,
+        date: dateFormatted,
+        time: `${booking.startTime} - ${booking.endTime}`,
+        duration: booking.service.formattedDuration,
+        amount: booking.amount,
+        reference: booking.paymentReference?.substring(0, 8).toUpperCase() || '',
+      })
+
+      await emailService.sendBusinessNotification({
+        businessEmail: booking.business.email,
+        businessName: booking.business.name,
+        customerName: booking.customerName,
+        customerEmail: booking.customerEmail,
+        customerPhone: booking.customerPhone,
+        serviceName: booking.service.name,
+        date: dateFormatted,
+        time: `${booking.startTime} - ${booking.endTime}`,
+        amount: booking.amount,
+      })
+
+      console.log(`[WEBHOOK] Booking #${booking.id} confirmed via webhook`)
+    } catch (error) {
+      console.error(`[WEBHOOK] Error processing charge.success for booking #${booking.id}:`, error)
+      throw error
+    }
   }
 
   private async handleChargeFailed(data: Record<string, unknown>) {
@@ -173,6 +232,41 @@ export default class WebhookController {
       console.log(`[WEBHOOK] No booking found for failed charge: ${reference}`)
       return
     }
+
+    // Check if transaction already exists (idempotency)
+    const existingTransaction = await Transaction.query()
+      .where('providerReference', reference)
+      .first()
+
+    if (existingTransaction) {
+      console.log(`[WEBHOOK] Failed transaction already recorded for reference: ${reference}`)
+      return
+    }
+
+    // Update booking payment attempts and error
+    booking.paymentAttempts = (booking.paymentAttempts || 0) + 1
+    booking.lastPaymentError = (data.gateway_response as string) || 'Payment failed'
+    await booking.save()
+
+    // Send payment failure notification email
+    await booking.load('business')
+    await booking.load('service')
+    const appUrl = env.get('APP_URL', `https://${env.get('APP_DOMAIN', 'fastappoint.com')}`)
+    const paymentUrl = `${appUrl}/book/${booking.business.slug}/booking/${booking.id}/payment`
+    const manageUrl = `${appUrl}/book/${booking.business.slug}/booking/${booking.id}/manage`
+
+    await emailService.sendPaymentFailureNotification({
+      customerName: booking.customerName,
+      customerEmail: booking.customerEmail,
+      businessName: booking.business.name,
+      serviceName: booking.service.name,
+      amount: booking.amount,
+      errorMessage: booking.lastPaymentError || 'Payment failed',
+      bookingUrl: manageUrl,
+      paymentUrl: paymentUrl,
+    }).catch((error) => {
+      console.error('[WEBHOOK] Failed to send payment failure email:', error)
+    })
 
     await Transaction.create({
       businessId: booking.businessId,
@@ -214,6 +308,26 @@ export default class WebhookController {
     }
 
     console.log(`[WEBHOOK] Processed refund for transaction #${transaction.id}`)
+  }
+
+  private async handleTransferSuccess(data: Record<string, unknown>) {
+    const reference = data.reference as string
+    console.log(`[WEBHOOK] Processing transfer success for reference: ${reference}`)
+    await withdrawalService.handleTransferSuccess(reference)
+  }
+
+  private async handleTransferFailed(data: Record<string, unknown>) {
+    const reference = data.reference as string
+    const reason = (data.reason as string) || 'Transfer failed'
+    console.log(`[WEBHOOK] Processing transfer failure for reference: ${reference}`)
+    await withdrawalService.handleTransferFailed(reference, reason)
+  }
+
+  private async handleTransferReversed(data: Record<string, unknown>) {
+    const reference = data.reference as string
+    const reason = (data.reason as string) || 'Transfer was reversed'
+    console.log(`[WEBHOOK] Processing transfer reversal for reference: ${reference}`)
+    await withdrawalService.handleTransferReversed(reference, reason)
   }
 }
 
