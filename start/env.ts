@@ -27,4 +27,6 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   TERMII_API_KEY: Env.schema.string.optional(),
   TERMII_SENDER_ID: Env.schema.string.optional(),
+
+  REQUEST_TIMEOUT: Env.schema.number.optional(),
 })

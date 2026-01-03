@@ -34,6 +34,21 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    if (error instanceof Error && error.message === 'Request timeout') {
+      ctx.logger.warn(`Request timeout: ${ctx.request.url()}`)
+
+      const acceptHeader = ctx.request.header('accept') || ''
+      if (acceptHeader.includes('application/json')) {
+        return ctx.response.status(408).send({
+          error: 'Request Timeout',
+          message: 'The request took too long to process. Please try again.',
+        })
+      }
+
+      ctx.session.flash('error', 'The request took too long to process. Please try again.')
+      return ctx.response.status(408).redirect().back()
+    }
+
     return super.handle(error, ctx)
   }
 

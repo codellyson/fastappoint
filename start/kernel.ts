@@ -38,7 +38,7 @@ router.use([
   () => import('@adonisjs/session/session_middleware'),
   () => import('#middleware/embed_middleware'),
   () => import('@adonisjs/shield/shield_middleware'),
-  () => import('@adonisjs/auth/initialize_auth_middleware')
+  () => import('@adonisjs/auth/initialize_auth_middleware'),
 ])
 
 /**
@@ -50,4 +50,5 @@ export const middleware = router.named({
   auth: () => import('#middleware/auth_middleware'),
   rateLimit: () => import('#middleware/rate-limit-middleware'),
   subscription: () => import('#middleware/subscription_middleware'),
+  timeout: () => import('#middleware/timeout_middleware'),
 })

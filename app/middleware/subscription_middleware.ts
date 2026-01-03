@@ -51,6 +51,12 @@ export default class SubscriptionMiddleware {
       }
     }
 
+    // Check if subscription is cancelled or past_due
+    if (subscription.status === 'cancelled' || subscription.status === 'past_due') {
+      ctx.session.flash('error', 'Your subscription is not active. Please renew to continue.')
+      return ctx.response.redirect().toRoute('subscriptions.manage')
+    }
+
     // Check if subscription is expired
     if (subscription.status === 'active' && subscription.currentPeriodEnd && subscription.currentPeriodEnd < DateTime.now()) {
       ctx.session.flash('error', 'Your subscription has expired. Please renew to continue.')

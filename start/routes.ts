@@ -73,7 +73,11 @@ router
     router
       .post('/onboarding/complete', [OnboardingController, 'complete'])
       .as('onboarding.complete')
+  })
+  .use(middleware.auth())
 
+router
+  .group(() => {
     router.get('/dashboard', [DashboardController, 'index']).as('dashboard')
 
     router.get('/bookings', [BookingsController, 'index']).as('bookings.index')
@@ -198,7 +202,11 @@ router
     router.get('/featured/:id/payment', [FeaturedController, 'payment']).as('featured.payment')
     router.get('/featured/:id/verify', [FeaturedController, 'verify']).as('featured.verify')
     router.get('/featured/:id/cancel', [FeaturedController, 'cancel']).as('featured.cancel')
+  })
+  .use([middleware.auth(), middleware.subscription()])
 
+router
+  .group(() => {
     router.get('/subscriptions', [SubscriptionsController, 'index']).as('subscriptions.index')
     router
       .get('/subscriptions/select', [SubscriptionsController, 'select'])
