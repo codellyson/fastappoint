@@ -4,7 +4,6 @@ import BusinessBankAccount from '#models/business-bank-account'
 import withdrawalService from '#services/withdrawal-service'
 import {
   addBankAccountValidator,
-  updateBankAccountValidator,
   withdrawalRequestValidator,
 } from '#validators/withdrawal-validator'
 import { errors } from '@vinejs/vine'

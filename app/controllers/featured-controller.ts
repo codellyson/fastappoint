@@ -78,8 +78,6 @@ export default class FeaturedController {
       displayName: displayName || business.name,
     })
 
-    const paystackPublicKey = env.get('PAYSTACK_PUBLIC_KEY')
-
     return response.redirect().toRoute('featured.payment', { id: featured.id })
   }
 

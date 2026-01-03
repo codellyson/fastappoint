@@ -9,7 +9,7 @@ class SubscriptionService {
   private secretKey: string | null
 
   constructor() {
-    this.secretKey = env.get('PAYSTACK_SECRET_KEY')
+    this.secretKey = env.get('PAYSTACK_SECRET_KEY') || null
   }
 
   /**
@@ -387,14 +387,19 @@ class SubscriptionService {
       body: JSON.stringify({ email, name }),
     })
 
-    const data = await response.json()
+    const data = await response.json() as {
+      status: boolean
+      message?: string
+      data?: { customer_code: string }
+    }
     if (!data.status) {
       throw new Error(data.message || 'Failed to create Paystack customer')
     }
 
-    return data.data.customer_code
+    return data.data!.customer_code
   }
 
+  // @ts-ignore - unused but may be needed for future recurring billing
   private async createPaystackSubscription(
     customerCode: string,
     planCode: string,
@@ -418,7 +423,11 @@ class SubscriptionService {
       body: JSON.stringify(body),
     })
 
-    const data = await response.json()
+    const data = await response.json() as {
+      status: boolean
+      message?: string
+      data: any
+    }
     if (!data.status) {
       throw new Error(data.message || 'Failed to create Paystack subscription')
     }

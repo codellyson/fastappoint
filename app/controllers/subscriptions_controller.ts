@@ -2,7 +2,6 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import Business from '#models/business'
 import SubscriptionPlan from '#models/subscription_plan'
-import Subscription from '#models/subscription'
 import subscriptionService from '#services/subscription-service'
 import env from '#start/env'
 
@@ -88,15 +87,12 @@ export default class SubscriptionsController {
       return response.redirect().toRoute('auth.login.show')
     }
 
-    const user = auth.user!
-    const business = await Business.findOrFail(user.businessId)
     const { planId } = request.only(['planId'])
 
     const plan = await SubscriptionPlan.findOrFail(planId)
 
     try {
       // All plans require payment - redirect to payment
-      const paystackPublicKey = env.get('PAYSTACK_PUBLIC_KEY')
       return response.redirect().toRoute('subscriptions.payment', { planId: plan.id })
     } catch (error: any) {
       session.flash('error', error.message || 'Failed to create subscription')
@@ -157,16 +153,25 @@ export default class SubscriptionsController {
           },
         })
 
-        const data = await paystackResponse.json()
+        const data = await paystackResponse.json() as {
+          status: boolean
+          message?: string
+          data?: {
+            status: string
+            authorization?: {
+              authorization_code: string
+            }
+          }
+        }
 
-        if (!data.status || data.data.status !== 'success') {
+        if (!data.status || data.data?.status !== 'success') {
           console.error('[SUBSCRIPTION] Payment verification failed:', data)
           session.flash('error', 'Payment verification failed. Please contact support if payment was deducted.')
           return response.redirect().toRoute('subscriptions.select')
         }
 
         // Extract authorization code for recurring billing
-        const authorizationCode = data.data.authorization?.authorization_code
+        const authorizationCode = data.data?.authorization?.authorization_code
 
         // Create subscription
         const subscription = await subscriptionService.createSubscription(business, plan, business.email, authorizationCode)
@@ -190,7 +195,7 @@ export default class SubscriptionsController {
       } else {
         // Dev mode - create subscription without verification
         console.log('[SUBSCRIPTION] Dev mode: Creating subscription without payment verification')
-        const subscription = await subscriptionService.createSubscription(business, plan, business.email)
+        await subscriptionService.createSubscription(business, plan, business.email)
         
         // Refresh business to get updated status
         await business.refresh()

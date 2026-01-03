@@ -71,7 +71,14 @@ class RefundService {
         }),
       })
 
-      const data = await response.json()
+      const data = await response.json() as {
+        status: boolean
+        message?: string
+        data?: {
+          transaction?: { reference: string }
+          reference: string
+        }
+      }
 
       if (data.status && data.data) {
         // Update transaction status
@@ -88,7 +95,7 @@ class RefundService {
           booking.paymentStatus = 'refunded'
           booking.status = 'cancelled'
           booking.cancellationReason = `Refunded: ${request.reason}`
-          booking.cancelledAt = new Date()
+          booking.cancelledAt = DateTime.now()
         }
         await booking.save()
 
@@ -101,7 +108,7 @@ class RefundService {
           refundReference: data.data.transaction?.reference || data.data.reference,
         }
       } else {
-        return { success: false, message: data.message || 'Refund failed' }
+        return { success: false, message: (data as { message?: string }).message || 'Refund failed' }
       }
     } catch (error: any) {
       console.error('[Refund] Error processing refund:', error)

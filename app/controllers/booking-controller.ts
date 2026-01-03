@@ -11,6 +11,7 @@ import Transaction from '#models/transaction'
 import { bookingValidator, rescheduleValidator } from '#validators/booking-validator'
 import { errors } from '@vinejs/vine'
 import { randomUUID } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 import emailService from '#services/email-service'
 import subscriptionService from '#services/subscription-service'
 import receiptService from '#services/receipt-service'
@@ -552,19 +553,12 @@ export default class BookingController {
 
     const secretKey = env.get('PAYSTACK_SECRET_KEY')
     let paymentSuccess = false
-    let transactionData: {
-      amount?: number
-      reference?: string
-      providerReference?: string
-      paidAt?: string
-    } = {}
     let errorMessage: string | null = null
 
     if (secretKey) {
       // Retry logic: Try up to 3 times with exponential backoff
       let retries = 0
       const maxRetries = 3
-      let lastError: Error | null = null
 
       while (retries < maxRetries && !paymentSuccess) {
         try {
@@ -581,7 +575,17 @@ export default class BookingController {
             throw new Error(`Paystack API returned status ${paystackResponse.status}`)
           }
 
-          const data = await paystackResponse.json()
+          const data = await paystackResponse.json() as {
+            status: boolean
+            message?: string
+            data?: {
+              status: string
+              reference: string
+              amount: number
+              paid_at: string
+              gateway_response?: string
+            }
+          }
 
           // Handle different payment statuses
           if (data.status && data.data) {
@@ -603,12 +607,6 @@ export default class BookingController {
                   await booking.save()
                 }
                 paymentSuccess = true
-                transactionData = {
-                  amount: data.data.amount / 100,
-                  reference: booking.paymentReference || reference,
-                  providerReference: data.data.reference,
-                  paidAt: data.data.paid_at,
-                }
                 break
               }
 
@@ -623,6 +621,10 @@ export default class BookingController {
                 booking.paymentStatus = 'paid'
                 booking.status = 'confirmed'
                 await booking.useTransaction(trx).save()
+
+                if (!data.data) {
+                  throw new Error('Payment data is missing')
+                }
 
                 const amount = data.data.amount / 100
                 const platformFee = Math.round(amount * 0.025)
@@ -649,7 +651,6 @@ export default class BookingController {
 
               if (trx) {
                 paymentSuccess = true
-                transactionData = trx
               }
             } else if (paymentStatus === 'pending') {
               errorMessage = 'Payment is still being processed. Please wait a moment and try again.'
@@ -658,7 +659,7 @@ export default class BookingController {
               await booking.save()
               break
             } else {
-              errorMessage = `Payment verification failed: ${data.data.gateway_response || 'Unknown error'}`
+              errorMessage = `Payment verification failed: ${data.data?.gateway_response || 'Unknown error'}`
               booking.paymentAttempts = (booking.paymentAttempts || 0) + 1
               booking.lastPaymentError = errorMessage
               await booking.save()
@@ -670,7 +671,6 @@ export default class BookingController {
             await booking.save()
           }
         } catch (error: any) {
-          lastError = error
           retries++
           if (retries < maxRetries) {
             // Exponential backoff: wait 1s, 2s, 4s
@@ -692,11 +692,6 @@ export default class BookingController {
       booking.status = 'confirmed'
       await booking.save()
       paymentSuccess = true
-      transactionData = {
-        amount: booking.amount,
-        reference: booking.paymentReference || 'dev-mode',
-        providerReference: 'dev-mode-' + Date.now(),
-      }
       console.warn('[DEV MODE] Payment auto-confirmed without verification')
     } else {
       console.error('[PRODUCTION] Payment verification failed: PAYSTACK_SECRET_KEY not configured')

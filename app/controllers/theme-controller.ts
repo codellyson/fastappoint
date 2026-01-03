@@ -40,6 +40,9 @@ const socialLinksValidator = vine.compile(
 export default class ThemeController {
   async index({ view, auth }: HttpContext) {
     const user = auth.user!
+    if (!user.businessId) {
+      throw new Error('User has no business associated')
+    }
     const business = await Business.query()
       .where('id', user.businessId)
       .preload('theme')
@@ -55,6 +58,9 @@ export default class ThemeController {
 
   async selectTemplate({ view, auth }: HttpContext) {
     const user = auth.user!
+    if (!user.businessId) {
+      throw new Error('User has no business associated')
+    }
     const business = await Business.query()
       .where('id', user.businessId)
       .preload('theme')
@@ -109,13 +115,16 @@ export default class ThemeController {
 
   async customize({ view, auth }: HttpContext) {
     const user = auth.user!
+    if (!user.businessId) {
+      throw new Error('User has no business associated')
+    }
     const business = await Business.query()
       .where('id', user.businessId)
       .preload('theme')
       .firstOrFail()
 
     if (!business.theme) {
-      const theme = await BusinessTheme.create({
+      await BusinessTheme.create({
         businessId: business.id,
         template: 'modern',
         primaryColor: '#2563eb',
@@ -133,7 +142,7 @@ export default class ThemeController {
         showAbout: true,
         showTestimonials: false,
       })
-      business.theme = theme
+      await business.load('theme')
     }
 
     return view.render('pages/settings/theme/customize', {
@@ -168,6 +177,9 @@ export default class ThemeController {
 
   async content({ view, auth }: HttpContext) {
     const user = auth.user!
+    if (!user.businessId) {
+      throw new Error('User has no business associated')
+    }
     const business = await Business.query()
       .where('id', user.businessId)
       .preload('theme')
@@ -206,6 +218,9 @@ export default class ThemeController {
 
   async socialLinks({ view, auth }: HttpContext) {
     const user = auth.user!
+    if (!user.businessId) {
+      throw new Error('User has no business associated')
+    }
     const business = await Business.query()
       .where('id', user.businessId)
       .preload('theme')

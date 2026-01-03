@@ -2,7 +2,6 @@ import { DateTime } from 'luxon'
 import Booking from '#models/booking'
 import Transaction from '#models/transaction'
 import Business from '#models/business'
-import env from '#start/env'
 import { createWriteStream, mkdirSync, existsSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
@@ -17,20 +16,15 @@ if (!existsSync(receiptsDir)) {
   mkdirSync(receiptsDir, { recursive: true })
 }
 
-interface ReceiptData {
-  booking: Booking
-  transaction: Transaction
-  business: Business
-}
-
 class ReceiptService {
   /**
    * Generate PDF receipt for a successful payment
    */
   async generateReceipt(booking: Booking, transaction: Transaction): Promise<string> {
     // Try to import pdfkit dynamically
-    let PDFDocument
+    let PDFDocument: any
     try {
+      // @ts-ignore - pdfkit may not be installed
       const pdfkit = await import('pdfkit')
       PDFDocument = pdfkit.default
     } catch (error) {
