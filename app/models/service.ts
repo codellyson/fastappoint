@@ -27,6 +27,24 @@ export default class Service extends BaseModel {
   declare image: string | null
 
   @column()
+  declare depositType: 'none' | 'percentage' | 'fixed'
+
+  @column()
+  declare depositAmount: number
+
+  @column()
+  declare locationType: 'business' | 'client' | 'virtual' | 'flexible'
+
+  @column()
+  declare travelFee: number
+
+  @column()
+  declare travelRadiusKm: number | null
+
+  @column()
+  declare virtualMeetingUrl: string | null
+
+  @column()
   declare isActive: boolean
 
   @column()
@@ -54,5 +72,45 @@ export default class Service extends BaseModel {
     if (hours === 0) return `${mins}min`
     if (mins === 0) return `${hours}h`
     return `${hours}h ${mins}min`
+  }
+
+  get hasDeposit() {
+    return this.depositType !== 'none' && this.depositAmount > 0
+  }
+
+  get calculatedDepositAmount() {
+    if (this.depositType === 'none' || !this.depositAmount) {
+      return 0
+    }
+    if (this.depositType === 'percentage') {
+      return Math.round((this.price * this.depositAmount) / 100)
+    }
+    return this.depositAmount
+  }
+
+  get balanceAfterDeposit() {
+    return this.price - this.calculatedDepositAmount
+  }
+
+  get locationTypeLabel() {
+    const labels: Record<string, string> = {
+      business: 'At Business Location',
+      client: 'At Client Location',
+      virtual: 'Virtual/Online',
+      flexible: 'Flexible (Customer Chooses)',
+    }
+    return labels[this.locationType] || 'At Business Location'
+  }
+
+  get hasTravelFee() {
+    return (this.locationType === 'client' || this.locationType === 'flexible') && this.travelFee > 0
+  }
+
+  get isVirtual() {
+    return this.locationType === 'virtual'
+  }
+
+  get isFlexible() {
+    return this.locationType === 'flexible'
   }
 }

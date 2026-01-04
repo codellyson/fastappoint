@@ -1,0 +1,106 @@
+@layout('layouts/app')
+
+@set('title', 'Notifications - Settings')
+
+@section('content')
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <div class="mb-6 sm:mb-8">
+      <a href="{{ route('settings.index') }}" class="inline-flex items-center text-xs sm:text-sm text-sand-11 hover:text-sand-12 mb-3 sm:mb-4 min-h-[44px]">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Back to Settings
+      </a>
+      <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Notification Settings</h1>
+      <p class="text-sm sm:text-base text-sand-11 mt-1">Configure email reminders for your customers</p>
+    </div>
+
+    @if(flashMessages.has('success'))
+      <div class="mb-6 p-4 bg-success/10 border border-success/20 rounded-lg">
+        <p class="text-sm text-success">{{ flashMessages.get('success') }}</p>
+      </div>
+    @endif
+
+    @if(flashMessages.has('error'))
+      <div class="mb-6 p-4 bg-error/10 border border-error/20 rounded-lg">
+        <p class="text-sm text-error">{{ flashMessages.get('error') }}</p>
+      </div>
+    @endif
+
+    <form method="POST" action="{{ route('settings.notifications.update') }}" class="bg-white border border-sand-7 rounded-xl p-4 sm:p-6 space-y-6">
+      {{ csrfField() }}
+
+      <div class="space-y-4">
+        <h3 class="text-sm font-medium text-sand-12">Booking Reminders</h3>
+        <p class="text-xs sm:text-sm text-sand-11">Send automatic email reminders to customers before their appointments to reduce no-shows.</p>
+
+        <div class="space-y-4 pt-2">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              name="reminder24hEnabled"
+              value="true"
+              {{ business.reminder24hEnabled !== false ? 'checked' : '' }}
+              class="mt-1 w-5 h-5 rounded border-sand-7 text-primary focus:ring-primary/20"
+            />
+            <div>
+              <span class="block text-sm font-medium text-sand-12">24-hour reminder</span>
+              <span class="block text-xs text-sand-11 mt-0.5">Send a reminder email 24 hours before the appointment</span>
+            </div>
+          </label>
+
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              name="reminder1hEnabled"
+              value="true"
+              {{ business.reminder1hEnabled !== false ? 'checked' : '' }}
+              class="mt-1 w-5 h-5 rounded border-sand-7 text-primary focus:ring-primary/20"
+            />
+            <div>
+              <span class="block text-sm font-medium text-sand-12">1-hour reminder</span>
+              <span class="block text-xs text-sand-11 mt-0.5">Send a reminder email 1 hour before the appointment</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="bg-sand-2 rounded-lg p-4">
+        <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-sand-11 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="text-xs sm:text-sm text-sand-11">
+            <p class="font-medium text-sand-12 mb-1">How reminders work</p>
+            <ul class="list-disc list-inside space-y-1">
+              <li>Reminders are sent automatically via email</li>
+              <li>Customers can reschedule or cancel from the reminder email</li>
+              <li>Reminders help reduce no-shows by up to 50%</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4 border-t border-sand-6">
+        <button type="submit" class="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm sm:text-base min-h-[44px]">
+          Save Changes
+        </button>
+        <a href="{{ route('settings.index') }}" class="px-6 py-2.5 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2 text-sm sm:text-base text-center min-h-[44px] flex items-center justify-center">
+          Cancel
+        </a>
+      </div>
+    </form>
+
+    <div class="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
+      <div class="flex items-start gap-3">
+        <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <div class="text-xs sm:text-sm">
+          <p class="font-medium text-amber-800 mb-1">SMS Notifications Coming Soon</p>
+          <p class="text-amber-700">We're working on SMS reminders for even better engagement. Stay tuned!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+@endsection

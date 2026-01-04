@@ -24,7 +24,17 @@
       <div class="space-y-3 sm:space-y-4">
         @each(service in services)
           <div class="bg-white border border-sand-7 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 {{ !service.isActive ? 'opacity-60' : '' }}">
-            <div class="flex-1 min-w-0">
+            <div class="flex items-start gap-4 flex-1 min-w-0">
+              @if(service.image)
+                <img src="{{ service.image }}" alt="{{ service.name }}" class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0" />
+              @else
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-sand-3 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-8 h-8 text-sand-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+              @endif
+              <div class="flex-1 min-w-0">
               <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                 <h3 class="font-medium text-sand-12 text-sm sm:text-base">{{ service.name }}</h3>
                 @if(!service.isActive)
@@ -36,10 +46,16 @@
               @if(service.description)
                 <p class="text-xs sm:text-sm text-sand-11 mt-1">{{ service.description }}</p>
               @endif
-              <div class="flex items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-sand-11">
+              <div class="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-sand-11">
                 <span>{{ service.formattedDuration }}</span>
                 <span>•</span>
                 <span class="font-medium text-sand-12">₦{{ Number(service.price).toLocaleString() }}</span>
+                @if(service.hasDeposit)
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                    {{ service.depositType === 'percentage' ? service.depositAmount + '%' : '₦' + Number(service.depositAmount).toLocaleString() }} deposit
+                  </span>
+                @endif
+              </div>
               </div>
             </div>
             <div class="flex items-center gap-2 self-start sm:self-auto">

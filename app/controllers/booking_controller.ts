@@ -8,6 +8,9 @@ import User from '#models/user'
 import Availability from '#models/availability'
 import TimeOff from '#models/time-off'
 import Transaction from '#models/transaction'
+import PortfolioItem from '#models/portfolio_item'
+import ServicePackage from '#models/service_package'
+import Customer from '#models/customer'
 import { bookingValidator, rescheduleValidator } from '#validators/booking-validator'
 import { errors } from '@vinejs/vine'
 import { randomUUID } from 'node:crypto'
@@ -15,6 +18,7 @@ import { readFileSync } from 'node:fs'
 import emailService from '#services/email-service'
 import subscriptionService from '#services/subscription-service'
 import receiptService from '#services/receipt-service'
+import googleCalendarService from '#services/google-calendar-service'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
 export default class BookingController {
@@ -49,11 +53,29 @@ export default class BookingController {
 
     const services = business.services
 
+    // Fetch portfolio items for the gallery
+    const portfolioItems = await PortfolioItem.query()
+      .where('businessId', business.id)
+      .where('isActive', true)
+      .preload('service')
+      .orderBy('isFeatured', 'desc')
+      .orderBy('sortOrder')
+      .orderBy('createdAt', 'desc')
+
+    // Fetch active service packages
+    const packages = await ServicePackage.query()
+      .where('businessId', business.id)
+      .where('isActive', true)
+      .orderBy('sortOrder')
+      .orderBy('createdAt', 'desc')
+
     return view.render(`pages/book/templates/${template}`, {
       business,
       theme,
       services,
       staff,
+      portfolioItems,
+      packages,
       csrfToken: request.csrfToken,
     })
   }
@@ -294,6 +316,20 @@ export default class BookingController {
       const data = await request.validateUsing(bookingValidator)
       const service = business.services[0]
 
+      // Check if this is a package booking
+      let packageInfo: ServicePackage | null = null
+      if (data.packageId) {
+        packageInfo = await ServicePackage.query()
+          .where('id', data.packageId)
+          .where('businessId', business.id)
+          .where('isActive', true)
+          .first()
+      }
+
+      // Use package duration and price if it's a package booking
+      const durationMinutes = packageInfo ? packageInfo.durationMinutes : service.durationMinutes
+      const basePrice = packageInfo ? Number(packageInfo.packagePrice) : service.price
+
       let assignedStaffId: number | null = data.staffId || null
 
       if (!assignedStaffId && service.staff.length > 0) {
@@ -302,7 +338,7 @@ export default class BookingController {
 
       const selectedDate = DateTime.fromISO(data.date)
       const [startHour, startMin] = data.time.split(':').map(Number)
-      const endMinutes = startHour * 60 + startMin + service.durationMinutes
+      const endMinutes = startHour * 60 + startMin + durationMinutes
       const endTime = `${Math.floor(endMinutes / 60)
         .toString()
         .padStart(2, '0')}:${(endMinutes % 60).toString().padStart(2, '0')}`
@@ -334,10 +370,73 @@ export default class BookingController {
       // Set payment expiration to 30 minutes from now
       const paymentExpiresAt = DateTime.now().plus({ minutes: 30 })
 
+      // Calculate deposit and balance amounts
+      // For packages, use package price; for services, use service price and deposit settings
+      let depositAmount = 0
+      let balanceDue = basePrice
+      let paymentAmount = basePrice
+
+      if (!packageInfo) {
+        // Individual service - use deposit settings
+        depositAmount = service.calculatedDepositAmount
+        balanceDue = service.price - depositAmount
+        paymentAmount = depositAmount > 0 ? depositAmount : service.price
+      }
+
+      // Determine location type and travel fee
+      let locationType: 'business' | 'client' | 'virtual' | null = null
+      let clientAddress: string | null = null
+      let travelFee = 0
+
+      if (service.locationType === 'flexible') {
+        // Customer chooses location for flexible services
+        locationType = data.locationType || 'business'
+        if (locationType === 'client') {
+          clientAddress = data.clientAddress || null
+          travelFee = service.travelFee || 0
+        }
+      } else if (service.locationType === 'client') {
+        // Client location service - always at client
+        locationType = 'client'
+        clientAddress = data.clientAddress || null
+        travelFee = service.travelFee || 0
+      } else if (service.locationType === 'virtual') {
+        locationType = 'virtual'
+      } else {
+        locationType = 'business'
+      }
+
+      // Adjust payment amount to include travel fee
+      paymentAmount = paymentAmount + travelFee
+
+      // Find or create customer record
+      let customerId: number | null = null
+      let customer = await Customer.findBy('email', data.customerEmail.toLowerCase())
+      if (!customer) {
+        customer = await Customer.create({
+          email: data.customerEmail.toLowerCase(),
+          name: data.customerName,
+          phone: data.customerPhone || null,
+          isVerified: false,
+          verificationToken: randomUUID(),
+        })
+      } else {
+        // Update customer info if they provided new details
+        if (data.customerPhone && !customer.phone) {
+          customer.phone = data.customerPhone
+          await customer.save()
+        }
+      }
+      customerId = customer.id
+      customer.lastBookingAt = DateTime.now()
+      await customer.save()
+
       const booking = await Booking.create({
         businessId: business.id,
         serviceId: service.id,
+        packageId: packageInfo?.id || null,
         staffId: assignedStaffId,
+        customerId: customerId,
         customerName: data.customerName,
         customerEmail: data.customerEmail,
         customerPhone: data.customerPhone || null,
@@ -345,7 +444,12 @@ export default class BookingController {
         startTime: data.time,
         endTime: endTime,
         status: 'pending_payment',
-        amount: service.price,
+        amount: paymentAmount,
+        depositAmount: depositAmount,
+        balanceDue: balanceDue,
+        locationType: locationType,
+        clientAddress: clientAddress,
+        travelFee: travelFee,
         paymentStatus: 'pending',
         paymentReference: randomUUID(),
         paymentExpiresAt,
@@ -759,6 +863,24 @@ export default class BookingController {
         amount: booking.amount,
       })
 
+      // Create Google Calendar event (async, non-blocking)
+      if (booking.business.googleCalendarEnabled) {
+        googleCalendarService
+          .createBookingEvent(booking.business, booking)
+          .then(async (result) => {
+            if (result) {
+              booking.googleEventId = result.eventId
+              await booking.save()
+              console.log(
+                `[Google Calendar] Created event ${result.eventId} for booking #${booking.id}`
+              )
+            }
+          })
+          .catch((error) => {
+            console.error('[Google Calendar] Failed to create event:', error)
+          })
+      }
+
       return response.redirect().toRoute('book.confirmation', {
         slug: params.slug,
         bookingId: booking.id,
@@ -908,6 +1030,22 @@ export default class BookingController {
     booking.cancellationReason = 'Cancelled by customer'
     await booking.save()
 
+    // Delete Google Calendar event (async, non-blocking)
+    if (booking.business.googleCalendarEnabled && booking.googleEventId) {
+      const eventId = booking.googleEventId
+      const bookingId = booking.id
+      googleCalendarService
+        .deleteBookingEvent(booking.business, eventId)
+        .then((success) => {
+          if (success) {
+            console.log(`[Google Calendar] Deleted event ${eventId} for booking #${bookingId}`)
+          }
+        })
+        .catch((error) => {
+          console.error('[Google Calendar] Failed to delete event:', error)
+        })
+    }
+
     session.flash('success', 'Booking cancelled successfully')
     return response.redirect().toRoute('book.manage', {
       slug: params.slug,
@@ -1022,6 +1160,22 @@ export default class BookingController {
         newTime,
         manageUrl,
       })
+
+      // Update Google Calendar event (async, non-blocking)
+      if (booking.business.googleCalendarEnabled && booking.googleEventId) {
+        const eventId = booking.googleEventId
+        const bookingId = booking.id
+        googleCalendarService
+          .updateBookingEvent(booking.business, booking, eventId)
+          .then((success) => {
+            if (success) {
+              console.log(`[Google Calendar] Updated event ${eventId} for booking #${bookingId}`)
+            }
+          })
+          .catch((error) => {
+            console.error('[Google Calendar] Failed to update event:', error)
+          })
+      }
 
       session.flash('success', 'Booking rescheduled successfully')
       return response.redirect().toRoute('book.manage', {

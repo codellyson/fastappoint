@@ -33,7 +33,7 @@ const shieldConfig = defineConfig({
       ],
       frameSrc: ["'self'", 'https://checkout.paystack.com'],
       frameAncestors: ["'none'"],
-      formAction: ["'self'"],
+      formAction: ["'self'", 'https://accounts.google.com'],
       baseUri: ["'self'"],
       objectSrc: ["'none'"],
     },

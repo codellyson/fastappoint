@@ -1,0 +1,145 @@
+@layout('layouts/guest')
+
+@set('title', 'My Bookings - FastAppoint')
+
+@section('content')
+  <div class="min-h-screen bg-sand-2">
+    <!-- Header -->
+    <header class="bg-white border-b border-sand-7">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <a href="/" class="text-xl font-bold text-primary">FastAppoint</a>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
+                {{ customer.initials }}
+              </div>
+              <span class="text-sm text-sand-12 hidden sm:inline">{{ customer.firstName }}</span>
+            </div>
+            <form method="POST" action="{{ route('customer.logout') }}" class="inline">
+              {{ csrfField() }}
+              <button type="submit" class="text-sm text-sand-11 hover:text-sand-12">Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      @if(flashMessages.has('success'))
+        <div class="mb-6 bg-success/10 border border-success text-success rounded-lg p-4 text-sm">
+          {{ flashMessages.get('success') }}
+        </div>
+      @endif
+
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-sand-12">Welcome back, {{ customer.firstName }}!</h1>
+        <p class="text-sand-11 mt-1">Manage your appointments and booking history</p>
+      </div>
+
+      <!-- Navigation -->
+      <div class="flex gap-4 mb-8 border-b border-sand-6 pb-4">
+        <a href="{{ route('customer.dashboard') }}" class="text-sm font-medium text-primary border-b-2 border-primary pb-2">
+          Dashboard
+        </a>
+        <a href="{{ route('customer.bookings') }}" class="text-sm font-medium text-sand-11 hover:text-sand-12 pb-2">
+          All Bookings
+        </a>
+        <a href="{{ route('customer.profile') }}" class="text-sm font-medium text-sand-11 hover:text-sand-12 pb-2">
+          Profile
+        </a>
+      </div>
+
+      <!-- Upcoming Bookings -->
+      <div class="mb-10">
+        <h2 class="text-lg font-semibold text-sand-12 mb-4">Upcoming Appointments</h2>
+
+        @if(upcomingBookings.length > 0)
+          <div class="space-y-4">
+            @each(booking in upcomingBookings)
+              <div class="bg-white border border-sand-7 rounded-xl p-5">
+                <div class="flex items-start justify-between gap-4">
+                  <div class="flex-1">
+                    <h3 class="font-medium text-sand-12">{{ booking.service?.name || 'Service' }}</h3>
+                    <p class="text-sm text-sand-11 mt-1">{{ booking.business.name }}</p>
+                    <div class="flex flex-wrap items-center gap-3 mt-3 text-sm text-sand-11">
+                      <span class="flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        {{ booking.date.toFormat('EEE, MMM d, yyyy') }}
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {{ booking.startTime }} - {{ booking.endTime }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-end gap-2">
+                    <span class="px-2 py-1 text-xs font-medium text-success bg-success/10 rounded-full">Confirmed</span>
+                    <a
+                      href="{{ route('book.manage', { slug: booking.business.slug, bookingId: booking.id }) }}"
+                      class="text-sm text-primary hover:underline"
+                    >
+                      Manage
+                    </a>
+                  </div>
+                </div>
+              </div>
+            @endeach
+          </div>
+        @else
+          <div class="bg-white border border-sand-7 rounded-xl p-8 text-center">
+            <svg class="w-12 h-12 mx-auto text-sand-9 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <h3 class="font-medium text-sand-12 mb-2">No upcoming appointments</h3>
+            <p class="text-sm text-sand-11">Book your next appointment with your favorite businesses.</p>
+          </div>
+        @endif
+      </div>
+
+      <!-- Past Bookings -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-sand-12">Recent Bookings</h2>
+          <a href="{{ route('customer.bookings') }}" class="text-sm text-primary hover:underline">View all</a>
+        </div>
+
+        @if(pastBookings.length > 0)
+          <div class="space-y-3">
+            @each(booking in pastBookings)
+              <div class="bg-white border border-sand-7 rounded-xl p-4">
+                <div class="flex items-center justify-between gap-4">
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-medium text-sand-12 truncate">{{ booking.service?.name || 'Service' }}</h3>
+                    <p class="text-sm text-sand-11">
+                      {{ booking.business.name }} &bull; {{ booking.date.toFormat('MMM d, yyyy') }}
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    @if(booking.status === 'completed')
+                      <span class="px-2 py-1 text-xs font-medium text-sand-11 bg-sand-3 rounded-full">Completed</span>
+                    @elseif(booking.status === 'cancelled')
+                      <span class="px-2 py-1 text-xs font-medium text-error bg-error/10 rounded-full">Cancelled</span>
+                    @endif
+                    <a
+                      href="/book/{{ booking.business.slug }}"
+                      class="text-sm text-primary hover:underline whitespace-nowrap"
+                    >
+                      Book again
+                    </a>
+                  </div>
+                </div>
+              </div>
+            @endeach
+          </div>
+        @else
+          <p class="text-sm text-sand-11">No past bookings yet.</p>
+        @endif
+      </div>
+    </div>
+  </div>
+@endsection

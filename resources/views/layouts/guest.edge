@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="FastAppoint - Manage your bookings" />
+    <title>{{ title ?? 'My Bookings - FastAppoint' }}</title>
+    <link rel="icon" type="image/svg+xml" href="/logo/svg/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link
+      href="https://fonts.bunny.net/css?family=instrument-sans:400,400i,500,500i,600,600i,700,700i"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --sand-1: #fdfdfc;
+        --sand-2: #f9f9f8;
+        --sand-3: #f1f0ef;
+        --sand-4: #e9e8e6;
+        --sand-5: #e2e1de;
+        --sand-6: #dad9d6;
+        --sand-7: #cfceca;
+        --sand-8: #bcbbb5;
+        --sand-9: #8d8d86;
+        --sand-10: #82827c;
+        --sand-11: #63635e;
+        --sand-12: #21201c;
+        --success: #10b981;
+        --error: #ef4444;
+        --warning: #f59e0b;
+      }
+      [x-cloak] { display: none !important; }
+    </style>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [ "Instrument Sans", "sans-serif" ]
+            },
+            colors: {
+              primary: {
+                DEFAULT: "#5A45FF",
+                lighter: "#a599ff"
+              },
+              sand: {
+                1: "var(--sand-1)",
+                2: "var(--sand-2)",
+                3: "var(--sand-3)",
+                4: "var(--sand-4)",
+                5: "var(--sand-5)",
+                6: "var(--sand-6)",
+                7: "var(--sand-7)",
+                8: "var(--sand-8)",
+                9: "var(--sand-9)",
+                10: "var(--sand-10)",
+                11: "var(--sand-11)",
+                12: "var(--sand-12)"
+              },
+              success: "var(--success)",
+              error: "var(--error)",
+              warning: "var(--warning)"
+            }
+          }
+        }
+      };
+    </script>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('dumper')
+  </head>
+  <body class="min-h-screen w-screen font-sans bg-sand-2">
+    {{-- Toast notifications --}}
+    @if(flashMessages.has('success'))
+      <div class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+        {{ flashMessages.get('success') }}
+      </div>
+    @endif
+    @if(flashMessages.has('error'))
+      <div class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+        {{ flashMessages.get('error') }}
+      </div>
+    @endif
+
+    <div class="min-h-screen flex flex-col">
+      {{-- Simple header for guest pages --}}
+      <header class="bg-white border-b border-sand-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center h-16">
+            <a href="/" class="flex items-center gap-2">
+              <img src="/logo/svg/favicon.svg" alt="FastAppoint" class="h-8 w-8" />
+              <span class="text-xl font-semibold text-sand-12">FastAppoint</span>
+            </a>
+
+            @if(session.get('customer_id'))
+              <div class="flex items-center gap-4">
+                <a href="{{ route('customer.dashboard') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">
+                  Dashboard
+                </a>
+                <a href="{{ route('customer.bookings') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">
+                  My Bookings
+                </a>
+                <a href="{{ route('customer.profile') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">
+                  Profile
+                </a>
+                <form action="{{ route('customer.logout') }}" method="POST" class="inline">
+                  {{ csrfField() }}
+                  <button type="submit" class="text-sand-11 hover:text-error text-sm font-medium">
+                    Logout
+                  </button>
+                </form>
+              </div>
+            @else
+              <div class="flex items-center gap-4">
+                <a href="{{ route('customer.login') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">
+                  Login
+                </a>
+                <a href="{{ route('customer.register') }}" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90">
+                  Sign Up
+                </a>
+              </div>
+            @endif
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-1">
+        @!section('content')
+      </main>
+
+      {{-- Simple footer --}}
+      <footer class="bg-white border-t border-sand-4 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p class="text-sand-9 text-sm">
+              &copy; {{ new Date().getFullYear() }} FastAppoint. All rights reserved.
+            </p>
+            <div class="flex items-center gap-6">
+              <a href="/" class="text-sand-9 hover:text-sand-11 text-sm">Home</a>
+              <a href="/privacy" class="text-sand-9 hover:text-sand-11 text-sm">Privacy</a>
+              <a href="/terms" class="text-sand-9 hover:text-sand-11 text-sm">Terms</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </body>
+</html>

@@ -13,9 +13,13 @@ const TimeOffController = () => import('#controllers/time_off_controller')
 const FeaturedController = () => import('#controllers/featured_controller')
 const ThemeController = () => import('#controllers/theme_controller')
 const WebhookController = () => import('#controllers/webhook_controller')
+const PortfoliosController = () => import('#controllers/portfolios_controller')
+const PackagesController = () => import('#controllers/packages_controller')
 const SubscriptionsController = () => import('#controllers/subscriptions_controller')
 const WithdrawalsController = () => import('#controllers/withdrawals_controller')
 
+const GoogleCalendarController = () => import('#controllers/google_calendar_controller')
+const CustomerAuthsController = () => import('#controllers/customer_auths_controller')
 const HomeController = () => import('#controllers/home_controller')
 router.get('/', [HomeController, 'index']).as('home')
 
@@ -128,6 +132,12 @@ router
     router
       .get('/settings/booking-page', [SettingsController, 'bookingPage'])
       .as('settings.booking-page')
+    router
+      .get('/settings/notifications', [SettingsController, 'notifications'])
+      .as('settings.notifications')
+    router
+      .post('/settings/notifications', [SettingsController, 'updateNotifications'])
+      .as('settings.notifications.update')
 
     // Withdrawals routes
     router
@@ -196,6 +206,23 @@ router
       .as('settings.theme.social.update')
     router.get('/settings/theme/preview', [ThemeController, 'preview']).as('settings.theme.preview')
 
+    // Google Calendar integration
+    router
+      .get('/settings/integrations/google', [GoogleCalendarController, 'show'])
+      .as('settings.google-calendar')
+    router
+      .post('/settings/integrations/google/connect', [GoogleCalendarController, 'connect'])
+      .as('settings.google-calendar.connect')
+    router
+      .get('/settings/integrations/google/callback', [GoogleCalendarController, 'callback'])
+      .as('settings.google-calendar.callback')
+    router
+      .post('/settings/integrations/google/calendar', [GoogleCalendarController, 'updateCalendar'])
+      .as('settings.google-calendar.update')
+    router
+      .post('/settings/integrations/google/disconnect', [GoogleCalendarController, 'disconnect'])
+      .as('settings.google-calendar.disconnect')
+
     router.get('/time-off', [TimeOffController, 'index']).as('time-off.index')
     router.get('/time-off/new', [TimeOffController, 'create']).as('time-off.create')
     router.post('/time-off', [TimeOffController, 'store']).as('time-off.store')
@@ -209,6 +236,25 @@ router
     router.get('/featured/:id/payment', [FeaturedController, 'payment']).as('featured.payment')
     router.get('/featured/:id/verify', [FeaturedController, 'verify']).as('featured.verify')
     router.get('/featured/:id/cancel', [FeaturedController, 'cancel']).as('featured.cancel')
+
+    router.get('/portfolio', [PortfoliosController, 'index']).as('portfolio.index')
+    router.get('/portfolio/new', [PortfoliosController, 'create']).as('portfolio.create')
+    router.post('/portfolio', [PortfoliosController, 'store']).as('portfolio.store')
+    router.get('/portfolio/:id/edit', [PortfoliosController, 'edit']).as('portfolio.edit')
+    router.post('/portfolio/:id', [PortfoliosController, 'update']).as('portfolio.update')
+    router.post('/portfolio/:id/toggle', [PortfoliosController, 'toggleActive']).as('portfolio.toggle')
+    router.post('/portfolio/:id/featured', [PortfoliosController, 'toggleFeatured']).as('portfolio.featured')
+    router.post('/portfolio/:id/delete', [PortfoliosController, 'destroy']).as('portfolio.destroy')
+    router.post('/portfolio/reorder', [PortfoliosController, 'reorder']).as('portfolio.reorder')
+
+    router.get('/packages', [PackagesController, 'index']).as('packages.index')
+    router.get('/packages/new', [PackagesController, 'create']).as('packages.create')
+    router.post('/packages', [PackagesController, 'store']).as('packages.store')
+    router.get('/packages/:id/edit', [PackagesController, 'edit']).as('packages.edit')
+    router.post('/packages/:id', [PackagesController, 'update']).as('packages.update')
+    router.post('/packages/:id/toggle', [PackagesController, 'toggleActive']).as('packages.toggle')
+    router.post('/packages/:id/delete', [PackagesController, 'destroy']).as('packages.destroy')
+    router.post('/packages/reorder', [PackagesController, 'reorder']).as('packages.reorder')
   })
   .use([middleware.auth(), middleware.subscription()])
 
@@ -295,3 +341,24 @@ router
 router.get('/api/featured', [FeaturedController, 'getActiveFeatured']).as('api.featured')
 
 router.post('/webhooks/paystack', [WebhookController, 'paystack']).as('webhooks.paystack')
+
+// Customer portal routes
+router
+  .group(() => {
+    router.get('/login', [CustomerAuthsController, 'showLogin']).as('customer.login')
+    router.post('/login', [CustomerAuthsController, 'login']).as('customer.login.post')
+    router.get('/register', [CustomerAuthsController, 'showRegister']).as('customer.register')
+    router.post('/register', [CustomerAuthsController, 'register']).as('customer.register.post')
+    router.post('/logout', [CustomerAuthsController, 'logout']).as('customer.logout')
+    router.get('/dashboard', [CustomerAuthsController, 'dashboard']).as('customer.dashboard')
+    router.get('/bookings', [CustomerAuthsController, 'bookings']).as('customer.bookings')
+    router.get('/profile', [CustomerAuthsController, 'profile']).as('customer.profile')
+    router.post('/profile', [CustomerAuthsController, 'updateProfile']).as('customer.profile.update')
+    router
+      .get('/create-password/:token', [CustomerAuthsController, 'showCreatePassword'])
+      .as('customer.create-password')
+    router
+      .post('/create-password/:token', [CustomerAuthsController, 'createPassword'])
+      .as('customer.create-password.post')
+  })
+  .prefix('/my')

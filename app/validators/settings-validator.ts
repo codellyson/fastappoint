@@ -25,3 +25,10 @@ export const paystackSettingsValidator = vine.compile(
   })
 )
 
+export const notificationSettingsValidator = vine.compile(
+  vine.object({
+    reminder24hEnabled: vine.boolean(),
+    reminder1hEnabled: vine.boolean(),
+  })
+)
+

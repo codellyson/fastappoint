@@ -44,6 +44,35 @@
           </a>
 
           <a
+            href="{{ route('settings.notifications') }}"
+            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
+          >
+            <div class="flex items-center gap-3 sm:gap-4">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
+                  Notifications
+                </h3>
+                <p class="text-xs sm:text-sm text-sand-11">
+                  Configure email reminders for customers
+                </p>
+              </div>
+              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a
             href="{{ route('settings.cancellation') }}"
             class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
           >
@@ -182,6 +211,34 @@
                   Customize your booking page appearance
                 </p>
               </div>
+              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a
+            href="{{ route('settings.google-calendar') }}"
+            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
+          >
+            <div class="flex items-center gap-3 sm:gap-4">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.5 3h-3V1.5h-1.5V3h-6V1.5H7.5V3h-3C3.675 3 3 3.675 3 4.5v15c0 .825.675 1.5 1.5 1.5h15c.825 0 1.5-.675 1.5-1.5v-15c0-.825-.675-1.5-1.5-1.5zm0 16.5h-15V9h15v10.5zm0-12h-15V4.5h15V7.5z"/>
+                  <path d="M8 11h3v3H8zm5 0h3v3h-3zm-5 5h3v3H8zm5 0h3v3h-3z"/>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
+                  Google Calendar
+                </h3>
+                <p class="text-xs sm:text-sm text-sand-11">
+                  Sync bookings with your Google Calendar
+                </p>
+              </div>
+              @if(business.googleCalendarEnabled)
+                <span class="px-2 py-1 text-xs font-medium text-success bg-success/10 rounded-full">Connected</span>
+              @endif
               <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>

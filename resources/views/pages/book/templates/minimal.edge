@@ -99,12 +99,49 @@
         </div>
       </section>
 
-      <section x-show="selectedService" x-cloak>
+      @if(packages && packages.length > 0)
+        <section>
+          <h2 class="text-xs font-medium uppercase tracking-widest text-neutral-400 mb-6">Packages</h2>
+          <div class="divide-y divide-neutral-100">
+            @each(pkg in packages)
+              <div
+                class="py-5 flex justify-between items-center cursor-pointer group"
+                :class="{ 'opacity-100': selectedPackage?.id === {{ pkg.id }}, 'hover:opacity-80': selectedPackage?.id !== {{ pkg.id }} }"
+                @click="selectPackage({{ pkg.id }}, '{{ pkg.name }}', {{ pkg.packagePrice }}, {{ pkg.durationMinutes }}, {{ JSON.stringify(pkg.serviceIds) }})"
+              >
+                <div class="flex items-center gap-4">
+                  <div
+                    class="w-3 h-3 rounded-full border-2 transition-all"
+                    :class="selectedPackage?.id === {{ pkg.id }} ? 'border-current bg-current' : 'border-neutral-300'"
+                  ></div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h3 class="font-medium">{{ pkg.name }}</h3>
+                      @if(pkg.savingsPercent > 0)
+                        <span class="text-xs px-1.5 py-0.5 bg-neutral-100 rounded">-{{ pkg.savingsPercent }}%</span>
+                      @endif
+                    </div>
+                    <p class="text-sm text-neutral-400">{{ pkg.durationMinutes }} min • {{ pkg.serviceIds.length }} services</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="font-medium">₦{{ Number(pkg.packagePrice).toLocaleString() }}</span>
+                  @if(pkg.originalPrice > pkg.packagePrice)
+                    <span class="text-sm text-neutral-400 line-through ml-1">₦{{ Number(pkg.originalPrice).toLocaleString() }}</span>
+                  @endif
+                </div>
+              </div>
+            @endeach
+          </div>
+        </section>
+      @endif
+
+      <section x-show="selectedService || selectedPackage" x-cloak>
         <h2 class="text-xs font-medium uppercase tracking-widest text-neutral-400 mb-6">When</h2>
         
         @if(staff.length > 1)
           <div class="mb-4">
-            <select x-model="selectedStaffId" @change="selectedDate && fetchTimeSlots()" class="w-full px-4 py-3 border border-neutral-200 rounded focus:outline-none focus:border-neutral-400 bg-white">
+            <select x-model="selectedStaffId" @change="selectedDate && fetchTimeSlots()" class="w-full px-4 py-3 border border-neutral-200 rounded focus:outline-none focus:border-neutral-400 bg-white min-h-[48px]">
               <option value="">Any staff</option>
               @each(member in staff)
                 <option value="{{ member.id }}">{{ member.fullName }}</option>
@@ -119,9 +156,9 @@
       <section x-show="selectedTime" x-cloak>
         <h2 class="text-xs font-medium uppercase tracking-widest text-neutral-400 mb-6">Your Details</h2>
         <div class="space-y-4">
-          <input type="text" x-model="customerName" placeholder="Name" class="w-full px-4 py-3 border border-neutral-200 rounded focus:outline-none focus:border-neutral-400" required />
-          <input type="email" x-model="customerEmail" placeholder="Email" class="w-full px-4 py-3 border border-neutral-200 rounded focus:outline-none focus:border-neutral-400" required />
-          <input type="tel" x-model="customerPhone" placeholder="Phone (optional)" class="w-full px-4 py-3 border border-neutral-200 rounded focus:outline-none focus:border-neutral-400" />
+          <input type="text" x-model="customerName" placeholder="Name" class="w-full px-4 py-3 border border-neutral-200 rounded focus:outline-none focus:border-neutral-400 min-h-[48px]" required />
+          <input type="email" x-model="customerEmail" placeholder="Email" class="w-full px-4 py-3 border border-neutral-200 rounded focus:outline-none focus:border-neutral-400 min-h-[48px]" required />
+          <input type="tel" x-model="customerPhone" placeholder="Phone (optional)" class="w-full px-4 py-3 border border-neutral-200 rounded focus:outline-none focus:border-neutral-400 min-h-[48px]" />
         </div>
       </section>
 
@@ -129,7 +166,10 @@
         <div class="flex justify-between items-center py-4 border-t border-neutral-200">
           <div>
             <p class="text-sm text-neutral-400">Total</p>
-            <p class="text-2xl font-semibold">₦<span x-text="selectedService?.price?.toLocaleString()"></span></p>
+            <p class="text-2xl font-semibold">₦<span x-text="selectedPackage?.price?.toLocaleString() || selectedService?.price?.toLocaleString()"></span></p>
+            <template x-if="selectedPackage">
+              <span class="text-xs text-neutral-400">Package</span>
+            </template>
           </div>
           <button
             @click="submitBooking()"
@@ -149,10 +189,53 @@
         </section>
       @endif
 
-      @if(theme?.showGallery && theme?.galleryImages && theme.galleryImages.length > 0)
+      @if(portfolioItems && portfolioItems.length > 0)
+        <section x-data="{ lightboxOpen: false, lightboxImage: '', lightboxTitle: '', lightboxDesc: '' }">
+          <h2 class="text-xs font-medium uppercase tracking-widest text-neutral-400 mb-4">Work</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            @each(item in portfolioItems)
+              <div
+                class="group relative aspect-square cursor-pointer {{ item.isFeatured ? 'ring-2 ring-neutral-900' : '' }}"
+                @click="lightboxImage = '{{ item.image }}'; lightboxTitle = '{{ item.title }}'; lightboxDesc = '{{ item.description || '' }}'; lightboxOpen = true"
+              >
+                <img src="{{ item.image }}" alt="{{ item.title }}" class="w-full h-full object-cover" />
+                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                  <span class="text-white text-xs truncate">{{ item.title }}</span>
+                </div>
+              </div>
+            @endeach
+          </div>
+
+          {{-- Lightbox Modal --}}
+          <div
+            x-show="lightboxOpen"
+            x-cloak
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click="lightboxOpen = false"
+            @keydown.escape.window="lightboxOpen = false"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          >
+            <div @click.stop class="relative max-w-3xl max-h-[90vh] w-full">
+              <button @click="lightboxOpen = false" class="absolute -top-10 right-0 text-white hover:opacity-70 text-sm uppercase tracking-wide">
+                Close
+              </button>
+              <img :src="lightboxImage" :alt="lightboxTitle" class="w-full max-h-[80vh] object-contain" />
+              <div x-show="lightboxTitle" class="mt-4">
+                <h3 class="text-white font-medium" x-text="lightboxTitle"></h3>
+                <p x-show="lightboxDesc" class="text-neutral-400 text-sm mt-1" x-text="lightboxDesc"></p>
+              </div>
+            </div>
+          </div>
+        </section>
+      @elseif(theme?.showGallery && theme?.galleryImages && theme.galleryImages.length > 0)
         <section>
           <h2 class="text-xs font-medium uppercase tracking-widest text-neutral-400 mb-4">Work</h2>
-          <div class="grid grid-cols-3 gap-2">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
             @each(image in theme.galleryImages)
               <div class="aspect-square">
                 <img src="{{ image }}" alt="" class="w-full h-full object-cover" />
@@ -176,6 +259,7 @@
       
       return {
         selectedService: null,
+        selectedPackage: null,
         selectedStaffId: '',
         selectedDate: '',
         selectedTime: '',
@@ -193,6 +277,17 @@
 
         selectService(id, name, price, duration) {
           this.selectedService = { id, name, price, duration }
+          this.selectedPackage = null
+          this.selectedTime = ''
+          this.timeSlots = []
+          if (this.selectedDate) {
+            this.fetchTimeSlots()
+          }
+        },
+
+        selectPackage(id, name, price, duration, serviceIds) {
+          this.selectedPackage = { id, name, price, duration, serviceIds }
+          this.selectedService = { id: serviceIds[0], name, price, duration, isPackage: true, packageId: id }
           this.selectedTime = ''
           this.timeSlots = []
           if (this.selectedDate) {
@@ -324,7 +419,8 @@
                 customerName: this.customerName,
                 customerEmail: this.customerEmail,
                 customerPhone: this.customerPhone,
-                staffId: this.selectedStaffId || undefined
+                staffId: this.selectedStaffId || undefined,
+                packageId: this.selectedPackage?.id || undefined
               })
             })
             const data = await res.json()

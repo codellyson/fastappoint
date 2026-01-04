@@ -91,28 +91,81 @@
           </h2>
           <div class="space-y-6">
             @each(service in services)
-              <div 
+              <div
                 class="p-6 border rounded-lg cursor-pointer transition-all hover:shadow-md"
                 :class="{ 'ring-1': selectedService?.id === {{ service.id }} }"
                 :style="selectedService?.id === {{ service.id }} ? 'border-color: var(--theme-primary)' : 'border-color: var(--theme-secondary)'"
                 @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.price }}, {{ service.durationMinutes || 30 }})"
               >
-                <div class="flex justify-between items-start">
-                  <div>
-                    <h3 class="font-serif text-xl">{{ service.name }}</h3>
-                    @if(service.description)
-                      <p class="text-sm opacity-60 mt-2 italic">{{ service.description }}</p>
-                    @endif
-                  </div>
-                  <div class="text-right">
-                    <p class="text-2xl font-serif" style="color: var(--theme-primary)">₦{{ Number(service.price).toLocaleString() }}</p>
-                    <p class="text-sm opacity-50 mt-1">{{ service.durationMinutes || 30 }} min</p>
+                <div class="flex gap-5">
+                  @if(service.image)
+                    <img src="{{ service.image }}" alt="{{ service.name }}" class="w-24 h-24 rounded-lg object-cover flex-shrink-0" />
+                  @endif
+                  <div class="flex-1 flex justify-between items-start">
+                    <div>
+                      <h3 class="font-serif text-xl">{{ service.name }}</h3>
+                      @if(service.description)
+                        <p class="text-sm opacity-60 mt-2 italic">{{ service.description }}</p>
+                      @endif
+                    </div>
+                    <div class="text-right">
+                      <p class="text-2xl font-serif" style="color: var(--theme-primary)">₦{{ Number(service.price).toLocaleString() }}</p>
+                      <p class="text-sm opacity-50 mt-1">{{ service.durationMinutes || 30 }} min</p>
+                    </div>
                   </div>
                 </div>
               </div>
             @end
           </div>
         </div>
+
+        @if(packages && packages.length > 0)
+          <div>
+            <h2 class="text-2xl font-serif mb-8 text-center">
+              <span class="elegant-divider">Packages</span>
+            </h2>
+            <p class="text-sm opacity-60 text-center mb-6 italic">Save more with our curated service bundles</p>
+            <div class="space-y-6">
+              @each(pkg in packages)
+                <div
+                  class="p-6 border rounded-lg cursor-pointer transition-all hover:shadow-md"
+                  :class="{ 'ring-1': selectedPackage?.id === {{ pkg.id }} }"
+                  :style="selectedPackage?.id === {{ pkg.id }} ? 'border-color: var(--theme-primary)' : 'border-color: var(--theme-secondary)'"
+                  @click="selectPackage({{ pkg.id }}, '{{ pkg.name }}', {{ pkg.packagePrice }}, {{ pkg.durationMinutes }}, {{ JSON.stringify(pkg.serviceIds) }})"
+                >
+                  <div class="flex gap-5">
+                    @if(pkg.image)
+                      <img src="{{ pkg.image }}" alt="{{ pkg.name }}" class="w-24 h-24 rounded-lg object-cover flex-shrink-0" />
+                    @endif
+                    <div class="flex-1 flex justify-between items-start">
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <h3 class="font-serif text-xl">{{ pkg.name }}</h3>
+                          @if(pkg.savingsPercent > 0)
+                            <span class="px-2 py-0.5 text-xs font-medium rounded" style="background: var(--theme-secondary); color: var(--theme-primary)">
+                              Save {{ pkg.savingsPercent }}%
+                            </span>
+                          @endif
+                        </div>
+                        @if(pkg.description)
+                          <p class="text-sm opacity-60 mt-2 italic">{{ pkg.description }}</p>
+                        @endif
+                        <p class="text-xs opacity-50 mt-2">Includes {{ pkg.serviceIds.length }} services</p>
+                      </div>
+                      <div class="text-right">
+                        <p class="text-2xl font-serif" style="color: var(--theme-primary)">₦{{ Number(pkg.packagePrice).toLocaleString() }}</p>
+                        @if(pkg.originalPrice > pkg.packagePrice)
+                          <p class="text-sm opacity-50 line-through">₦{{ Number(pkg.originalPrice).toLocaleString() }}</p>
+                        @endif
+                        <p class="text-sm opacity-50 mt-1">{{ pkg.durationMinutes }} min</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              @endeach
+            </div>
+          </div>
+        @endif
 
         @if(theme?.showAbout && theme?.aboutText)
           <div>
@@ -125,7 +178,65 @@
           </div>
         @endif
 
-        @if(theme?.showGallery && theme?.galleryImages && theme.galleryImages.length > 0)
+        @if(portfolioItems && portfolioItems.length > 0)
+          <div x-data="{ lightboxOpen: false, lightboxImage: '', lightboxTitle: '', lightboxDesc: '' }">
+            <h2 class="text-2xl font-serif mb-6 text-center">
+              <span class="elegant-divider">Our Work</span>
+            </h2>
+            <div class="grid grid-cols-2 gap-4">
+              @each(item in portfolioItems)
+                <div
+                  class="group relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer {{ item.isFeatured ? 'ring-2 ring-offset-2' : '' }}"
+                  style="{{ item.isFeatured ? 'ring-color: var(--theme-primary)' : '' }}"
+                  @click="lightboxImage = '{{ item.image }}'; lightboxTitle = '{{ item.title }}'; lightboxDesc = '{{ item.description || '' }}'; lightboxOpen = true"
+                >
+                  <img src="{{ item.image }}" alt="{{ item.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="absolute bottom-0 left-0 right-0 p-4">
+                      <h3 class="text-white font-serif text-lg">{{ item.title }}</h3>
+                      @if(item.service)
+                        <p class="text-white/70 text-sm italic mt-1">{{ item.service.name }}</p>
+                      @endif
+                    </div>
+                  </div>
+                  @if(item.isFeatured)
+                    <div class="absolute top-3 right-3 px-2 py-1 rounded text-xs font-medium text-white uppercase tracking-wide" style="background-color: var(--theme-primary)">
+                      Featured
+                    </div>
+                  @endif
+                </div>
+              @endeach
+            </div>
+
+            {{-- Lightbox Modal --}}
+            <div
+              x-show="lightboxOpen"
+              x-cloak
+              x-transition:enter="transition ease-out duration-300"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
+              x-transition:leave="transition ease-in duration-200"
+              x-transition:leave-start="opacity-100"
+              x-transition:leave-end="opacity-0"
+              @click="lightboxOpen = false"
+              @keydown.escape.window="lightboxOpen = false"
+              class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4"
+            >
+              <div @click.stop class="relative max-w-4xl max-h-[90vh] w-full">
+                <button @click="lightboxOpen = false" class="absolute -top-12 right-0 text-white hover:opacity-70">
+                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+                <img :src="lightboxImage" :alt="lightboxTitle" class="w-full max-h-[80vh] object-contain rounded-lg" />
+                <div x-show="lightboxTitle" class="mt-4 text-center">
+                  <h3 class="text-white font-serif text-xl" x-text="lightboxTitle"></h3>
+                  <p x-show="lightboxDesc" class="text-white/70 text-sm italic mt-2" x-text="lightboxDesc"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        @elseif(theme?.showGallery && theme?.galleryImages && theme.galleryImages.length > 0)
           <div>
             <h2 class="text-2xl font-serif mb-6 text-center">
               <span class="elegant-divider">Gallery</span>
@@ -145,20 +256,33 @@
         <div class="border rounded-lg p-6 sticky top-6" style="border-color: var(--theme-secondary); background: var(--theme-secondary)">
           <h3 class="font-serif text-xl mb-6 text-center">Reserve Your Appointment</h3>
           
-          <div x-show="!selectedService" class="text-center py-8 opacity-50 italic">
-            <p>Please select a service to begin</p>
+          <div x-show="!selectedService && !selectedPackage" class="text-center py-8 opacity-50 italic">
+            <p>Please select a service or package to begin</p>
           </div>
 
-          <div x-show="selectedService" x-cloak class="space-y-4">
+          <div x-show="selectedService || selectedPackage" x-cloak class="space-y-4">
             <div class="p-4 bg-white rounded-lg border" style="border-color: var(--theme-accent)">
-              <p class="font-serif text-lg" x-text="selectedService?.name"></p>
-              <p class="text-sm opacity-60"><span x-text="selectedService?.duration"></span> minutes • ₦<span x-text="selectedService?.price?.toLocaleString()"></span></p>
+              <template x-if="selectedPackage">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <p class="font-serif text-lg" x-text="selectedPackage?.name"></p>
+                    <span class="px-2 py-0.5 text-xs font-medium rounded" style="background: var(--theme-secondary); color: var(--theme-primary)">Package</span>
+                  </div>
+                  <p class="text-sm opacity-60"><span x-text="selectedPackage?.duration"></span> minutes • ₦<span x-text="selectedPackage?.price?.toLocaleString()"></span></p>
+                </div>
+              </template>
+              <template x-if="!selectedPackage && selectedService">
+                <div>
+                  <p class="font-serif text-lg" x-text="selectedService?.name"></p>
+                  <p class="text-sm opacity-60"><span x-text="selectedService?.duration"></span> minutes • ₦<span x-text="selectedService?.price?.toLocaleString()"></span></p>
+                </div>
+              </template>
             </div>
 
             @if(staff.length > 1)
               <div class="mb-2">
                 <label class="block text-sm font-medium mb-2 uppercase tracking-wide">Preferred Specialist</label>
-                <select x-model="selectedStaffId" @change="selectedDate && fetchTimeSlots()" class="w-full px-4 py-3 border rounded-lg bg-white" style="border-color: var(--theme-accent)">
+                <select x-model="selectedStaffId" @change="selectedDate && fetchTimeSlots()" class="w-full px-4 py-3 border rounded-lg bg-white min-h-[48px]" style="border-color: var(--theme-accent)">
                   <option value="">No preference</option>
                   @each(member in staff)
                     <option value="{{ member.id }}">{{ member.fullName }}</option>
@@ -170,9 +294,9 @@
             @include('partials/booking-datetime-picker')
 
             <div x-show="selectedTime" class="space-y-3 pt-4 border-t" style="border-color: var(--theme-accent)">
-              <input type="text" x-model="customerName" placeholder="Full Name" class="w-full px-4 py-3 border rounded-lg bg-white" style="border-color: var(--theme-accent)" required />
-              <input type="email" x-model="customerEmail" placeholder="Email Address" class="w-full px-4 py-3 border rounded-lg bg-white" style="border-color: var(--theme-accent)" required />
-              <input type="tel" x-model="customerPhone" placeholder="Phone Number" class="w-full px-4 py-3 border rounded-lg bg-white" style="border-color: var(--theme-accent)" />
+              <input type="text" x-model="customerName" placeholder="Full Name" class="w-full px-4 py-3 border rounded-lg bg-white min-h-[48px]" style="border-color: var(--theme-accent)" required />
+              <input type="email" x-model="customerEmail" placeholder="Email Address" class="w-full px-4 py-3 border rounded-lg bg-white min-h-[48px]" style="border-color: var(--theme-accent)" required />
+              <input type="tel" x-model="customerPhone" placeholder="Phone Number" class="w-full px-4 py-3 border rounded-lg bg-white min-h-[48px]" style="border-color: var(--theme-accent)" />
             </div>
 
             <button
@@ -202,6 +326,7 @@
       
       return {
         selectedService: null,
+        selectedPackage: null,
         selectedStaffId: '',
         selectedDate: '',
         selectedTime: '',
@@ -219,6 +344,17 @@
 
         selectService(id, name, price, duration) {
           this.selectedService = { id, name, price, duration }
+          this.selectedPackage = null
+          this.selectedTime = ''
+          this.timeSlots = []
+          if (this.selectedDate) {
+            this.fetchTimeSlots()
+          }
+        },
+
+        selectPackage(id, name, price, duration, serviceIds) {
+          this.selectedPackage = { id, name, price, duration, serviceIds }
+          this.selectedService = { id: serviceIds[0], name, price, duration, isPackage: true, packageId: id }
           this.selectedTime = ''
           this.timeSlots = []
           if (this.selectedDate) {
@@ -350,7 +486,8 @@
                 customerName: this.customerName,
                 customerEmail: this.customerEmail,
                 customerPhone: this.customerPhone,
-                staffId: this.selectedStaffId || undefined
+                staffId: this.selectedStaffId || undefined,
+                packageId: this.selectedPackage?.id || undefined
               })
             })
             const data = await res.json()

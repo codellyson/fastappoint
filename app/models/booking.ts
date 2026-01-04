@@ -4,6 +4,8 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import Business from '#models/business'
 import Service from '#models/service'
 import User from '#models/user'
+import ServicePackage from '#models/service_package'
+import Customer from '#models/customer'
 
 export default class Booking extends BaseModel {
   @column({ isPrimary: true })
@@ -81,6 +83,33 @@ export default class Booking extends BaseModel {
   @column.dateTime()
   declare reminder1hSentAt: DateTime | null
 
+  @column()
+  declare depositAmount: number
+
+  @column()
+  declare balanceDue: number
+
+  @column.dateTime()
+  declare balancePaidAt: DateTime | null
+
+  @column()
+  declare packageId: number | null
+
+  @column()
+  declare locationType: 'business' | 'client' | 'virtual' | null
+
+  @column()
+  declare clientAddress: string | null
+
+  @column()
+  declare travelFee: number
+
+  @column()
+  declare googleEventId: string | null
+
+  @column()
+  declare customerId: number | null
+
   @belongsTo(() => Business)
   declare business: BelongsTo<typeof Business>
 
@@ -89,6 +118,12 @@ export default class Booking extends BaseModel {
 
   @belongsTo(() => User, { foreignKey: 'staffId' })
   declare staff: BelongsTo<typeof User>
+
+  @belongsTo(() => ServicePackage)
+  declare package: BelongsTo<typeof ServicePackage>
+
+  @belongsTo(() => Customer)
+  declare customer: BelongsTo<typeof Customer>
 
   get isPast() {
     const bookingDateTime = this.date.set({
@@ -109,5 +144,41 @@ export default class Booking extends BaseModel {
 
   get canRetryPayment() {
     return this.paymentAttempts < 3 && !this.isPaymentExpired
+  }
+
+  get hasDeposit() {
+    return this.depositAmount > 0
+  }
+
+  get isDepositPaid() {
+    return this.hasDeposit && this.paymentStatus !== 'pending'
+  }
+
+  get isBalancePaid() {
+    return this.balancePaidAt !== null
+  }
+
+  get isFullyPaid() {
+    if (!this.hasDeposit) {
+      return this.paymentStatus === 'paid'
+    }
+    return this.isDepositPaid && this.isBalancePaid
+  }
+
+  get locationTypeLabel() {
+    const labels: Record<string, string> = {
+      business: 'At Business Location',
+      client: 'At Client Location',
+      virtual: 'Virtual/Online',
+    }
+    return this.locationType ? labels[this.locationType] : null
+  }
+
+  get hasTravelFee() {
+    return this.travelFee > 0
+  }
+
+  get totalWithTravelFee() {
+    return this.amount + (this.travelFee || 0)
   }
 }

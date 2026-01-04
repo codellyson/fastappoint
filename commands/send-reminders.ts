@@ -49,38 +49,65 @@ export default class SendReminders extends BaseCommand {
   }
 
   private async getBookingsFor24hReminder(now: DateTime): Promise<Booking[]> {
-    const tomorrow = now.plus({ hours: 24 }).startOf('day')
-    const tomorrowEnd = now.plus({ hours: 25 }).startOf('day')
+    // Get bookings that are 20-28 hours away (giving a window for the cron to catch them)
+    const minTime = now.plus({ hours: 20 })
+    const maxTime = now.plus({ hours: 28 })
 
-    return Booking.query()
+    const bookings = await Booking.query()
       .where('status', 'confirmed')
       .where('paymentStatus', 'paid')
       .whereNull('reminder_24h_sent_at')
-      .where('date', '>=', tomorrow.toISODate()!)
-      .where('date', '<=', tomorrowEnd.toISODate()!)
+      .where('date', '>=', minTime.toISODate()!)
+      .where('date', '<=', maxTime.toISODate()!)
       .preload('business')
       .preload('service')
       .preload('staff')
+
+    // Filter by business settings and exact time window
+    return bookings.filter((booking) => {
+      // Check if business has 24h reminders enabled
+      if (booking.business.reminder24hEnabled === false) {
+        return false
+      }
+
+      // Calculate exact booking datetime
+      const [hour, minute] = booking.startTime.split(':').map(Number)
+      const bookingDateTime = booking.date.set({ hour, minute })
+      const hoursUntilBooking = bookingDateTime.diff(now, 'hours').hours
+
+      // Send reminder if booking is 20-28 hours away
+      return hoursUntilBooking >= 20 && hoursUntilBooking <= 28
+    })
   }
 
   private async getBookingsFor1hReminder(now: DateTime): Promise<Booking[]> {
+    // Get bookings for today and tomorrow (in case of late night bookings)
     const today = now.toISODate()!
-    const currentHour = now.hour
-    const targetHourStart = currentHour + 1
-    const targetHourEnd = currentHour + 2
+    const tomorrow = now.plus({ days: 1 }).toISODate()!
 
     const bookings = await Booking.query()
       .where('status', 'confirmed')
       .where('paymentStatus', 'paid')
       .whereNull('reminder_1h_sent_at')
-      .where('date', today)
+      .whereIn('date', [today, tomorrow])
       .preload('business')
       .preload('service')
       .preload('staff')
 
+    // Filter by business settings and exact time window (45 min to 90 min before)
     return bookings.filter((booking) => {
-      const [hour] = booking.startTime.split(':').map(Number)
-      return hour >= targetHourStart && hour < targetHourEnd
+      // Check if business has 1h reminders enabled
+      if (booking.business.reminder1hEnabled === false) {
+        return false
+      }
+
+      // Calculate exact booking datetime
+      const [hour, minute] = booking.startTime.split(':').map(Number)
+      const bookingDateTime = booking.date.set({ hour, minute })
+      const minutesUntilBooking = bookingDateTime.diff(now, 'minutes').minutes
+
+      // Send reminder if booking is 45-90 minutes away
+      return minutesUntilBooking >= 45 && minutesUntilBooking <= 90
     })
   }
 

@@ -70,6 +70,27 @@ export default class Business extends BaseModel {
   @column()
   declare isOnboarded: boolean
 
+  @column()
+  declare reminder24hEnabled: boolean
+
+  @column()
+  declare reminder1hEnabled: boolean
+
+  @column()
+  declare googleCalendarEnabled: boolean
+
+  @column()
+  declare googleAccessToken: string | null
+
+  @column()
+  declare googleRefreshToken: string | null
+
+  @column.dateTime()
+  declare googleTokenExpiresAt: DateTime | null
+
+  @column()
+  declare googleCalendarId: string | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

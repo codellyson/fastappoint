@@ -3,6 +3,10 @@ import Service from '#models/service'
 import Business from '#models/business'
 import { serviceValidator } from '#validators/business-validator'
 import { errors } from '@vinejs/vine'
+import app from '@adonisjs/core/services/app'
+import { cuid } from '@adonisjs/core/helpers'
+import sharp from 'sharp'
+import { unlink } from 'node:fs/promises'
 
 export default class ServicesController {
   async index({ view, auth }: HttpContext) {
@@ -23,12 +27,44 @@ export default class ServicesController {
     try {
       const data = await request.validateUsing(serviceValidator)
 
+      // Handle image upload
+      let imagePath: string | null = null
+      const image = request.file('image', {
+        size: '5mb',
+        extnames: ['jpg', 'jpeg', 'png', 'webp'],
+      })
+
+      if (image) {
+        if (!image.isValid) {
+          session.flash('error', image.errors[0]?.message || 'Invalid image file')
+          return response.redirect().back()
+        }
+
+        const fileName = `${cuid()}.webp`
+        const uploadPath = app.publicPath('uploads/services')
+
+        // Process and optimize image with sharp
+        await sharp(image.tmpPath)
+          .resize(800, 800, { fit: 'cover', withoutEnlargement: true })
+          .webp({ quality: 80 })
+          .toFile(`${uploadPath}/${fileName}`)
+
+        imagePath = `/uploads/services/${fileName}`
+      }
+
       await Service.create({
         businessId: user.businessId!,
         name: data.name,
         description: data.description || null,
         durationMinutes: data.durationMinutes,
         price: data.price,
+        image: imagePath,
+        depositType: data.depositType || 'none',
+        depositAmount: data.depositAmount || 0,
+        locationType: data.locationType || 'business',
+        travelFee: data.travelFee || 0,
+        travelRadiusKm: data.travelRadiusKm || null,
+        virtualMeetingUrl: data.virtualMeetingUrl || null,
         isActive: true,
         sortOrder: 0,
       })
@@ -72,11 +108,64 @@ export default class ServicesController {
     try {
       const data = await request.validateUsing(serviceValidator)
 
+      // Handle image upload
+      const image = request.file('image', {
+        size: '5mb',
+        extnames: ['jpg', 'jpeg', 'png', 'webp'],
+      })
+
+      let imagePath = service.image
+
+      if (image) {
+        if (!image.isValid) {
+          session.flash('error', image.errors[0]?.message || 'Invalid image file')
+          return response.redirect().back()
+        }
+
+        const fileName = `${cuid()}.webp`
+        const uploadPath = app.publicPath('uploads/services')
+
+        // Process and optimize image with sharp
+        await sharp(image.tmpPath)
+          .resize(800, 800, { fit: 'cover', withoutEnlargement: true })
+          .webp({ quality: 80 })
+          .toFile(`${uploadPath}/${fileName}`)
+
+        // Delete old image if exists
+        if (service.image) {
+          try {
+            await unlink(app.publicPath(service.image))
+          } catch {
+            // Ignore if file doesn't exist
+          }
+        }
+
+        imagePath = `/uploads/services/${fileName}`
+      }
+
+      // Handle image removal
+      const removeImage = request.input('removeImage') === 'true'
+      if (removeImage && service.image) {
+        try {
+          await unlink(app.publicPath(service.image))
+        } catch {
+          // Ignore if file doesn't exist
+        }
+        imagePath = null
+      }
+
       service.merge({
         name: data.name,
         description: data.description || null,
         durationMinutes: data.durationMinutes,
         price: data.price,
+        image: imagePath,
+        depositType: data.depositType || 'none',
+        depositAmount: data.depositAmount || 0,
+        locationType: data.locationType || 'business',
+        travelFee: data.travelFee || 0,
+        travelRadiusKm: data.travelRadiusKm || null,
+        virtualMeetingUrl: data.virtualMeetingUrl || null,
       })
       await service.save()
 
@@ -118,6 +207,15 @@ export default class ServicesController {
 
     if (!service) {
       return response.notFound('Service not found')
+    }
+
+    // Delete image if exists
+    if (service.image) {
+      try {
+        await unlink(app.publicPath(service.image))
+      } catch {
+        // Ignore if file doesn't exist
+      }
     }
 
     await service.delete()

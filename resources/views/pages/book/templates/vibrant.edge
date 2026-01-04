@@ -124,11 +124,14 @@
           </h2>
           <div class="grid sm:grid-cols-2 gap-4">
             @each(service in services)
-              <div 
-                class="service-card p-5 cursor-pointer"
+              <div
+                class="service-card p-5 cursor-pointer overflow-hidden"
                 :class="{ 'selected': selectedService?.id === {{ service.id }} }"
                 @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.price }}, {{ service.durationMinutes || 30 }})"
               >
+                @if(service.image)
+                  <img src="{{ service.image }}" alt="{{ service.name }}" class="w-full h-32 object-cover rounded-lg mb-3 -mt-1" />
+                @endif
                 <h3 class="font-bold text-lg">{{ service.name }}</h3>
                 @if(service.description)
                   <p class="text-sm opacity-60 mt-1">{{ service.description }}</p>
@@ -142,10 +145,108 @@
           </div>
         </section>
 
-        @if(theme?.showGallery && theme?.galleryImages && theme.galleryImages.length > 0)
+        @if(packages && packages.length > 0)
+          <section>
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+              🎁 Packages
+            </h2>
+            <div class="grid sm:grid-cols-2 gap-4">
+              @each(pkg in packages)
+                <div
+                  class="service-card p-5 cursor-pointer overflow-hidden"
+                  :class="{ 'selected': selectedPackage?.id === {{ pkg.id }} }"
+                  @click="selectPackage({{ pkg.id }}, '{{ pkg.name }}', {{ pkg.packagePrice }}, {{ pkg.durationMinutes }}, {{ JSON.stringify(pkg.serviceIds) }})"
+                >
+                  @if(pkg.image)
+                    <img src="{{ pkg.image }}" alt="{{ pkg.name }}" class="w-full h-32 object-cover rounded-lg mb-3 -mt-1" />
+                  @endif
+                  <div class="flex items-center gap-2">
+                    <h3 class="font-bold text-lg">{{ pkg.name }}</h3>
+                    @if(pkg.savingsPercent > 0)
+                      <span class="px-2 py-0.5 text-xs font-bold rounded-full text-white" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent))">
+                        -{{ pkg.savingsPercent }}%
+                      </span>
+                    @endif
+                  </div>
+                  @if(pkg.description)
+                    <p class="text-sm opacity-60 mt-1">{{ pkg.description }}</p>
+                  @endif
+                  <p class="text-xs opacity-40 mt-2">{{ pkg.serviceIds.length }} services included</p>
+                  <div class="flex justify-between items-end mt-4">
+                    <div>
+                      <span class="text-sm opacity-50">{{ pkg.durationMinutes }} min</span>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-xl font-bold" style="color: var(--theme-primary)">₦{{ Number(pkg.packagePrice).toLocaleString() }}</span>
+                      @if(pkg.originalPrice > pkg.packagePrice)
+                        <span class="text-sm opacity-50 line-through ml-1">₦{{ Number(pkg.originalPrice).toLocaleString() }}</span>
+                      @endif
+                    </div>
+                  </div>
+                </div>
+              @endeach
+            </div>
+          </section>
+        @endif
+
+        @if(portfolioItems && portfolioItems.length > 0)
+          <section x-data="{ lightboxOpen: false, lightboxImage: '', lightboxTitle: '', lightboxDesc: '' }">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">📸 Our Work</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+              @each(item in portfolioItems)
+                <div
+                  class="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer {{ item.isFeatured ? 'ring-4 ring-offset-2' : '' }}"
+                  style="{{ item.isFeatured ? 'ring-color: var(--theme-primary)' : '' }}"
+                  @click="lightboxImage = '{{ item.image }}'; lightboxTitle = '{{ item.title }}'; lightboxDesc = '{{ item.description || '' }}'; lightboxOpen = true"
+                >
+                  <img src="{{ item.image }}" alt="{{ item.title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="absolute bottom-0 left-0 right-0 p-3">
+                      <h3 class="text-white font-bold text-sm truncate">{{ item.title }}</h3>
+                      @if(item.service)
+                        <p class="text-white/70 text-xs mt-0.5">{{ item.service.name }}</p>
+                      @endif
+                    </div>
+                  </div>
+                  @if(item.isFeatured)
+                    <div class="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold text-white" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent))">
+                      ⭐
+                    </div>
+                  @endif
+                </div>
+              @endeach
+            </div>
+
+            {{-- Lightbox Modal --}}
+            <div
+              x-show="lightboxOpen"
+              x-cloak
+              x-transition:enter="transition ease-out duration-300"
+              x-transition:enter-start="opacity-0 scale-95"
+              x-transition:enter-end="opacity-100 scale-100"
+              x-transition:leave="transition ease-in duration-200"
+              x-transition:leave-start="opacity-100 scale-100"
+              x-transition:leave-end="opacity-0 scale-95"
+              @click="lightboxOpen = false"
+              @keydown.escape.window="lightboxOpen = false"
+              class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            >
+              <div @click.stop class="relative max-w-4xl max-h-[90vh] w-full">
+                <button @click="lightboxOpen = false" class="absolute -top-12 right-0 text-white hover:scale-110 transition-transform text-3xl">
+                  ✕
+                </button>
+                <img :src="lightboxImage" :alt="lightboxTitle" class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl" />
+                <div x-show="lightboxTitle" class="mt-4 text-center">
+                  <h3 class="text-white font-bold text-xl" x-text="lightboxTitle"></h3>
+                  <p x-show="lightboxDesc" class="text-white/70 text-sm mt-2" x-text="lightboxDesc"></p>
+                </div>
+              </div>
+            </div>
+          </section>
+        @elseif(theme?.showGallery && theme?.galleryImages && theme.galleryImages.length > 0)
           <section>
             <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">📸 Portfolio</h2>
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
               @each(image in theme.galleryImages)
                 <div class="aspect-square rounded-2xl overflow-hidden">
                   <img src="{{ image }}" alt="" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
@@ -167,19 +268,32 @@
         <div class="card-vibrant p-6 sticky top-6">
           <h3 class="text-xl font-bold mb-6 flex items-center gap-2">📅 Book Now</h3>
           
-          <div x-show="!selectedService" class="text-center py-8">
+          <div x-show="!selectedService && !selectedPackage" class="text-center py-8">
             <div class="text-5xl mb-4">👆</div>
-            <p class="opacity-60">Pick a service to start</p>
+            <p class="opacity-60">Pick a service or package to start</p>
           </div>
 
-          <div x-show="selectedService" x-cloak class="space-y-4">
+          <div x-show="selectedService || selectedPackage" x-cloak class="space-y-4">
             <div class="p-4 rounded-xl" style="background: var(--theme-secondary)">
-              <p class="font-bold" x-text="selectedService?.name"></p>
-              <p class="text-sm opacity-60"><span x-text="selectedService?.duration"></span> min • ₦<span x-text="selectedService?.price?.toLocaleString()"></span></p>
+              <template x-if="selectedPackage">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <p class="font-bold" x-text="selectedPackage?.name"></p>
+                    <span class="px-2 py-0.5 text-xs font-bold rounded-full text-white" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent))">Package</span>
+                  </div>
+                  <p class="text-sm opacity-60"><span x-text="selectedPackage?.duration"></span> min • ₦<span x-text="selectedPackage?.price?.toLocaleString()"></span></p>
+                </div>
+              </template>
+              <template x-if="!selectedPackage && selectedService">
+                <div>
+                  <p class="font-bold" x-text="selectedService?.name"></p>
+                  <p class="text-sm opacity-60"><span x-text="selectedService?.duration"></span> min • ₦<span x-text="selectedService?.price?.toLocaleString()"></span></p>
+                </div>
+              </template>
             </div>
 
             @if(staff.length > 1)
-              <select x-model="selectedStaffId" @change="selectedDate && fetchTimeSlots()" class="w-full px-4 py-3 rounded-xl border-2 border-transparent focus:border-pink-200 transition-colors mb-2" style="background: var(--theme-secondary)">
+              <select x-model="selectedStaffId" @change="selectedDate && fetchTimeSlots()" class="w-full px-4 py-3 rounded-xl border-2 border-transparent focus:border-pink-200 transition-colors mb-2 min-h-[48px]" style="background: var(--theme-secondary)">
                 <option value="">🎲 Any available</option>
                 @each(member in staff)
                   <option value="{{ member.id }}">{{ member.fullName }}</option>
@@ -190,9 +304,9 @@
             @include('partials/booking-datetime-picker')
 
             <div x-show="selectedTime" class="space-y-3 pt-4">
-              <input type="text" x-model="customerName" placeholder="Your name ✨" class="w-full px-4 py-3 rounded-xl border-2 border-transparent focus:border-pink-200 transition-colors" style="background: var(--theme-secondary)" required />
-              <input type="email" x-model="customerEmail" placeholder="Email 📧" class="w-full px-4 py-3 rounded-xl border-2 border-transparent focus:border-pink-200 transition-colors" style="background: var(--theme-secondary)" required />
-              <input type="tel" x-model="customerPhone" placeholder="Phone 📱" class="w-full px-4 py-3 rounded-xl border-2 border-transparent focus:border-pink-200 transition-colors" style="background: var(--theme-secondary)" />
+              <input type="text" x-model="customerName" placeholder="Your name ✨" class="w-full px-4 py-3 rounded-xl border-2 border-transparent focus:border-pink-200 transition-colors min-h-[48px]" style="background: var(--theme-secondary)" required />
+              <input type="email" x-model="customerEmail" placeholder="Email 📧" class="w-full px-4 py-3 rounded-xl border-2 border-transparent focus:border-pink-200 transition-colors min-h-[48px]" style="background: var(--theme-secondary)" required />
+              <input type="tel" x-model="customerPhone" placeholder="Phone 📱" class="w-full px-4 py-3 rounded-xl border-2 border-transparent focus:border-pink-200 transition-colors min-h-[48px]" style="background: var(--theme-secondary)" />
             </div>
 
             <button
@@ -222,6 +336,7 @@
       
       return {
         selectedService: null,
+        selectedPackage: null,
         selectedStaffId: '',
         selectedDate: '',
         selectedTime: '',
@@ -239,6 +354,15 @@
 
         selectService(id, name, price, duration) {
           this.selectedService = { id, name, price, duration }
+          this.selectedPackage = null
+          this.selectedTime = ''
+          this.timeSlots = []
+          if (this.selectedDate) this.fetchTimeSlots()
+        },
+
+        selectPackage(id, name, price, duration, serviceIds) {
+          this.selectedPackage = { id, name, price, duration, serviceIds }
+          this.selectedService = { id: serviceIds[0], name, price, duration, isPackage: true, packageId: id }
           this.selectedTime = ''
           this.timeSlots = []
           if (this.selectedDate) this.fetchTimeSlots()
@@ -358,7 +482,8 @@
               body: JSON.stringify({
                 date: this.selectedDate, time: this.selectedTime,
                 customerName: this.customerName, customerEmail: this.customerEmail,
-                customerPhone: this.customerPhone, staffId: this.selectedStaffId || undefined
+                customerPhone: this.customerPhone, staffId: this.selectedStaffId || undefined,
+                packageId: this.selectedPackage?.id || undefined
               })
             })
             const data = await res.json()

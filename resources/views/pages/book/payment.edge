@@ -95,11 +95,26 @@
           <span class="text-sand-11">Duration</span>
           <span class="font-medium text-sand-12">{{ booking.service.formattedDuration }}</span>
         </div>
-        <div class="border-t border-sand-6 pt-3 mt-3">
-          <div class="flex justify-between">
-            <span class="font-medium text-sand-12">Total</span>
-            <span class="font-bold text-primary text-lg">₦{{ Number(booking.amount).toLocaleString() }}</span>
-          </div>
+        <div class="border-t border-sand-6 pt-3 mt-3 space-y-2">
+          @if(booking.depositAmount > 0)
+            <div class="flex justify-between">
+              <span class="text-sand-11">Service Total</span>
+              <span class="text-sand-12">₦{{ Number(booking.depositAmount + booking.balanceDue).toLocaleString() }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sand-11">Deposit (due now)</span>
+              <span class="font-bold text-primary text-lg">₦{{ Number(booking.amount).toLocaleString() }}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-sand-9">Balance (due at appointment)</span>
+              <span class="text-sand-11">₦{{ Number(booking.balanceDue).toLocaleString() }}</span>
+            </div>
+          @else
+            <div class="flex justify-between">
+              <span class="font-medium text-sand-12">Total</span>
+              <span class="font-bold text-primary text-lg">₦{{ Number(booking.amount).toLocaleString() }}</span>
+            </div>
+          @endif
         </div>
       </div>
     </div>
@@ -168,6 +183,8 @@
     >
       @if(timeRemaining === 0)
         Payment Expired
+      @elseif(booking.depositAmount > 0)
+        Pay Deposit ₦{{ Number(booking.amount).toLocaleString() }}
       @else
         Pay ₦{{ Number(booking.amount).toLocaleString() }}
       @endif

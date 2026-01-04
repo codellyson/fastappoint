@@ -4,6 +4,7 @@ import {
   businessProfileValidator,
   cancellationPolicyValidator,
   paystackSettingsValidator,
+  notificationSettingsValidator,
 } from '#validators/settings-validator'
 import { errors } from '@vinejs/vine'
 
@@ -112,5 +113,35 @@ export default class SettingsController {
     const user = auth.user!
     const business = await Business.findOrFail(user.businessId)
     return view.render('pages/settings/booking-page', { business })
+  }
+
+  async notifications({ view, auth }: HttpContext) {
+    const user = auth.user!
+    const business = await Business.findOrFail(user.businessId)
+    return view.render('pages/settings/notifications', { business })
+  }
+
+  async updateNotifications({ request, response, auth, session }: HttpContext) {
+    const user = auth.user!
+    const business = await Business.findOrFail(user.businessId)
+
+    try {
+      const data = await request.validateUsing(notificationSettingsValidator)
+
+      business.merge({
+        reminder24hEnabled: data.reminder24hEnabled,
+        reminder1hEnabled: data.reminder1hEnabled,
+      })
+      await business.save()
+
+      session.flash('success', 'Notification settings updated successfully')
+      return response.redirect().toRoute('settings.notifications')
+    } catch (error) {
+      if (error instanceof errors.E_VALIDATION_ERROR) {
+        session.flash('error', 'Please check your input')
+        return response.redirect().back()
+      }
+      throw error
+    }
   }
 }

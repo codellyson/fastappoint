@@ -102,7 +102,8 @@
             <span class="text-sm opacity-60">{{ services.length }} services available</span>
           </div>
           
-          <div class="bg-white border rounded-lg overflow-hidden" style="border-color: var(--theme-secondary)">
+          {{-- Desktop Table View --}}
+          <div class="hidden md:block bg-white border rounded-lg overflow-hidden" style="border-color: var(--theme-secondary)">
             <table class="w-full">
               <thead style="background: var(--theme-secondary)">
                 <tr>
@@ -114,7 +115,7 @@
               </thead>
               <tbody class="divide-y" style="border-color: var(--theme-secondary)">
                 @each(service in services)
-                  <tr 
+                  <tr
                     class="hover:bg-gray-50 cursor-pointer transition-colors"
                     :class="{ 'bg-teal-50': selectedService?.id === {{ service.id }} }"
                     @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.price }}, {{ service.durationMinutes || 30 }})"
@@ -128,7 +129,7 @@
                     <td class="px-6 py-4 text-sm opacity-70">{{ service.durationMinutes || 30 }} min</td>
                     <td class="px-6 py-4 text-right font-semibold" style="color: var(--theme-primary)">₦{{ Number(service.price).toLocaleString() }}</td>
                     <td class="px-6 py-4">
-                      <div 
+                      <div
                         class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors"
                         :class="selectedService?.id === {{ service.id }} ? 'border-teal-600 bg-teal-600' : 'border-gray-300'"
                       >
@@ -142,7 +143,150 @@
               </tbody>
             </table>
           </div>
+
+          {{-- Mobile Card View --}}
+          <div class="md:hidden space-y-3">
+            @each(service in services)
+              <div
+                class="bg-white border rounded-lg p-4 cursor-pointer transition-all min-h-[60px]"
+                :class="{ 'ring-2': selectedService?.id === {{ service.id }} }"
+                :style="selectedService?.id === {{ service.id }} ? 'border-color: var(--theme-primary); ring-color: var(--theme-primary)' : 'border-color: var(--theme-secondary)'"
+                @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.price }}, {{ service.durationMinutes || 30 }})"
+              >
+                <div class="flex justify-between items-start gap-3">
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium">{{ service.name }}</div>
+                    @if(service.description)
+                      <div class="text-sm opacity-60 mt-1 line-clamp-2">{{ service.description }}</div>
+                    @endif
+                  </div>
+                  <div
+                    class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0"
+                    :class="selectedService?.id === {{ service.id }} ? 'border-teal-600 bg-teal-600' : 'border-gray-300'"
+                  >
+                    <svg x-show="selectedService?.id === {{ service.id }}" class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                  <span class="text-sm opacity-60">{{ service.durationMinutes || 30 }} min</span>
+                  <span class="font-semibold" style="color: var(--theme-primary)">₦{{ Number(service.price).toLocaleString() }}</span>
+                </div>
+              </div>
+            @end
+          </div>
         </section>
+
+        @if(packages && packages.length > 0)
+          <section>
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-bold">Service Packages</h2>
+              <span class="text-sm opacity-60">Save with bundles</span>
+            </div>
+
+            {{-- Desktop Table View --}}
+            <div class="hidden md:block bg-white border rounded-lg overflow-hidden" style="border-color: var(--theme-secondary)">
+              <table class="w-full">
+                <thead style="background: var(--theme-secondary)">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider opacity-70">Package</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider opacity-70">Duration</th>
+                    <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider opacity-70">Price</th>
+                    <th class="px-6 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y" style="border-color: var(--theme-secondary)">
+                  @each(pkg in packages)
+                    <tr
+                      class="hover:bg-gray-50 cursor-pointer transition-colors"
+                      :class="{ 'bg-teal-50': selectedPackage?.id === {{ pkg.id }} }"
+                      @click="selectPackage({{ pkg.id }}, '{{ pkg.name }}', {{ pkg.packagePrice }}, {{ pkg.durationMinutes }}, {{ JSON.stringify(pkg.serviceIds) }})"
+                    >
+                      <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                          <span class="font-medium">{{ pkg.name }}</span>
+                          @if(pkg.savingsPercent > 0)
+                            <span class="px-2 py-0.5 text-xs font-medium rounded" style="background: var(--theme-secondary); color: var(--theme-primary)">
+                              Save {{ pkg.savingsPercent }}%
+                            </span>
+                          @endif
+                        </div>
+                        @if(pkg.description)
+                          <div class="text-sm opacity-60 mt-0.5">{{ pkg.description }}</div>
+                        @endif
+                        <div class="text-xs opacity-50 mt-1">{{ pkg.serviceIds.length }} services included</div>
+                      </td>
+                      <td class="px-6 py-4 text-sm opacity-70">{{ pkg.durationMinutes }} min</td>
+                      <td class="px-6 py-4 text-right">
+                        <span class="font-semibold" style="color: var(--theme-primary)">₦{{ Number(pkg.packagePrice).toLocaleString() }}</span>
+                        @if(pkg.originalPrice > pkg.packagePrice)
+                          <span class="text-sm opacity-50 line-through ml-1">₦{{ Number(pkg.originalPrice).toLocaleString() }}</span>
+                        @endif
+                      </td>
+                      <td class="px-6 py-4">
+                        <div
+                          class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors"
+                          :class="selectedPackage?.id === {{ pkg.id }} ? 'border-teal-600 bg-teal-600' : 'border-gray-300'"
+                        >
+                          <svg x-show="selectedPackage?.id === {{ pkg.id }}" class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                          </svg>
+                        </div>
+                      </td>
+                    </tr>
+                  @endeach
+                </tbody>
+              </table>
+            </div>
+
+            {{-- Mobile Card View --}}
+            <div class="md:hidden space-y-3">
+              @each(pkg in packages)
+                <div
+                  class="bg-white border rounded-lg p-4 cursor-pointer transition-all min-h-[60px]"
+                  :class="{ 'ring-2': selectedPackage?.id === {{ pkg.id }} }"
+                  :style="selectedPackage?.id === {{ pkg.id }} ? 'border-color: var(--theme-primary); ring-color: var(--theme-primary)' : 'border-color: var(--theme-secondary)'"
+                  @click="selectPackage({{ pkg.id }}, '{{ pkg.name }}', {{ pkg.packagePrice }}, {{ pkg.durationMinutes }}, {{ JSON.stringify(pkg.serviceIds) }})"
+                >
+                  <div class="flex justify-between items-start gap-3">
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2">
+                        <span class="font-medium">{{ pkg.name }}</span>
+                        @if(pkg.savingsPercent > 0)
+                          <span class="px-2 py-0.5 text-xs font-medium rounded" style="background: var(--theme-secondary); color: var(--theme-primary)">
+                            -{{ pkg.savingsPercent }}%
+                          </span>
+                        @endif
+                      </div>
+                      @if(pkg.description)
+                        <div class="text-sm opacity-60 mt-1 line-clamp-2">{{ pkg.description }}</div>
+                      @endif
+                      <div class="text-xs opacity-50 mt-1">{{ pkg.serviceIds.length }} services</div>
+                    </div>
+                    <div
+                      class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0"
+                      :class="selectedPackage?.id === {{ pkg.id }} ? 'border-teal-600 bg-teal-600' : 'border-gray-300'"
+                    >
+                      <svg x-show="selectedPackage?.id === {{ pkg.id }}" class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                    <span class="text-sm opacity-60">{{ pkg.durationMinutes }} min</span>
+                    <div>
+                      <span class="font-semibold" style="color: var(--theme-primary)">₦{{ Number(pkg.packagePrice).toLocaleString() }}</span>
+                      @if(pkg.originalPrice > pkg.packagePrice)
+                        <span class="text-sm opacity-50 line-through ml-1">₦{{ Number(pkg.originalPrice).toLocaleString() }}</span>
+                      @endif
+                    </div>
+                  </div>
+                </div>
+              @endeach
+            </div>
+          </section>
+        @endif
 
         @if(theme?.showAbout && theme?.aboutText)
           <section class="bg-white border rounded-lg p-6" style="border-color: var(--theme-secondary)">
@@ -151,10 +295,66 @@
           </section>
         @endif
 
-        @if(theme?.showGallery && theme?.galleryImages && theme.galleryImages.length > 0)
+        @if(portfolioItems && portfolioItems.length > 0)
+          <section x-data="{ lightboxOpen: false, lightboxImage: '', lightboxTitle: '', lightboxDesc: '' }">
+            <h2 class="text-lg font-bold mb-4">Our Work</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+              @each(item in portfolioItems)
+                <div
+                  class="group relative aspect-square rounded overflow-hidden cursor-pointer {{ item.isFeatured ? 'ring-2' : '' }}"
+                  style="{{ item.isFeatured ? 'ring-color: var(--theme-primary)' : '' }}"
+                  @click="lightboxImage = '{{ item.image }}'; lightboxTitle = '{{ item.title }}'; lightboxDesc = '{{ item.description || '' }}'; lightboxOpen = true"
+                >
+                  <img src="{{ item.image }}" alt="{{ item.title }}" class="w-full h-full object-cover group-hover:opacity-90 transition-opacity" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div class="absolute bottom-0 left-0 right-0 p-2">
+                      <p class="text-white text-xs font-medium truncate">{{ item.title }}</p>
+                      @if(item.service)
+                        <p class="text-white/70 text-xs truncate">{{ item.service.name }}</p>
+                      @endif
+                    </div>
+                  </div>
+                  @if(item.isFeatured)
+                    <div class="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs" style="background: var(--theme-primary)">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+                  @endif
+                </div>
+              @endeach
+            </div>
+
+            {{-- Lightbox Modal --}}
+            <div
+              x-show="lightboxOpen"
+              x-cloak
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
+              x-transition:leave="transition ease-in duration-150"
+              x-transition:leave-start="opacity-100"
+              x-transition:leave-end="opacity-0"
+              @click="lightboxOpen = false"
+              @keydown.escape.window="lightboxOpen = false"
+              class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4"
+            >
+              <div @click.stop class="relative max-w-4xl max-h-[90vh] w-full">
+                <button @click="lightboxOpen = false" class="absolute -top-10 right-0 text-white hover:opacity-70">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+                <img :src="lightboxImage" :alt="lightboxTitle" class="w-full max-h-[80vh] object-contain rounded" />
+                <div x-show="lightboxTitle" class="mt-3">
+                  <h3 class="text-white font-semibold" x-text="lightboxTitle"></h3>
+                  <p x-show="lightboxDesc" class="text-white/70 text-sm mt-1" x-text="lightboxDesc"></p>
+                </div>
+              </div>
+            </div>
+          </section>
+        @elseif(theme?.showGallery && theme?.galleryImages && theme.galleryImages.length > 0)
           <section>
             <h2 class="text-lg font-bold mb-4">Gallery</h2>
-            <div class="grid grid-cols-4 gap-2">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
               @each(image in theme.galleryImages)
                 <div class="aspect-square rounded overflow-hidden">
                   <img src="{{ image }}" alt="" class="w-full h-full object-cover hover:opacity-90 transition-opacity" />
@@ -170,23 +370,36 @@
           <h3 class="font-bold text-lg mb-1">Schedule Appointment</h3>
           <p class="text-sm opacity-60 mb-6">Complete the form below to book</p>
           
-          <div x-show="!selectedService" class="text-center py-6 border-2 border-dashed rounded-lg" style="border-color: var(--theme-secondary)">
+          <div x-show="!selectedService && !selectedPackage" class="text-center py-6 border-2 border-dashed rounded-lg" style="border-color: var(--theme-secondary)">
             <svg class="w-10 h-10 mx-auto mb-2 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
-            <p class="text-sm opacity-50">Select a service from the list</p>
+            <p class="text-sm opacity-50">Select a service or package from the list</p>
           </div>
 
-          <form x-show="selectedService" x-cloak class="space-y-4">
+          <form x-show="selectedService || selectedPackage" x-cloak class="space-y-4">
             <div class="p-4 rounded-lg" style="background: var(--theme-secondary)">
-              <p class="font-semibold" x-text="selectedService?.name"></p>
-              <p class="text-sm opacity-70"><span x-text="selectedService?.duration"></span> minutes | ₦<span x-text="selectedService?.price?.toLocaleString()"></span></p>
+              <template x-if="selectedPackage">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <p class="font-semibold" x-text="selectedPackage?.name"></p>
+                    <span class="px-2 py-0.5 text-xs font-medium rounded" style="background: white; color: var(--theme-primary)">Package</span>
+                  </div>
+                  <p class="text-sm opacity-70"><span x-text="selectedPackage?.duration"></span> minutes | ₦<span x-text="selectedPackage?.price?.toLocaleString()"></span></p>
+                </div>
+              </template>
+              <template x-if="!selectedPackage && selectedService">
+                <div>
+                  <p class="font-semibold" x-text="selectedService?.name"></p>
+                  <p class="text-sm opacity-70"><span x-text="selectedService?.duration"></span> minutes | ₦<span x-text="selectedService?.price?.toLocaleString()"></span></p>
+                </div>
+              </template>
             </div>
 
             @if(staff.length > 1)
               <div class="mb-2">
                 <label class="block text-sm font-medium mb-1">Preferred Staff</label>
-                <select x-model="selectedStaffId" @change="selectedDate && fetchTimeSlots()" class="w-full px-3 py-2 border rounded" style="border-color: var(--theme-secondary)">
+                <select x-model="selectedStaffId" @change="selectedDate && fetchTimeSlots()" class="w-full px-4 py-3 border rounded min-h-[48px]" style="border-color: var(--theme-secondary)">
                   <option value="">No preference</option>
                   @each(member in staff)
                     <option value="{{ member.id }}">{{ member.fullName }}</option>
@@ -200,15 +413,15 @@
             <div x-show="selectedTime" class="space-y-4 pt-4 border-t" style="border-color: var(--theme-secondary)">
               <div>
                 <label class="block text-sm font-medium mb-1">Full Name *</label>
-                <input type="text" x-model="customerName" class="w-full px-3 py-2 border rounded" style="border-color: var(--theme-secondary)" required />
+                <input type="text" x-model="customerName" class="w-full px-4 py-3 border rounded min-h-[48px]" style="border-color: var(--theme-secondary)" required />
               </div>
               <div>
                 <label class="block text-sm font-medium mb-1">Email *</label>
-                <input type="email" x-model="customerEmail" class="w-full px-3 py-2 border rounded" style="border-color: var(--theme-secondary)" required />
+                <input type="email" x-model="customerEmail" class="w-full px-4 py-3 border rounded min-h-[48px]" style="border-color: var(--theme-secondary)" required />
               </div>
               <div>
                 <label class="block text-sm font-medium mb-1">Phone</label>
-                <input type="tel" x-model="customerPhone" class="w-full px-3 py-2 border rounded" style="border-color: var(--theme-secondary)" />
+                <input type="tel" x-model="customerPhone" class="w-full px-4 py-3 border rounded min-h-[48px]" style="border-color: var(--theme-secondary)" />
               </div>
 
               <button
@@ -240,6 +453,7 @@
       
       return {
         selectedService: null,
+        selectedPackage: null,
         selectedStaffId: '',
         selectedDate: '',
         selectedTime: '',
@@ -257,6 +471,15 @@
 
         selectService(id, name, price, duration) {
           this.selectedService = { id, name, price, duration }
+          this.selectedPackage = null
+          this.selectedTime = ''
+          this.timeSlots = []
+          if (this.selectedDate) this.fetchTimeSlots()
+        },
+
+        selectPackage(id, name, price, duration, serviceIds) {
+          this.selectedPackage = { id, name, price, duration, serviceIds }
+          this.selectedService = { id: serviceIds[0], name, price, duration, isPackage: true, packageId: id }
           this.selectedTime = ''
           this.timeSlots = []
           if (this.selectedDate) this.fetchTimeSlots()
@@ -376,7 +599,8 @@
               body: JSON.stringify({
                 date: this.selectedDate, time: this.selectedTime,
                 customerName: this.customerName, customerEmail: this.customerEmail,
-                customerPhone: this.customerPhone, staffId: this.selectedStaffId || undefined
+                customerPhone: this.customerPhone, staffId: this.selectedStaffId || undefined,
+                packageId: this.selectedPackage?.id || undefined
               })
             })
             const data = await res.json()

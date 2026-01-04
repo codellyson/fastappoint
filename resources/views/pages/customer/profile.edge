@@ -1,0 +1,135 @@
+@layout('layouts/guest')
+
+@set('title', 'My Profile - FastAppoint')
+
+@section('content')
+  <div class="min-h-screen bg-sand-2">
+    <!-- Header -->
+    <header class="bg-white border-b border-sand-7">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <a href="/" class="text-xl font-bold text-primary">FastAppoint</a>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
+                {{ customer.initials }}
+              </div>
+              <span class="text-sm text-sand-12 hidden sm:inline">{{ customer.firstName }}</span>
+            </div>
+            <form method="POST" action="{{ route('customer.logout') }}" class="inline">
+              {{ csrfField() }}
+              <button type="submit" class="text-sm text-sand-11 hover:text-sand-12">Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      @if(flashMessages.has('success'))
+        <div class="mb-6 bg-success/10 border border-success text-success rounded-lg p-4 text-sm">
+          {{ flashMessages.get('success') }}
+        </div>
+      @endif
+
+      @if(flashMessages.has('error'))
+        <div class="mb-6 bg-error/10 border border-error text-error rounded-lg p-4 text-sm">
+          {{ flashMessages.get('error') }}
+        </div>
+      @endif
+
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-sand-12">Profile Settings</h1>
+        <p class="text-sand-11 mt-1">Manage your account information</p>
+      </div>
+
+      <!-- Navigation -->
+      <div class="flex gap-4 mb-8 border-b border-sand-6 pb-4">
+        <a href="{{ route('customer.dashboard') }}" class="text-sm font-medium text-sand-11 hover:text-sand-12 pb-2">
+          Dashboard
+        </a>
+        <a href="{{ route('customer.bookings') }}" class="text-sm font-medium text-sand-11 hover:text-sand-12 pb-2">
+          All Bookings
+        </a>
+        <a href="{{ route('customer.profile') }}" class="text-sm font-medium text-primary border-b-2 border-primary pb-2">
+          Profile
+        </a>
+      </div>
+
+      <!-- Profile Form -->
+      <div class="bg-white border border-sand-7 rounded-xl">
+        <div class="p-6 border-b border-sand-7">
+          <h2 class="font-semibold text-sand-12">Personal Information</h2>
+        </div>
+
+        <form method="POST" action="{{ route('customer.profile.update') }}" class="p-6 space-y-6">
+          {{ csrfField() }}
+
+          <div>
+            <label for="name" class="block text-sm font-medium text-sand-12 mb-2">Full Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              required
+              value="{{ customer.name }}"
+              class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          <div>
+            <label for="email" class="block text-sm font-medium text-sand-12 mb-2">Email</label>
+            <input
+              id="email"
+              type="email"
+              disabled
+              value="{{ customer.email }}"
+              class="w-full px-4 py-3 border border-sand-6 rounded-lg text-sand-11 bg-sand-2 cursor-not-allowed"
+            />
+            <p class="text-xs text-sand-11 mt-1">Email cannot be changed</p>
+          </div>
+
+          <div>
+            <label for="phone" class="block text-sm font-medium text-sand-12 mb-2">
+              Phone <span class="text-sand-9">(optional)</span>
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              value="{{ customer.phone || '' }}"
+              class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Your phone number"
+            />
+          </div>
+
+          <div class="pt-4">
+            <button
+              type="submit"
+              class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Account Info -->
+      <div class="mt-6 bg-white border border-sand-7 rounded-xl p-6">
+        <h2 class="font-semibold text-sand-12 mb-4">Account Information</h2>
+        <dl class="space-y-3 text-sm">
+          <div class="flex justify-between">
+            <dt class="text-sand-11">Account created</dt>
+            <dd class="text-sand-12">{{ customer.createdAt.toFormat('MMMM d, yyyy') }}</dd>
+          </div>
+          @if(customer.lastBookingAt)
+            <div class="flex justify-between">
+              <dt class="text-sand-11">Last booking</dt>
+              <dd class="text-sand-12">{{ customer.lastBookingAt.toFormat('MMMM d, yyyy') }}</dd>
+            </div>
+          @endif
+        </dl>
+      </div>
+    </div>
+  </div>
+@endsection
