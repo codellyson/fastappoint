@@ -15,6 +15,7 @@ import { readFileSync } from 'node:fs'
 import emailService from '#services/email-service'
 import subscriptionService from '#services/subscription-service'
 import receiptService from '#services/receipt-service'
+import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
 export default class BookingController {
   async show({ params, view, response, request }: HttpContext) {
@@ -23,9 +24,12 @@ export default class BookingController {
       .where('isActive', true)
       .where('isOnboarded', true)
       .preload('services', (query) => {
-        query.where('isActive', true).orderBy('sortOrder').preload('staff', (staffQuery) => {
-          staffQuery.where('isActive', true)
-        })
+        query
+          .where('isActive', true)
+          .orderBy('sortOrder')
+          .preload('staff', (staffQuery) => {
+            staffQuery.where('isActive', true)
+          })
       })
       .preload('availabilities', (query) => query.where('isActive', true))
       .preload('theme')
@@ -276,9 +280,14 @@ export default class BookingController {
       const canCreate = await subscriptionService.canCreateBooking(business.id)
       if (!canCreate.allowed) {
         if (isJsonRequest) {
-          return response.badRequest({ error: 'Booking limit reached. Please contact the business directly.' })
+          return response.badRequest({
+            error: 'Booking limit reached. Please contact the business directly.',
+          })
         }
-        session.flash('error', 'This business has reached their monthly booking limit. Please contact them directly.')
+        session.flash(
+          'error',
+          'This business has reached their monthly booking limit. Please contact them directly.'
+        )
         return response.redirect().back()
       }
 
@@ -294,7 +303,9 @@ export default class BookingController {
       const selectedDate = DateTime.fromISO(data.date)
       const [startHour, startMin] = data.time.split(':').map(Number)
       const endMinutes = startHour * 60 + startMin + service.durationMinutes
-      const endTime = `${Math.floor(endMinutes / 60).toString().padStart(2, '0')}:${(endMinutes % 60).toString().padStart(2, '0')}`
+      const endTime = `${Math.floor(endMinutes / 60)
+        .toString()
+        .padStart(2, '0')}:${(endMinutes % 60).toString().padStart(2, '0')}`
 
       const bookingQuery = Booking.query()
         .where('businessId', business.id)
@@ -391,7 +402,7 @@ export default class BookingController {
     }
 
     const paystackPublicKey = env.get('PAYSTACK_PUBLIC_KEY', 'pk_test_xxxxx')
-    
+
     // Calculate time remaining
     let timeRemaining: number | null = null
     if (booking.paymentExpiresAt) {
@@ -478,7 +489,11 @@ export default class BookingController {
         await receiptService.generateReceipt(booking, transaction)
       } catch (error) {
         console.error('[Receipt] Failed to generate receipt:', error)
-        return response.status(500).send('Failed to generate receipt. Please ensure pdfkit is installed: pnpm add pdfkit @types/pdfkit')
+        return response
+          .status(500)
+          .send(
+            'Failed to generate receipt. Please ensure pdfkit is installed: pnpm add pdfkit @types/pdfkit'
+          )
       }
     }
 
@@ -495,9 +510,7 @@ export default class BookingController {
   }
 
   async getPaymentStatus({ params, response }: HttpContext) {
-    const booking = await Booking.query()
-      .where('id', params.bookingId)
-      .first()
+    const booking = await Booking.query().where('id', params.bookingId).first()
 
     if (!booking || booking.business.slug !== params.slug) {
       return response.notFound('Booking not found')
@@ -575,7 +588,7 @@ export default class BookingController {
             throw new Error(`Paystack API returned status ${paystackResponse.status}`)
           }
 
-          const data = await paystackResponse.json() as {
+          const data = (await paystackResponse.json()) as {
             status: boolean
             message?: string
             data?: {
@@ -611,7 +624,7 @@ export default class BookingController {
               }
 
               // Use database transaction for atomicity
-              const trx = await Booking.transaction(async (trx) => {
+              const trx = await Booking.transaction(async (trx2: TransactionClientContract) => {
                 // Double-check booking status within transaction
                 await booking.refresh()
                 if (booking.paymentStatus === 'paid') {
@@ -620,7 +633,7 @@ export default class BookingController {
 
                 booking.paymentStatus = 'paid'
                 booking.status = 'confirmed'
-                await booking.useTransaction(trx).save()
+                await booking.useTransaction(trx2).save()
 
                 if (!data.data) {
                   throw new Error('Payment data is missing')
@@ -639,7 +652,7 @@ export default class BookingController {
                 transaction.provider = 'paystack'
                 transaction.reference = booking.paymentReference || reference
                 transaction.providerReference = data.data.reference
-                await transaction.useTransaction(trx).save()
+                await transaction.useTransaction(trx2).save()
 
                 return {
                   amount,
@@ -758,22 +771,27 @@ export default class BookingController {
 
       if (errorMessage) {
         // Send payment failure email
-        await emailService.sendPaymentFailureNotification({
-          customerName: booking.customerName,
-          customerEmail: booking.customerEmail,
-          businessName: booking.business.name,
-          serviceName: booking.service.name,
-          amount: booking.amount,
-          errorMessage: errorMessage,
-          bookingUrl: manageUrl,
-          paymentUrl: paymentUrl,
-        }).catch((error) => {
-          console.error('[Payment] Failed to send payment failure email:', error)
-        })
+        await emailService
+          .sendPaymentFailureNotification({
+            customerName: booking.customerName,
+            customerEmail: booking.customerEmail,
+            businessName: booking.business.name,
+            serviceName: booking.service.name,
+            amount: booking.amount,
+            errorMessage: errorMessage,
+            bookingUrl: manageUrl,
+            paymentUrl: paymentUrl,
+          })
+          .catch((error) => {
+            console.error('[Payment] Failed to send payment failure email:', error)
+          })
 
         session.flash('error', errorMessage)
       } else {
-        session.flash('error', 'Payment verification failed. Please try again or contact support if the issue persists.')
+        session.flash(
+          'error',
+          'Payment verification failed. Please try again or contact support if the issue persists.'
+        )
       }
 
       return response.redirect().toRoute('book.payment', {
@@ -952,7 +970,9 @@ export default class BookingController {
 
       const [startHour, startMin] = data.time.split(':').map(Number)
       const endMinutes = startHour * 60 + startMin + booking.service.durationMinutes
-      const endTime = `${Math.floor(endMinutes / 60).toString().padStart(2, '0')}:${(endMinutes % 60).toString().padStart(2, '0')}`
+      const endTime = `${Math.floor(endMinutes / 60)
+        .toString()
+        .padStart(2, '0')}:${(endMinutes % 60).toString().padStart(2, '0')}`
 
       const existingBooking = await Booking.query()
         .where('businessId', booking.businessId)
@@ -1023,9 +1043,12 @@ export default class BookingController {
       .where('isActive', true)
       .where('isOnboarded', true)
       .preload('services', (query) => {
-        query.where('isActive', true).orderBy('sortOrder').preload('staff', (staffQuery) => {
-          staffQuery.where('isActive', true)
-        })
+        query
+          .where('isActive', true)
+          .orderBy('sortOrder')
+          .preload('staff', (staffQuery) => {
+            staffQuery.where('isActive', true)
+          })
       })
       .preload('availabilities', (query) => query.where('isActive', true))
       .preload('theme')

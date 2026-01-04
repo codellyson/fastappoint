@@ -53,11 +53,11 @@ export default class FeaturedController {
   async initiate({ request, response, auth, session }: HttpContext) {
     const user = auth.user!
     const business = await Business.findOrFail(user.businessId)
-    const { plan: planKey, workspaceImage, displayName } = request.only([
-      'plan',
-      'workspaceImage',
-      'displayName',
-    ])
+    const {
+      plan: planKey,
+      workspaceImage,
+      displayName,
+    } = request.only(['plan', 'workspaceImage', 'displayName'])
 
     const plan = FeaturedBusiness.PLANS[planKey as keyof typeof FeaturedBusiness.PLANS]
     if (!plan) {
@@ -202,4 +202,3 @@ export default class FeaturedController {
     )
   }
 }
-

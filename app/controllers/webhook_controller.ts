@@ -24,9 +24,7 @@ export default class WebhookController {
       return response.status(400).send('Invalid request')
     }
 
-    const expectedSignature = createHmac('sha512', secretKey)
-      .update(rawBody)
-      .digest('hex')
+    const expectedSignature = createHmac('sha512', secretKey).update(rawBody).digest('hex')
 
     if (signature !== expectedSignature) {
       console.error('[WEBHOOK] Invalid Paystack signature')
@@ -125,9 +123,7 @@ export default class WebhookController {
     try {
       await Booking.transaction(async (trx) => {
         // Reload booking within transaction to get latest state
-        const bookingInTrx = await Booking.query({ client: trx })
-          .where('id', booking!.id)
-          .first()
+        const bookingInTrx = await Booking.query({ client: trx }).where('id', booking!.id).first()
 
         if (!bookingInTrx) {
           throw new Error('Booking not found in transaction')
@@ -223,9 +219,7 @@ export default class WebhookController {
     }
 
     if (!booking) {
-      booking = await Booking.query()
-        .whereILike('paymentReference', `%${reference}%`)
-        .first()
+      booking = await Booking.query().whereILike('paymentReference', `%${reference}%`).first()
     }
 
     if (!booking) {
@@ -255,18 +249,20 @@ export default class WebhookController {
     const paymentUrl = `${appUrl}/book/${booking.business.slug}/booking/${booking.id}/payment`
     const manageUrl = `${appUrl}/book/${booking.business.slug}/booking/${booking.id}/manage`
 
-    await emailService.sendPaymentFailureNotification({
-      customerName: booking.customerName,
-      customerEmail: booking.customerEmail,
-      businessName: booking.business.name,
-      serviceName: booking.service.name,
-      amount: booking.amount,
-      errorMessage: booking.lastPaymentError || 'Payment failed',
-      bookingUrl: manageUrl,
-      paymentUrl: paymentUrl,
-    }).catch((error) => {
-      console.error('[WEBHOOK] Failed to send payment failure email:', error)
-    })
+    await emailService
+      .sendPaymentFailureNotification({
+        customerName: booking.customerName,
+        customerEmail: booking.customerEmail,
+        businessName: booking.business.name,
+        serviceName: booking.service.name,
+        amount: booking.amount,
+        errorMessage: booking.lastPaymentError || 'Payment failed',
+        bookingUrl: manageUrl,
+        paymentUrl: paymentUrl,
+      })
+      .catch((error) => {
+        console.error('[WEBHOOK] Failed to send payment failure email:', error)
+      })
 
     await Transaction.create({
       businessId: booking.businessId,
@@ -286,9 +282,7 @@ export default class WebhookController {
   private async handleRefund(data: Record<string, unknown>) {
     const transactionRef = data.transaction_reference as string
 
-    const transaction = await Transaction.query()
-      .where('providerReference', transactionRef)
-      .first()
+    const transaction = await Transaction.query().where('providerReference', transactionRef).first()
 
     if (!transaction) {
       console.log(`[WEBHOOK] No transaction found for refund: ${transactionRef}`)
@@ -330,4 +324,3 @@ export default class WebhookController {
     await withdrawalService.handleTransferReversed(reference, reason)
   }
 }
-

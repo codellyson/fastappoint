@@ -114,4 +114,3 @@ export default class SettingsController {
     return view.render('pages/settings/booking-page', { business })
   }
 }
-

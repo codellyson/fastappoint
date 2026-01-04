@@ -3,7 +3,11 @@ import User from '#models/user'
 import Business from '#models/business'
 import Service from '#models/service'
 import Availability from '#models/availability'
-import { staffValidator, staffUpdateValidator, staffAvailabilityValidator } from '#validators/staff-validator'
+import {
+  staffValidator,
+  staffUpdateValidator,
+  staffAvailabilityValidator,
+} from '#validators/staff-validator'
 import { errors } from '@vinejs/vine'
 import subscriptionService from '#services/subscription-service'
 
@@ -173,7 +177,10 @@ export default class StaffController {
     staffMember.isActive = !staffMember.isActive
     await staffMember.save()
 
-    session.flash('success', staffMember.isActive ? 'Staff member activated' : 'Staff member deactivated')
+    session.flash(
+      'success',
+      staffMember.isActive ? 'Staff member activated' : 'Staff member deactivated'
+    )
     return response.redirect().back()
   }
 
@@ -225,9 +232,7 @@ export default class StaffController {
       { value: 6, label: 'Saturday' },
     ]
 
-    const availabilityMap = new Map(
-      staffMember.availabilities.map((a) => [a.dayOfWeek, a])
-    )
+    const availabilityMap = new Map(staffMember.availabilities.map((a) => [a.dayOfWeek, a]))
 
     return view.render('pages/staff/availability', { staffMember, daysOfWeek, availabilityMap })
   }
@@ -273,4 +278,3 @@ export default class StaffController {
     }
   }
 }
-

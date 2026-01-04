@@ -62,7 +62,7 @@ export default class DashboardController {
     const subscription = await business.getCurrentSubscription()
     let trialDaysRemaining = 0
     let trialExpired = false
-    
+
     if (subscription?.status === 'trialing' && subscription.trialEndsAt) {
       trialExpired = subscription.trialEndsAt < DateTime.now()
       if (!trialExpired) {
@@ -70,9 +70,9 @@ export default class DashboardController {
       }
     }
 
-    return view.render('pages/dashboard', { 
-      business, 
-      stats, 
+    return view.render('pages/dashboard', {
+      business,
+      stats,
       upcomingBookings,
       subscription,
       trialDaysRemaining,

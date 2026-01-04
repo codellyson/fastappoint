@@ -2,21 +2,21 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth-controller')
-const OnboardingController = () => import('#controllers/onboarding-controller')
-const DashboardController = () => import('#controllers/dashboard-controller')
-const BookingController = () => import('#controllers/booking-controller')
-const BookingsController = () => import('#controllers/bookings-controller')
-const ServicesController = () => import('#controllers/services-controller')
-const StaffController = () => import('#controllers/staff-controller')
-const SettingsController = () => import('#controllers/settings-controller')
-const TimeOffController = () => import('#controllers/time-off-controller')
-const FeaturedController = () => import('#controllers/featured-controller')
-const ThemeController = () => import('#controllers/theme-controller')
-const WebhookController = () => import('#controllers/webhook-controller')
+const OnboardingController = () => import('#controllers/onboarding_controller')
+const DashboardController = () => import('#controllers/dashboard_controller')
+const BookingController = () => import('#controllers/booking_controller')
+const BookingsController = () => import('#controllers/bookings_controller')
+const ServicesController = () => import('#controllers/services_controller')
+const StaffController = () => import('#controllers/staff_controller')
+const SettingsController = () => import('#controllers/settings_controller')
+const TimeOffController = () => import('#controllers/time_off_controller')
+const FeaturedController = () => import('#controllers/featured_controller')
+const ThemeController = () => import('#controllers/theme_controller')
+const WebhookController = () => import('#controllers/webhook_controller')
 const SubscriptionsController = () => import('#controllers/subscriptions_controller')
-const WithdrawalsController = () => import('#controllers/withdrawals-controller')
+const WithdrawalsController = () => import('#controllers/withdrawals_controller')
 
-const HomeController = () => import('#controllers/home-controller')
+const HomeController = () => import('#controllers/home_controller')
 router.get('/', [HomeController, 'index']).as('home')
 
 router
@@ -143,13 +143,22 @@ router
       .post('/settings/withdrawals/bank-accounts', [WithdrawalsController, 'storeBankAccount'])
       .as('settings.withdrawals.bank-accounts.store')
     router
-      .post('/settings/withdrawals/bank-accounts/:id/primary', [WithdrawalsController, 'setPrimaryBankAccount'])
+      .post('/settings/withdrawals/bank-accounts/:id/primary', [
+        WithdrawalsController,
+        'setPrimaryBankAccount',
+      ])
       .as('settings.withdrawals.bank-accounts.primary')
     router
-      .post('/settings/withdrawals/bank-accounts/:id/delete', [WithdrawalsController, 'deleteBankAccount'])
+      .post('/settings/withdrawals/bank-accounts/:id/delete', [
+        WithdrawalsController,
+        'deleteBankAccount',
+      ])
       .as('settings.withdrawals.bank-accounts.delete')
     router
-      .post('/settings/withdrawals/bank-accounts/verify', [WithdrawalsController, 'verifyBankAccount'])
+      .post('/settings/withdrawals/bank-accounts/verify', [
+        WithdrawalsController,
+        'verifyBankAccount',
+      ])
       .as('settings.withdrawals.bank-accounts.verify')
     router
       .post('/settings/withdrawals/request', [WithdrawalsController, 'requestWithdrawal'])
@@ -160,9 +169,7 @@ router
     router
       .get('/settings/withdrawals/history', [WithdrawalsController, 'history'])
       .as('settings.withdrawals.history')
-    router
-      .get('/api/banks', [WithdrawalsController, 'getBanks'])
-      .as('api.banks')
+    router.get('/api/banks', [WithdrawalsController, 'getBanks']).as('api.banks')
 
     router.get('/settings/theme', [ThemeController, 'index']).as('settings.theme')
     router

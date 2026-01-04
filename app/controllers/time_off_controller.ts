@@ -21,12 +21,8 @@ export default class TimeOffController {
       .where('isActive', true)
       .orderBy('fullName')
 
-    const upcomingTimeOffs = timeOffs.filter(
-      (t) => t.endDatetime >= DateTime.now()
-    )
-    const pastTimeOffs = timeOffs.filter(
-      (t) => t.endDatetime < DateTime.now()
-    )
+    const upcomingTimeOffs = timeOffs.filter((t) => t.endDatetime >= DateTime.now())
+    const pastTimeOffs = timeOffs.filter((t) => t.endDatetime < DateTime.now())
 
     return view.render('pages/time-off/index', {
       upcomingTimeOffs,
@@ -180,4 +176,3 @@ export default class TimeOffController {
     return response.redirect().toRoute('time-off.index')
   }
 }
-

@@ -29,11 +29,11 @@ export default class SubscriptionsController {
     const business = await Business.findOrFail(user.businessId)
     const currentSubscription = await business.getCurrentSubscription()
     const plans = await SubscriptionPlan.query().where('isActive', true).orderBy('sortOrder', 'asc')
-    
+
     // Check if trial is expired and calculate days remaining
     let trialExpired = false
     let trialDaysRemaining = 0
-    
+
     if (currentSubscription?.status === 'trialing' && currentSubscription.trialEndsAt) {
       trialExpired = currentSubscription.trialEndsAt < DateTime.now()
       if (!trialExpired) {
@@ -62,7 +62,7 @@ export default class SubscriptionsController {
     const business = await Business.findOrFail(user.businessId)
     const subscription = await business.getCurrentSubscription()
     const plans = await SubscriptionPlan.query().where('isActive', true).orderBy('sortOrder', 'asc')
-    
+
     // Calculate trial days remaining if on trial
     let trialDaysRemaining = 0
     if (subscription?.status === 'trialing' && subscription.trialEndsAt) {
@@ -147,13 +147,16 @@ export default class SubscriptionsController {
       // Verify payment with Paystack
       const secretKey = env.get('PAYSTACK_SECRET_KEY')
       if (secretKey) {
-        const paystackResponse = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-          headers: {
-            Authorization: `Bearer ${secretKey}`,
-          },
-        })
+        const paystackResponse = await fetch(
+          `https://api.paystack.co/transaction/verify/${reference}`,
+          {
+            headers: {
+              Authorization: `Bearer ${secretKey}`,
+            },
+          }
+        )
 
-        const data = await paystackResponse.json() as {
+        const data = (await paystackResponse.json()) as {
           status: boolean
           message?: string
           data?: {
@@ -166,7 +169,10 @@ export default class SubscriptionsController {
 
         if (!data.status || data.data?.status !== 'success') {
           console.error('[SUBSCRIPTION] Payment verification failed:', data)
-          session.flash('error', 'Payment verification failed. Please contact support if payment was deducted.')
+          session.flash(
+            'error',
+            'Payment verification failed. Please contact support if payment was deducted.'
+          )
           return response.redirect().toRoute('subscriptions.select')
         }
 
@@ -174,19 +180,24 @@ export default class SubscriptionsController {
         const authorizationCode = data.data?.authorization?.authorization_code
 
         // Create subscription
-        const subscription = await subscriptionService.createSubscription(business, plan, business.email, authorizationCode)
-        
-        console.log('[SUBSCRIPTION] Created subscription:', { 
-          subscriptionId: subscription.id, 
-          planId: plan.id, 
-          businessId: business.id 
+        const subscription = await subscriptionService.createSubscription(
+          business,
+          plan,
+          business.email,
+          authorizationCode
+        )
+
+        console.log('[SUBSCRIPTION] Created subscription:', {
+          subscriptionId: subscription.id,
+          planId: plan.id,
+          businessId: business.id,
         })
 
         // Refresh business to get updated status
         await business.refresh()
 
         session.flash('success', `Successfully subscribed to ${plan.displayName} plan!`)
-        
+
         // Redirect to onboarding if not yet onboarded, otherwise to manage
         if (!business.isOnboarded) {
           return response.redirect().toRoute('onboarding.show')
@@ -196,12 +207,12 @@ export default class SubscriptionsController {
         // Dev mode - create subscription without verification
         console.log('[SUBSCRIPTION] Dev mode: Creating subscription without payment verification')
         await subscriptionService.createSubscription(business, plan, business.email)
-        
+
         // Refresh business to get updated status
         await business.refresh()
 
         session.flash('success', `Successfully subscribed to ${plan.displayName} plan!`)
-        
+
         // Redirect to onboarding if not yet onboarded, otherwise to manage
         if (!business.isOnboarded) {
           return response.redirect().toRoute('onboarding.show')
@@ -210,7 +221,10 @@ export default class SubscriptionsController {
       }
     } catch (error: any) {
       console.error('[SUBSCRIPTION] Error creating subscription:', error)
-      session.flash('error', error.message || 'Failed to activate subscription. Please contact support.')
+      session.flash(
+        'error',
+        error.message || 'Failed to activate subscription. Please contact support.'
+      )
       return response.redirect().toRoute('subscriptions.select')
     }
   }
@@ -234,7 +248,10 @@ export default class SubscriptionsController {
 
     try {
       await subscriptionService.cancelSubscription(subscription, false)
-      session.flash('success', 'Subscription will be cancelled at the end of the current billing period')
+      session.flash(
+        'success',
+        'Subscription will be cancelled at the end of the current billing period'
+      )
     } catch (error: any) {
       session.flash('error', error.message || 'Failed to cancel subscription')
     }

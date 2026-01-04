@@ -125,7 +125,9 @@ export default class WithdrawalsController {
 
       // If setting as primary, unset other primary accounts
       if (data.isPrimary || isFirst) {
-        await BusinessBankAccount.query().where('businessId', business.id).update({ isPrimary: false })
+        await BusinessBankAccount.query()
+          .where('businessId', business.id)
+          .update({ isPrimary: false })
       }
 
       // Create the bank account
@@ -295,4 +297,3 @@ export default class WithdrawalsController {
     return response.json({ success: true, banks })
   }
 }
-

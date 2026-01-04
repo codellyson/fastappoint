@@ -8,9 +8,7 @@ export default class ServicesController {
   async index({ view, auth }: HttpContext) {
     const user = auth.user!
     const business = await Business.findOrFail(user.businessId)
-    const services = await Service.query()
-      .where('businessId', business.id)
-      .orderBy('sortOrder')
+    const services = await Service.query().where('businessId', business.id).orderBy('sortOrder')
 
     return view.render('pages/services/index', { services, business })
   }

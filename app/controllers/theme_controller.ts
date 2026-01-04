@@ -256,4 +256,3 @@ export default class ThemeController {
     return response.redirect(`/book/${business.slug}?preview=true`)
   }
 }
-
