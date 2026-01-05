@@ -1,0 +1,278 @@
+@layout('layouts/blog')
+
+@set('title', post.title + ' - FastAppoint Blog')
+@set('description', post.excerpt)
+
+@section('content')
+  {{-- Article Header --}}
+  <article>
+    <div class="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 mb-4">
+          <a href="{{ route('blog.index') }}" class="text-primary hover:underline text-sm">Blog</a>
+          <span class="text-sand-9">/</span>
+          <span class="text-sand-11 text-sm">{{ post.category }}</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-sand-12 mb-4">
+          {{ post.title }}
+        </h1>
+        <p class="text-lg text-sand-11 mb-6">
+          {{ post.excerpt }}
+        </p>
+        <div class="flex items-center gap-4 text-sm text-sand-9">
+          <span>{{ post.publishedAt }}</span>
+          <span>&middot;</span>
+          <span>{{ post.readTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    {{-- Featured Image --}}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <img
+        src="{{ post.image }}"
+        alt="{{ post.title }}"
+        class="w-full rounded-xl shadow-lg aspect-[2/1] object-cover"
+      />
+    </div>
+
+    {{-- Article Content --}}
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="prose prose-lg max-w-none">
+        <p class="lead text-xl text-sand-11">
+          Square is a payments giant. Their Point of Sale systems are everywhere. But when it comes to online appointment booking, how does Square Appointments compare to FastAppoint? More importantly, can you even use Square Appointments in Nigeria?
+        </p>
+
+        <h2>The Immediate Problem: Square Isn't Available in Nigeria</h2>
+        <p>
+          Let's get the elephant out of the room first: <strong>Square Appointments is not available in Nigeria</strong>. Square only operates in a handful of countries:
+        </p>
+        <ul>
+          <li>United States</li>
+          <li>Canada</li>
+          <li>United Kingdom</li>
+          <li>Australia</li>
+          <li>Japan</li>
+          <li>France, Ireland, Spain</li>
+        </ul>
+        <p>
+          If you're running a business in Nigeria or anywhere in Africa, Square Appointments simply isn't an option. But let's still compare them for those considering their options.
+        </p>
+
+        <div class="bg-error/10 rounded-xl p-6 my-8 border border-error/30">
+          <h3 class="text-lg font-semibold text-error mt-0 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+            Not Available in Nigeria
+          </h3>
+          <p class="text-sand-11 mb-0">
+            Square Appointments only operates in select Western countries. Nigerian businesses cannot sign up for or use Square's services.
+          </p>
+        </div>
+
+        <h2>Feature Comparison (For Reference)</h2>
+        <p>
+          Even if Square were available, here's how it would stack up:
+        </p>
+
+        <div class="overflow-x-auto my-8">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-sand-3">
+                <th class="text-left p-4 border border-sand-6">Feature</th>
+                <th class="text-center p-4 border border-sand-6">FastAppoint</th>
+                <th class="text-center p-4 border border-sand-6">Square Appointments</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-4 border border-sand-6">Available in Nigeria</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Yes</td>
+                <td class="text-center p-4 border border-sand-6 text-error">No</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Payment Processing</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Paystack (NGN)</td>
+                <td class="text-center p-4 border border-sand-6">Square Payments only</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Free Plan Available</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">5-day trial</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Yes (1 location)</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Multi-Staff</td>
+                <td class="text-center p-4 border border-sand-6 text-success">All plans</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Plus plan and up</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Portfolio Gallery</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Yes</td>
+                <td class="text-center p-4 border border-sand-6 text-error">No</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Service Packages</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Yes</td>
+                <td class="text-center p-4 border border-sand-6 text-error">No</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">POS Integration</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Online only</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Full Square ecosystem</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Square's Business Model: The Trap</h2>
+        <p>
+          Square Appointments looks attractive because it offers a "free" plan. But here's what they don't tell you upfront:
+        </p>
+        <ul>
+          <li><strong>Payment processing fees:</strong> 2.6% + 10&cent; per transaction</li>
+          <li><strong>Card-on-file charges:</strong> 3.5% + 15&cent;</li>
+          <li><strong>No-show fees:</strong> You get charged even when collecting no-show fees</li>
+          <li><strong>Locked into Square Payments:</strong> You must use Square for processing</li>
+        </ul>
+        <p>
+          The "free" plan is only free if you don't process any payments. Once you start taking payments, you're paying Square on every transaction - forever.
+        </p>
+
+        <div class="bg-primary/10 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0">The Real Cost of "Free"</h3>
+          <p class="text-sand-11">
+            Let's say you're a hairstylist doing &#8358;500,000 in bookings per month through Square:
+          </p>
+          <div class="bg-white rounded-lg p-4 mt-4">
+            <div class="flex justify-between mb-2">
+              <span>Transaction fees (2.6%)</span>
+              <span class="font-semibold">&#8358;13,000</span>
+            </div>
+            <div class="flex justify-between mb-2">
+              <span>Per-transaction fee (&#8358;150 x ~50 bookings)</span>
+              <span class="font-semibold">&#8358;7,500</span>
+            </div>
+            <div class="flex justify-between pt-2 border-t border-sand-4">
+              <span class="font-semibold">Total Monthly Cost</span>
+              <span class="font-semibold text-error">~&#8358;20,500</span>
+            </div>
+          </div>
+          <p class="text-sand-11 mt-4 mb-0">
+            Compare this to FastAppoint's flat &#8358;5,000/month + Paystack's 1.5% (&#8358;7,500) = <strong>&#8358;12,500 total</strong>. You'd save &#8358;8,000/month.
+          </p>
+        </div>
+
+        <h2>Why Square Won't Come to Nigeria Soon</h2>
+        <p>
+          Square's business model relies on their payment processing hardware and infrastructure. Building this in Nigeria would require:
+        </p>
+        <ul>
+          <li>CBN licensing and regulatory approval</li>
+          <li>Local banking partnerships</li>
+          <li>Hardware distribution networks</li>
+          <li>Customer support infrastructure</li>
+        </ul>
+        <p>
+          This is why international payment companies like Stripe have also been slow to fully enter Nigeria. The regulatory and infrastructure requirements are significant.
+        </p>
+
+        <h2>What FastAppoint Offers Instead</h2>
+        <p>
+          FastAppoint was built for the Nigerian market from the start. Here's what you get:
+        </p>
+
+        <h3>1. Payment Processing That Works</h3>
+        <p>
+          Through Paystack, your customers can pay with:
+        </p>
+        <ul>
+          <li>All Nigerian bank cards (Verve, Mastercard, Visa)</li>
+          <li>Bank transfers</li>
+          <li>USSD (for those without smartphones)</li>
+        </ul>
+        <p>
+          And the money goes straight to your Nigerian bank account.
+        </p>
+
+        <h3>2. Predictable Pricing</h3>
+        <p>
+          Unlike Square's percentage-based model that grows with your success, FastAppoint has flat monthly plans:
+        </p>
+        <ul>
+          <li><strong>Starter:</strong> &#8358;5,000/month</li>
+          <li><strong>Pro:</strong> &#8358;15,000/month</li>
+          <li><strong>Business:</strong> &#8358;40,000/month</li>
+        </ul>
+        <p>
+          As your business grows, your software costs stay stable. You only pay Paystack's transaction fees (1.5%), which is lower than Square's 2.6%.
+        </p>
+
+        <h3>3. Features for Service Businesses</h3>
+        <p>
+          Square focuses on retail. FastAppoint focuses on service businesses:
+        </p>
+        <ul>
+          <li>Portfolio galleries to showcase your work</li>
+          <li>Service packages and bundles</li>
+          <li>Flexible deposit collection</li>
+          <li>Customer accounts for repeat bookings</li>
+          <li>Staff management with individual schedules</li>
+        </ul>
+
+        <h2>The Bottom Line</h2>
+        <p>
+          Square Appointments is simply not an option for Nigerian businesses. Even if it were, their payment-focused model would cost you more as you grow.
+        </p>
+        <p>
+          FastAppoint gives you:
+        </p>
+        <ul>
+          <li>A platform that actually works in Nigeria</li>
+          <li>Payment processing through Paystack</li>
+          <li>Predictable, affordable pricing</li>
+          <li>Features built for service businesses</li>
+        </ul>
+
+        <div class="bg-sand-3 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0 mb-4">Start Accepting Bookings Today</h3>
+          <p class="mb-4">
+            Don't wait for international platforms to come to Nigeria. FastAppoint is here now, built for your market, ready to grow your business.
+          </p>
+          <a
+            href="{{ route('auth.signup.show') }}"
+            class="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  {{-- Related Posts --}}
+  @if(relatedPosts.length > 0)
+    <div class="bg-sand-2 py-12">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-sand-12 mb-8">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          @each(related in relatedPosts)
+            <a href="{{ route('blog.show', { slug: related.slug }) }}" class="group">
+              <div class="relative rounded-xl overflow-hidden mb-4 aspect-[16/9]">
+                <img
+                  src="{{ related.image }}"
+                  alt="{{ related.title }}"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <h3 class="font-semibold text-sand-12 group-hover:text-primary transition-colors mb-2">
+                {{ related.title }}
+              </h3>
+              <div class="text-xs text-sand-9">{{ related.readTime }}</div>
+            </a>
+          @endeach
+        </div>
+      </div>
+    </div>
+  @endif
+@endsection

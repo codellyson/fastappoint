@@ -1,0 +1,265 @@
+@layout('layouts/blog')
+
+@set('title', post.title + ' - FastAppoint Blog')
+@set('description', post.excerpt)
+
+@section('content')
+  {{-- Article Header --}}
+  <article>
+    <div class="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 mb-4">
+          <a href="{{ route('blog.index') }}" class="text-primary hover:underline text-sm">Blog</a>
+          <span class="text-sand-9">/</span>
+          <span class="text-sand-11 text-sm">{{ post.category }}</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-sand-12 mb-4">
+          {{ post.title }}
+        </h1>
+        <p class="text-lg text-sand-11 mb-6">
+          {{ post.excerpt }}
+        </p>
+        <div class="flex items-center gap-4 text-sm text-sand-9">
+          <span>{{ post.publishedAt }}</span>
+          <span>&middot;</span>
+          <span>{{ post.readTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    {{-- Featured Image --}}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <img
+        src="{{ post.image }}"
+        alt="{{ post.title }}"
+        class="w-full rounded-xl shadow-lg aspect-[2/1] object-cover"
+      />
+    </div>
+
+    {{-- Article Content --}}
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="prose prose-lg max-w-none">
+        <p class="lead text-xl text-sand-11">
+          If you're running a service business in Nigeria or Africa, you've probably heard of Calendly. It's the go-to tool for scheduling meetings. But here's the thing: <strong>Calendly was built for meetings, not service businesses</strong>. And that makes all the difference.
+        </p>
+
+        <h2>The Core Problem with Calendly for Service Businesses</h2>
+        <p>
+          Calendly is fantastic if you're a consultant scheduling Zoom calls or a sales rep booking demos. But if you're a hair stylist, photographer, makeup artist, or any service professional who needs to:
+        </p>
+        <ul>
+          <li>Accept payments at the time of booking</li>
+          <li>Manage multiple staff members with different skills</li>
+          <li>Offer different services at different prices</li>
+          <li>Handle deposits and cancellation fees</li>
+          <li>Process payments in Naira</li>
+        </ul>
+        <p>
+          ...then Calendly falls short. Let's break down the differences.
+        </p>
+
+        <h2>Feature Comparison: FastAppoint vs Calendly</h2>
+
+        <div class="overflow-x-auto my-8">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-sand-3">
+                <th class="text-left p-4 border border-sand-6">Feature</th>
+                <th class="text-center p-4 border border-sand-6">FastAppoint</th>
+                <th class="text-center p-4 border border-sand-6">Calendly</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-4 border border-sand-6">Built-in Payments</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Yes (Paystack)</td>
+                <td class="text-center p-4 border border-sand-6 text-error">Stripe/PayPal only</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Nigerian Naira Support</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Native</td>
+                <td class="text-center p-4 border border-sand-6 text-error">No</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Multiple Staff Management</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Full Support</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Limited (Teams plan)</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Service Menu & Pricing</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Full catalog</td>
+                <td class="text-center p-4 border border-sand-6 text-error">Basic event types</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Deposit Collection</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Yes</td>
+                <td class="text-center p-4 border border-sand-6 text-error">No</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Branded Booking Page</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Full customization</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Limited</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Portfolio Gallery</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Yes</td>
+                <td class="text-center p-4 border border-sand-6 text-error">No</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Starting Price</td>
+                <td class="text-center p-4 border border-sand-6 font-semibold">&#8358;5,000/mo</td>
+                <td class="text-center p-4 border border-sand-6">$10/mo (~&#8358;15,000)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Pricing: The Real Cost Difference</h2>
+        <p>
+          Let's talk money. Calendly's paid plans start at <strong>$10/month per seat</strong>. That's roughly &#8358;15,000 at current exchange rates. And that's for their basic paid tier that doesn't even include payments!
+        </p>
+        <p>
+          FastAppoint starts at <strong>&#8358;5,000/month</strong> with payments built-in. That's 3x cheaper with more features for service businesses.
+        </p>
+
+        <div class="bg-primary/10 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0">Monthly Cost Comparison</h3>
+          <div class="grid grid-cols-2 gap-4 mt-4">
+            <div class="bg-white rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-primary">&#8358;5,000</div>
+              <div class="text-sm text-sand-11">FastAppoint Starter</div>
+              <div class="text-xs text-sand-9 mt-1">With payments included</div>
+            </div>
+            <div class="bg-white rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-sand-12">~&#8358;15,000</div>
+              <div class="text-sm text-sand-11">Calendly Standard</div>
+              <div class="text-xs text-sand-9 mt-1">Payments extra</div>
+            </div>
+          </div>
+        </div>
+
+        <h2>Payment Processing: The Dealbreaker</h2>
+        <p>
+          Here's where Calendly really falls apart for Nigerian businesses: <strong>payment processing</strong>.
+        </p>
+        <p>
+          Calendly only integrates with Stripe and PayPal for payments. Neither of these has full support for Nigerian businesses. You can't easily collect payments in Naira, and your customers can't pay with their Nigerian bank cards or bank transfers.
+        </p>
+        <p>
+          FastAppoint is built on <strong>Paystack</strong>, which means:
+        </p>
+        <ul>
+          <li>Accept payments in Naira (&#8358;)</li>
+          <li>Customers can pay with any Nigerian bank card</li>
+          <li>Bank transfer option available</li>
+          <li>Money goes directly to your Nigerian bank account</li>
+          <li>No currency conversion fees</li>
+        </ul>
+
+        <h2>For Service Businesses, Not Just Meetings</h2>
+        <p>
+          Calendly treats every appointment as a "meeting." But your haircut isn't a meeting. Your photoshoot isn't a meeting. Your makeup session isn't a meeting.
+        </p>
+        <p>
+          FastAppoint understands that service businesses need:
+        </p>
+        <ul>
+          <li><strong>Service catalogs</strong> with descriptions, durations, and prices</li>
+          <li><strong>Staff assignments</strong> so customers can book with their preferred stylist</li>
+          <li><strong>Portfolio galleries</strong> to showcase your work</li>
+          <li><strong>Flexible payment options</strong> - full payment, deposits, or pay later</li>
+          <li><strong>Google Calendar sync</strong> to keep everything organized</li>
+        </ul>
+
+        <h2>The Staff Management Gap</h2>
+        <p>
+          If you have a team, Calendly's model gets expensive fast. Their Teams plan charges <strong>per seat</strong>, meaning each staff member costs extra.
+        </p>
+        <p>
+          FastAppoint includes staff management in all plans:
+        </p>
+        <ul>
+          <li><strong>Starter:</strong> Up to 3 staff members</li>
+          <li><strong>Pro:</strong> Up to 10 staff members</li>
+          <li><strong>Business:</strong> Unlimited staff</li>
+        </ul>
+        <p>
+          Your staff can have individual availability schedules, assigned services, and customers can book directly with them.
+        </p>
+
+        <h2>When Should You Use Calendly Instead?</h2>
+        <p>
+          To be fair, Calendly is still excellent for certain use cases:
+        </p>
+        <ul>
+          <li>Scheduling sales calls and demos</li>
+          <li>Booking virtual consultations</li>
+          <li>Coordinating meetings across time zones</li>
+          <li>If you don't need payment collection</li>
+          <li>If you work alone and don't have staff</li>
+        </ul>
+        <p>
+          But if you're a service business that needs to collect money and manage a team, FastAppoint is the clear choice.
+        </p>
+
+        <h2>Real Talk: Who's Making the Switch?</h2>
+        <p>
+          We're seeing business owners switch from Calendly for these reasons:
+        </p>
+        <ol>
+          <li><strong>Payment friction:</strong> Customers couldn't pay easily with Nigerian cards</li>
+          <li><strong>Pricing in foreign currency:</strong> Tired of fluctuating costs based on exchange rates</li>
+          <li><strong>Missing features:</strong> Needed deposits, staff management, and service catalogs</li>
+          <li><strong>Local support:</strong> Wanted a platform that understands the Nigerian market</li>
+        </ol>
+
+        <h2>The Bottom Line</h2>
+        <p>
+          Calendly is a great meeting scheduler. FastAppoint is a complete booking and payment platform built for service businesses in Africa.
+        </p>
+        <p>
+          If you're running a salon, photography studio, spa, or any service business where customers pay for your time and expertise, FastAppoint gives you everything you need at a fraction of the cost.
+        </p>
+
+        <div class="bg-sand-3 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0 mb-4">Ready to make the switch?</h3>
+          <p class="mb-4">
+            Try FastAppoint free for 5 days. No credit card required. See why service businesses are choosing us over Calendly.
+          </p>
+          <a
+            href="{{ route('auth.signup.show') }}"
+            class="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  {{-- Related Posts --}}
+  @if(relatedPosts.length > 0)
+    <div class="bg-sand-2 py-12">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-sand-12 mb-8">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          @each(related in relatedPosts)
+            <a href="{{ route('blog.show', { slug: related.slug }) }}" class="group">
+              <div class="relative rounded-xl overflow-hidden mb-4 aspect-[16/9]">
+                <img
+                  src="{{ related.image }}"
+                  alt="{{ related.title }}"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <h3 class="font-semibold text-sand-12 group-hover:text-primary transition-colors mb-2">
+                {{ related.title }}
+              </h3>
+              <div class="text-xs text-sand-9">{{ related.readTime }}</div>
+            </a>
+          @endeach
+        </div>
+      </div>
+    </div>
+  @endif
+@endsection

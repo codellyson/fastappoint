@@ -1,0 +1,382 @@
+@layout('layouts/blog')
+
+@set('title', post.title + ' - FastAppoint Blog')
+@set('description', post.excerpt)
+
+@section('content')
+  {{-- Article Header --}}
+  <article>
+    <div class="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 mb-4">
+          <a href="{{ route('blog.index') }}" class="text-primary hover:underline text-sm">Blog</a>
+          <span class="text-sand-9">/</span>
+          <span class="text-sand-11 text-sm">{{ post.category }}</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-sand-12 mb-4">
+          {{ post.title }}
+        </h1>
+        <p class="text-lg text-sand-11 mb-6">
+          {{ post.excerpt }}
+        </p>
+        <div class="flex items-center gap-4 text-sm text-sand-9">
+          <span>{{ post.publishedAt }}</span>
+          <span>&middot;</span>
+          <span>{{ post.readTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    {{-- Featured Image --}}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <img
+        src="{{ post.image }}"
+        alt="{{ post.title }}"
+        class="w-full rounded-xl shadow-lg aspect-[2/1] object-cover"
+      />
+    </div>
+
+    {{-- Article Content --}}
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="prose prose-lg max-w-none">
+        <p class="lead text-xl text-sand-11">
+          "Free booking software" is one of the most searched terms by service business owners. But here's what experienced business owners know: free software often costs more than paid alternatives. Let's expose the hidden costs and help you calculate the true price of your booking platform.
+        </p>
+
+        <h2>The Hidden Cost Categories</h2>
+        <p>
+          When evaluating "free" booking software, look for these hidden costs:
+        </p>
+        <ol>
+          <li>Transaction fees</li>
+          <li>New client commissions</li>
+          <li>Feature limitations</li>
+          <li>Per-user pricing</li>
+          <li>Booking limits</li>
+          <li>Marketing add-ons</li>
+          <li>Time costs</li>
+        </ol>
+
+        <h2>1. Transaction Fees: The Silent Profit Eater</h2>
+        <p>
+          Most "free" booking platforms make money through payment processing. Here's how fees compare:
+        </p>
+
+        <div class="overflow-x-auto my-8">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-sand-3">
+                <th class="text-left p-4 border border-sand-6">Platform</th>
+                <th class="text-center p-4 border border-sand-6">Transaction Fee</th>
+                <th class="text-center p-4 border border-sand-6">Per-Transaction</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-4 border border-sand-6">FastAppoint + Paystack</td>
+                <td class="text-center p-4 border border-sand-6 text-success">1.5%</td>
+                <td class="text-center p-4 border border-sand-6">None</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Fresha</td>
+                <td class="text-center p-4 border border-sand-6">2.19%</td>
+                <td class="text-center p-4 border border-sand-6">+20p</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Square Appointments</td>
+                <td class="text-center p-4 border border-sand-6">2.6%</td>
+                <td class="text-center p-4 border border-sand-6">+10&cent;</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Setmore + Stripe</td>
+                <td class="text-center p-4 border border-sand-6">2.9%</td>
+                <td class="text-center p-4 border border-sand-6">+30&cent;</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bg-primary/10 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0">Real World Example</h3>
+          <p class="text-sand-11 mb-4">
+            Let's say your salon processes &#8358;1,000,000 in bookings per month with 100 transactions.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white rounded-lg p-4">
+              <h4 class="font-semibold text-sand-12 mb-2 mt-0">FastAppoint + Paystack</h4>
+              <div class="text-sm text-sand-11">
+                <div class="flex justify-between mb-1">
+                  <span>1.5% of &#8358;1,000,000</span>
+                  <span>&#8358;15,000</span>
+                </div>
+                <div class="flex justify-between mb-1">
+                  <span>Monthly subscription</span>
+                  <span>&#8358;5,000</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-sand-4 font-semibold">
+                  <span>Total</span>
+                  <span class="text-primary">&#8358;20,000</span>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white rounded-lg p-4">
+              <h4 class="font-semibold text-sand-12 mb-2 mt-0">"Free" Platform</h4>
+              <div class="text-sm text-sand-11">
+                <div class="flex justify-between mb-1">
+                  <span>2.9% of &#8358;1,000,000</span>
+                  <span>&#8358;29,000</span>
+                </div>
+                <div class="flex justify-between mb-1">
+                  <span>&#8358;450 x 100 transactions</span>
+                  <span>&#8358;45,000</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-sand-4 font-semibold">
+                  <span>Total</span>
+                  <span class="text-error">&#8358;74,000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-sm text-sand-11 mt-4 mb-0">
+            <strong>The "free" platform costs &#8358;54,000 MORE per month.</strong> That's &#8358;648,000 per year - enough for a new equipment or staff salary.
+          </p>
+        </div>
+
+        <h2>2. New Client Commissions: The Growth Tax</h2>
+        <p>
+          Some "free" platforms like Fresha take a percentage of your first booking with each new client. Typically 20%.
+        </p>
+        <p>
+          Think about what that means:
+        </p>
+        <ul>
+          <li>New client books a &#8358;20,000 service</li>
+          <li>Platform takes &#8358;4,000</li>
+          <li>You did all the work, they took 20%</li>
+          <li>This is <strong>on top of</strong> regular transaction fees</li>
+        </ul>
+        <p>
+          If you're actively marketing and bringing in new clients, this cost adds up fast. A salon getting 50 new clients per month at &#8358;15,000 average ticket loses &#8358;150,000 to commissions alone.
+        </p>
+
+        <h2>3. Feature Limitations: Death by a Thousand Cuts</h2>
+        <p>
+          Free plans often restrict critical features:
+        </p>
+
+        <div class="bg-warning/10 rounded-xl p-6 my-8 border border-warning/30">
+          <h3 class="text-lg font-semibold text-warning mt-0">Common Restrictions</h3>
+          <ul class="text-sand-11 mb-0">
+            <li><strong>No SMS reminders:</strong> Email has ~20% open rate, SMS has 98%</li>
+            <li><strong>Basic calendar:</strong> One-way sync only, no Google Calendar integration</li>
+            <li><strong>No deposits:</strong> Can't collect upfront payments to reduce no-shows</li>
+            <li><strong>Platform branding:</strong> "Powered by [Platform]" on your booking page</li>
+            <li><strong>Limited customization:</strong> Can't match your brand colors/style</li>
+            <li><strong>No recurring appointments:</strong> Customers must rebook manually</li>
+          </ul>
+        </div>
+
+        <h2>4. Per-User Pricing: The Team Trap</h2>
+        <p>
+          Many platforms charge per user/seat. This seems fair until you calculate the real cost:
+        </p>
+        <ul>
+          <li><strong>Solo:</strong> $12/month (manageable)</li>
+          <li><strong>3 staff:</strong> $36/month</li>
+          <li><strong>6 staff:</strong> $72/month</li>
+          <li><strong>10 staff:</strong> $120/month (~&#8358;180,000)</li>
+        </ul>
+        <p>
+          FastAppoint's approach is different:
+        </p>
+        <ul>
+          <li><strong>Starter:</strong> &#8358;5,000/month for up to 3 staff</li>
+          <li><strong>Pro:</strong> &#8358;15,000/month for up to 10 staff</li>
+          <li><strong>Business:</strong> &#8358;40,000/month for unlimited staff</li>
+        </ul>
+        <p>
+          A 10-person team on FastAppoint Pro pays &#8358;15,000. On a per-user platform, they'd pay &#8358;180,000. That's 12x more.
+        </p>
+
+        <h2>5. Booking Limits: Punishing Success</h2>
+        <p>
+          Some platforms limit the number of bookings on lower-tier plans:
+        </p>
+        <ul>
+          <li>Free: 50 bookings/month</li>
+          <li>Basic: 100 bookings/month</li>
+          <li>Standard: 500 bookings/month</li>
+          <li>Premium: 2000 bookings/month</li>
+        </ul>
+        <p>
+          A busy salon doing 20 bookings per day hits 600 bookings per month. On a platform with booking limits, they're forced into premium tiers just because they're successful.
+        </p>
+        <p>
+          <strong>FastAppoint has no booking limits.</strong> Whether you have 10 or 10,000 bookings, you pay the same flat rate.
+        </p>
+
+        <h2>6. Marketing Add-ons: Pay to Communicate</h2>
+        <p>
+          "Free" platforms often charge for marketing tools:
+        </p>
+        <ul>
+          <li>Email campaigns: per email sent</li>
+          <li>SMS reminders: per message</li>
+          <li>Blast messages: per recipient</li>
+          <li>Automated follow-ups: premium feature</li>
+        </ul>
+        <p>
+          If you're sending 500 reminder texts per month at &#8358;10 each, that's &#8358;5,000/month just for reminders - more than FastAppoint's entire Starter plan.
+        </p>
+
+        <h2>7. Time Costs: The Invisible Expense</h2>
+        <p>
+          Some costs aren't monetary but equally important:
+        </p>
+
+        <h3>Setup Time</h3>
+        <p>
+          Complex platforms with 50+ features require hours of setup and learning. Simple platforms like FastAppoint can be set up in 30-60 minutes.
+        </p>
+
+        <h3>Admin Time</h3>
+        <p>
+          Without integrated payments, you're manually:
+        </p>
+        <ul>
+          <li>Sending payment reminders</li>
+          <li>Chasing unpaid invoices</li>
+          <li>Reconciling payments</li>
+          <li>Handling payment disputes</li>
+        </ul>
+        <p>
+          If you value your time at &#8358;5,000/hour and spend 10 hours/month on payment admin, that's &#8358;50,000 in hidden costs.
+        </p>
+
+        <h3>No-Show Costs</h3>
+        <p>
+          Without the ability to collect deposits or payments upfront:
+        </p>
+        <ul>
+          <li>No-show rate increases from ~5% to 20-30%</li>
+          <li>Lost revenue from empty appointment slots</li>
+          <li>Staff being paid for idle time</li>
+        </ul>
+
+        <div class="bg-error/10 rounded-xl p-6 my-8 border border-error/30">
+          <h3 class="text-lg font-semibold text-error mt-0">No-Show Cost Calculator</h3>
+          <p class="text-sand-11 mb-4">For a salon doing &#8358;1,000,000/month in bookings:</p>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white rounded-lg p-4">
+              <div class="text-sm text-sand-11">
+                <strong class="text-sand-12">Without Deposits</strong>
+                <div class="mt-2">25% no-show rate</div>
+                <div class="text-xl font-bold text-error">&#8358;250,000 lost</div>
+              </div>
+            </div>
+            <div class="bg-white rounded-lg p-4">
+              <div class="text-sm text-sand-11">
+                <strong class="text-sand-12">With Deposits</strong>
+                <div class="mt-2">5% no-show rate</div>
+                <div class="text-xl font-bold text-success">&#8358;50,000 lost</div>
+              </div>
+            </div>
+          </div>
+          <p class="text-sm text-sand-11 mt-4 mb-0">
+            <strong>Deposits save &#8358;200,000/month</strong> - 40x more than FastAppoint's Starter plan costs.
+          </p>
+        </div>
+
+        <h2>How to Calculate Your True Cost</h2>
+        <p>
+          Use this formula to compare platforms fairly:
+        </p>
+
+        <div class="bg-sand-3 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0 mb-4">True Monthly Cost Formula</h3>
+          <code class="block bg-white p-4 rounded-lg text-sm mb-4">
+            Monthly Subscription<br />
+            + (Transaction % × Monthly Revenue)<br />
+            + (Per-Transaction Fee × Number of Transactions)<br />
+            + (New Client Commission × New Client Revenue)<br />
+            + Add-on Fees (SMS, Email, etc.)<br />
+            + (Time Spent × Your Hourly Rate)<br />
+            + No-Show Losses<br />
+            = TRUE MONTHLY COST
+          </code>
+        </div>
+
+        <h2>The FastAppoint Advantage</h2>
+        <p>
+          FastAppoint's pricing is transparent:
+        </p>
+        <ul>
+          <li><strong>Fixed monthly fee:</strong> &#8358;5,000, &#8358;15,000, or &#8358;40,000</li>
+          <li><strong>Paystack fees:</strong> 1.5% (goes to Paystack, not us)</li>
+          <li><strong>No per-transaction fees</strong></li>
+          <li><strong>No new client commissions</strong></li>
+          <li><strong>No booking limits</strong></li>
+          <li><strong>No add-on fees for core features</strong></li>
+        </ul>
+        <p>
+          What you see is what you pay. No surprises, no hidden costs eating into your margins.
+        </p>
+
+        <h2>The Bottom Line</h2>
+        <p>
+          "Free" booking software often costs more than paid alternatives when you account for:
+        </p>
+        <ul>
+          <li>Higher transaction fees</li>
+          <li>Commissions on new clients</li>
+          <li>Per-user pricing</li>
+          <li>Feature limitations</li>
+          <li>Time costs</li>
+          <li>No-show losses</li>
+        </ul>
+        <p>
+          Before choosing a "free" platform, calculate the true cost. In most cases, a transparent paid platform like FastAppoint saves money from day one.
+        </p>
+
+        <div class="bg-sand-3 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0 mb-4">See Transparent Pricing in Action</h3>
+          <p class="mb-4">
+            Try FastAppoint free for 5 days. No hidden fees, no surprises. Just honest pricing for your service business.
+          </p>
+          <a
+            href="{{ route('auth.signup.show') }}"
+            class="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  {{-- Related Posts --}}
+  @if(relatedPosts.length > 0)
+    <div class="bg-sand-2 py-12">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-sand-12 mb-8">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          @each(related in relatedPosts)
+            <a href="{{ route('blog.show', { slug: related.slug }) }}" class="group">
+              <div class="relative rounded-xl overflow-hidden mb-4 aspect-[16/9]">
+                <img
+                  src="{{ related.image }}"
+                  alt="{{ related.title }}"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <h3 class="font-semibold text-sand-12 group-hover:text-primary transition-colors mb-2">
+                {{ related.title }}
+              </h3>
+              <div class="text-xs text-sand-9">{{ related.readTime }}</div>
+            </a>
+          @endeach
+        </div>
+      </div>
+    </div>
+  @endif
+@endsection

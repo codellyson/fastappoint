@@ -1,0 +1,312 @@
+@layout('layouts/blog')
+
+@set('title', post.title + ' - FastAppoint Blog')
+@set('description', post.excerpt)
+
+@section('content')
+  {{-- Article Header --}}
+  <article>
+    <div class="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 mb-4">
+          <a href="{{ route('blog.index') }}" class="text-primary hover:underline text-sm">Blog</a>
+          <span class="text-sand-9">/</span>
+          <span class="text-sand-11 text-sm">{{ post.category }}</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-sand-12 mb-4">
+          {{ post.title }}
+        </h1>
+        <p class="text-lg text-sand-11 mb-6">
+          {{ post.excerpt }}
+        </p>
+        <div class="flex items-center gap-4 text-sm text-sand-9">
+          <span>{{ post.publishedAt }}</span>
+          <span>&middot;</span>
+          <span>{{ post.readTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    {{-- Featured Image --}}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <img
+        src="{{ post.image }}"
+        alt="{{ post.title }}"
+        class="w-full rounded-xl shadow-lg aspect-[2/1] object-cover"
+      />
+    </div>
+
+    {{-- Article Content --}}
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="prose prose-lg max-w-none">
+        <p class="lead text-xl text-sand-11">
+          Booksy has positioned itself as the go-to platform for beauty and wellness professionals. With their flashy marketplace and mobile app, they've attracted millions of users. But is Booksy really the best choice for Nigerian beauty professionals? Let's find out.
+        </p>
+
+        <h2>What is Booksy?</h2>
+        <p>
+          Booksy is a booking platform specifically targeting the beauty and wellness industry. They offer:
+        </p>
+        <ul>
+          <li>A consumer-facing app where people find and book services</li>
+          <li>A business app for managing appointments</li>
+          <li>A marketplace that lists businesses</li>
+        </ul>
+        <p>
+          The idea is that you get exposure through their marketplace while managing bookings through their platform. Sounds great, right? Not so fast.
+        </p>
+
+        <h2>The Booksy Model: What You're Really Signing Up For</h2>
+        <p>
+          Booksy's "marketplace" model comes with strings attached:
+        </p>
+
+        <div class="bg-warning/10 rounded-xl p-6 my-8 border border-warning/30">
+          <h3 class="text-lg font-semibold text-warning mt-0 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            The Marketplace Trap
+          </h3>
+          <p class="text-sand-11 mb-0">
+            When customers book through Booksy's marketplace, they become Booksy's customers, not yours. They'll get Booksy's marketing, see your competitors, and may never develop loyalty to YOUR business.
+          </p>
+        </div>
+
+        <h3>1. You Don't Own Your Customer Relationships</h3>
+        <p>
+          In the Booksy model, customers often think of themselves as "Booksy users" rather than your clients. This affects:
+        </p>
+        <ul>
+          <li><strong>Customer loyalty:</strong> They can easily browse and book with competitors</li>
+          <li><strong>Marketing:</strong> Booksy controls communications with YOUR customers</li>
+          <li><strong>Data ownership:</strong> Limited access to customer data and insights</li>
+        </ul>
+
+        <h3>2. Commission Fees on Marketplace Bookings</h3>
+        <p>
+          While Booksy's subscription might seem reasonable, bookings that come through their marketplace incur additional fees. You're essentially paying for leads.
+        </p>
+
+        <h3>3. Limited Availability in Nigeria</h3>
+        <p>
+          Booksy's payment processing and many features are optimized for US and European markets. Nigerian businesses face limitations with payment processing and local currency support.
+        </p>
+
+        <h2>Feature Comparison</h2>
+
+        <div class="overflow-x-auto my-8">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-sand-3">
+                <th class="text-left p-4 border border-sand-6">Feature</th>
+                <th class="text-center p-4 border border-sand-6">FastAppoint</th>
+                <th class="text-center p-4 border border-sand-6">Booksy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-4 border border-sand-6">Nigerian Payment Support</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Paystack (Native)</td>
+                <td class="text-center p-4 border border-sand-6 text-error">Limited/None</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Customer Data Ownership</td>
+                <td class="text-center p-4 border border-sand-6 text-success">100% yours</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Shared with Booksy</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Marketplace Exposure</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Your own branding</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Booksy marketplace</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Commission on Bookings</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Never</td>
+                <td class="text-center p-4 border border-sand-6 text-error">Yes (marketplace)</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Portfolio Gallery</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Built-in</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Yes</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Your Own Booking URL</td>
+                <td class="text-center p-4 border border-sand-6 text-success">yourname.fastappoint.com</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">booksy.com/en-us/...</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Monthly Price</td>
+                <td class="text-center p-4 border border-sand-6 font-semibold">From &#8358;5,000</td>
+                <td class="text-center p-4 border border-sand-6">$29.99+ (~&#8358;45,000)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>The Case Against Marketplace Dependency</h2>
+        <p>
+          Booksy's marketplace model seems helpful at first - they help you find customers! But there are serious long-term concerns:
+        </p>
+
+        <h3>1. Building Someone Else's Business</h3>
+        <p>
+          Every customer that finds you through Booksy associates your service with Booksy, not with your brand. When you want to leave, those customers might stay on Booksy and find someone else.
+        </p>
+
+        <h3>2. Race to the Bottom</h3>
+        <p>
+          Marketplaces encourage price comparison. When customers can easily see competitors' prices, there's pressure to undercut. This devalues your expertise and craft.
+        </p>
+
+        <h3>3. Algorithm Dependency</h3>
+        <p>
+          Booksy decides who gets visibility in their marketplace. Changes to their algorithm can dramatically affect your bookings overnight.
+        </p>
+
+        <h2>Why FastAppoint Takes a Different Approach</h2>
+        <p>
+          FastAppoint gives you a booking page that's <strong>yours</strong>. No marketplace, no competition on your page, no commissions.
+        </p>
+
+        <h3>Build Your Own Brand</h3>
+        <ul>
+          <li><strong>Custom booking page:</strong> yourname.fastappoint.com (or your own domain)</li>
+          <li><strong>Your branding:</strong> Colors, logo, photos - it's all you</li>
+          <li><strong>Your customers:</strong> They book with YOU, not a marketplace</li>
+        </ul>
+
+        <h3>Direct Customer Relationships</h3>
+        <ul>
+          <li>Collect customer emails and phone numbers directly</li>
+          <li>Send your own marketing messages</li>
+          <li>Build loyalty to your business, not a platform</li>
+        </ul>
+
+        <h3>No Hidden Commissions</h3>
+        <p>
+          FastAppoint charges a flat monthly fee. No commission on bookings. No percentage cuts. What you earn is yours (minus payment processing fees which go to Paystack, not us).
+        </p>
+
+        <h2>For Beauty Professionals in Nigeria</h2>
+        <p>
+          If you're a hair stylist, makeup artist, nail technician, or spa owner in Nigeria, here's what matters:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+          <div class="bg-success/10 rounded-xl p-6 border border-success/30">
+            <h4 class="font-semibold text-success mt-0 mb-3">With FastAppoint</h4>
+            <ul class="text-sand-11 space-y-2 mb-0">
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-success flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                Customers pay in Naira
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-success flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                All Nigerian bank cards work
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-success flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                Affordable monthly pricing
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-success flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                Build your own brand
+              </li>
+            </ul>
+          </div>
+          <div class="bg-error/10 rounded-xl p-6 border border-error/30">
+            <h4 class="font-semibold text-error mt-0 mb-3">With Booksy</h4>
+            <ul class="text-sand-11 space-y-2 mb-0">
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-error flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                Payment processing issues
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-error flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                Commission on marketplace bookings
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-error flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                Expensive USD pricing
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-error flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                Customers loyalty to Booksy
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>The Bottom Line</h2>
+        <p>
+          Booksy's marketplace model might work for businesses in markets where they have strong presence and payment support. But for Nigerian beauty professionals, the limitations are significant.
+        </p>
+        <p>
+          FastAppoint lets you:
+        </p>
+        <ul>
+          <li>Accept payments that actually work in Nigeria</li>
+          <li>Build your own brand and customer relationships</li>
+          <li>Pay a fair, flat rate without commissions</li>
+          <li>Keep 100% control of your customer data</li>
+        </ul>
+
+        <div class="bg-sand-3 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0 mb-4">Ready to Own Your Bookings?</h3>
+          <p class="mb-4">
+            Stop building someone else's platform. Start building your own brand with FastAppoint.
+          </p>
+          <a
+            href="{{ route('auth.signup.show') }}"
+            class="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  {{-- Related Posts --}}
+  @if(relatedPosts.length > 0)
+    <div class="bg-sand-2 py-12">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-sand-12 mb-8">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          @each(related in relatedPosts)
+            <a href="{{ route('blog.show', { slug: related.slug }) }}" class="group">
+              <div class="relative rounded-xl overflow-hidden mb-4 aspect-[16/9]">
+                <img
+                  src="{{ related.image }}"
+                  alt="{{ related.title }}"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <h3 class="font-semibold text-sand-12 group-hover:text-primary transition-colors mb-2">
+                {{ related.title }}
+              </h3>
+              <div class="text-xs text-sand-9">{{ related.readTime }}</div>
+            </a>
+          @endeach
+        </div>
+      </div>
+    </div>
+  @endif
+@endsection

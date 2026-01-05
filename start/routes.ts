@@ -20,9 +20,14 @@ const WithdrawalsController = () => import('#controllers/withdrawals_controller'
 
 const GoogleCalendarController = () => import('#controllers/google_calendar_controller')
 const CustomerAuthsController = () => import('#controllers/customer_auths_controller')
+const BlogController = () => import('#controllers/blog_controller')
 const HomeController = () => import('#controllers/home_controller')
 router.get('/', [HomeController, 'index']).as('home')
 router.get('/pricing', [HomeController, 'pricing']).as('pricing')
+
+// Blog routes
+router.get('/blog', [BlogController, 'index']).as('blog.index')
+router.get('/blog/:slug', [BlogController, 'show']).as('blog.show')
 
 router
   .group(() => {

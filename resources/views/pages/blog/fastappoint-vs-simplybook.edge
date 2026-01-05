@@ -1,0 +1,311 @@
+@layout('layouts/blog')
+
+@set('title', post.title + ' - FastAppoint Blog')
+@set('description', post.excerpt)
+
+@section('content')
+  {{-- Article Header --}}
+  <article>
+    <div class="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 mb-4">
+          <a href="{{ route('blog.index') }}" class="text-primary hover:underline text-sm">Blog</a>
+          <span class="text-sand-9">/</span>
+          <span class="text-sand-11 text-sm">{{ post.category }}</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-sand-12 mb-4">
+          {{ post.title }}
+        </h1>
+        <p class="text-lg text-sand-11 mb-6">
+          {{ post.excerpt }}
+        </p>
+        <div class="flex items-center gap-4 text-sm text-sand-9">
+          <span>{{ post.publishedAt }}</span>
+          <span>&middot;</span>
+          <span>{{ post.readTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    {{-- Featured Image --}}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <img
+        src="{{ post.image }}"
+        alt="{{ post.title }}"
+        class="w-full rounded-xl shadow-lg aspect-[2/1] object-cover"
+      />
+    </div>
+
+    {{-- Article Content --}}
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="prose prose-lg max-w-none">
+        <p class="lead text-xl text-sand-11">
+          SimplyBook.me advertises "50+ custom features" and positions itself as the Swiss Army knife of booking software. But when you're running a hair salon in Lagos or a photography studio in Abuja, do you really need 50+ features? Let's explore why focused simplicity often beats feature overload.
+        </p>
+
+        <h2>The Feature Overload Problem</h2>
+        <p>
+          SimplyBook.me offers an impressive list of features:
+        </p>
+        <ul>
+          <li>Intake forms</li>
+          <li>Multiple locations</li>
+          <li>Gift cards</li>
+          <li>Memberships</li>
+          <li>Class scheduling</li>
+          <li>Product sales</li>
+          <li>And dozens more...</li>
+        </ul>
+        <p>
+          Sounds great, right? But here's the problem: <strong>you pay for all of them whether you use them or not</strong>. And most service businesses only use a fraction of what's available.
+        </p>
+
+        <div class="bg-warning/10 rounded-xl p-6 my-8 border border-warning/30">
+          <h3 class="text-lg font-semibold text-warning mt-0 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            The Complexity Tax
+          </h3>
+          <p class="text-sand-11 mb-0">
+            More features mean more complexity. More things to configure. More things that can break. More time spent learning the platform instead of running your business.
+          </p>
+        </div>
+
+        <h2>SimplyBook.me's Pricing Structure</h2>
+        <p>
+          SimplyBook.me uses a credit-based system that can be confusing:
+        </p>
+        <ul>
+          <li><strong>Free:</strong> 50 bookings/month</li>
+          <li><strong>Basic:</strong> $9.9/month (~&#8358;15,000) - 100 bookings</li>
+          <li><strong>Standard:</strong> $29.9/month (~&#8358;45,000) - 500 bookings</li>
+          <li><strong>Premium:</strong> $59.9/month (~&#8358;90,000) - 2000 bookings</li>
+        </ul>
+        <p>
+          Notice the booking limits? If you're a busy salon exceeding 500 bookings a month, you're forced into the Premium tier - nearly &#8358;90,000/month!
+        </p>
+
+        <h2>Feature Comparison</h2>
+
+        <div class="overflow-x-auto my-8">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-sand-3">
+                <th class="text-left p-4 border border-sand-6">Feature</th>
+                <th class="text-center p-4 border border-sand-6">FastAppoint</th>
+                <th class="text-center p-4 border border-sand-6">SimplyBook.me</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-4 border border-sand-6">Booking Limits</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Unlimited (all plans)</td>
+                <td class="text-center p-4 border border-sand-6 text-error">50-2000 based on plan</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">African Payment Support</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Paystack (Native)</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Limited gateways</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Learning Curve</td>
+                <td class="text-center p-4 border border-sand-6 text-success">30 minutes</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Hours to days</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Custom Features</td>
+                <td class="text-center p-4 border border-sand-6">Core essentials included</td>
+                <td class="text-center p-4 border border-sand-6">50+ features</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Portfolio Gallery</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Built-in</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Add-on required</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Staff Management</td>
+                <td class="text-center p-4 border border-sand-6 text-success">All plans</td>
+                <td class="text-center p-4 border border-sand-6 text-success">All plans</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Price (Unlimited Bookings)</td>
+                <td class="text-center p-4 border border-sand-6 font-semibold">From &#8358;5,000/mo</td>
+                <td class="text-center p-4 border border-sand-6">~&#8358;90,000/mo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>The Case for Focused Simplicity</h2>
+        <p>
+          There's a reason tools like Basecamp and Apple products succeed: they focus on doing fewer things really well. FastAppoint takes the same approach.
+        </p>
+
+        <h3>What Most Service Businesses Actually Need</h3>
+        <p>
+          After talking to hundreds of service business owners, we found they really need:
+        </p>
+        <ol>
+          <li><strong>Online booking</strong> - let customers book 24/7</li>
+          <li><strong>Payment processing</strong> - get paid when they book</li>
+          <li><strong>Staff scheduling</strong> - manage team availability</li>
+          <li><strong>Reminders</strong> - reduce no-shows</li>
+          <li><strong>A branded page</strong> - look professional</li>
+          <li><strong>Calendar sync</strong> - stay organized</li>
+        </ol>
+        <p>
+          That's it. Everything else is nice-to-have at best.
+        </p>
+
+        <div class="bg-primary/10 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0">The 80/20 Rule of Software</h3>
+          <p class="text-sand-11 mb-0">
+            80% of users only use 20% of features. Why pay for 50+ features when you'll only use 6-8 regularly? FastAppoint focuses on the features that actually drive your business forward.
+          </p>
+        </div>
+
+        <h2>The Booking Limit Trap</h2>
+        <p>
+          SimplyBook.me's booking limits are perhaps their most frustrating aspect. Consider this scenario:
+        </p>
+        <ul>
+          <li>You sign up for Basic plan (100 bookings/month) - &#8358;15,000</li>
+          <li>Your business grows to 150 bookings/month - great!</li>
+          <li>Now you need Standard plan - &#8358;45,000</li>
+          <li>Business keeps growing to 600 bookings - amazing!</li>
+          <li>Forced to Premium plan - &#8358;90,000</li>
+        </ul>
+        <p>
+          <strong>Your success is punished with higher fees.</strong>
+        </p>
+        <p>
+          FastAppoint has no booking limits. Whether you have 10 or 10,000 bookings, you pay the same flat rate. Your growth is rewarded, not penalized.
+        </p>
+
+        <h2>Setup and Learning Time</h2>
+        <p>
+          SimplyBook.me's extensive feature set means extensive setup time:
+        </p>
+        <ul>
+          <li>Choosing which of 50+ features to enable</li>
+          <li>Configuring each feature properly</li>
+          <li>Learning how they interact</li>
+          <li>Training staff on the complex interface</li>
+        </ul>
+        <p>
+          Realistically, you're looking at days to fully set up and learn SimplyBook.me. Time that could be spent on actual client work.
+        </p>
+        <p>
+          FastAppoint? Most businesses are fully set up in 30-60 minutes:
+        </p>
+        <ol>
+          <li>Add your business details (5 min)</li>
+          <li>Add your services (10-15 min)</li>
+          <li>Set your availability (5 min)</li>
+          <li>Connect payments (5 min)</li>
+          <li>Share your booking link (1 min)</li>
+        </ol>
+
+        <h2>When SimplyBook.me Makes Sense</h2>
+        <p>
+          To be fair, SimplyBook.me is a good fit for certain businesses:
+        </p>
+        <ul>
+          <li>Large enterprises with complex needs</li>
+          <li>Businesses running classes and memberships</li>
+          <li>Companies that need advanced intake forms</li>
+          <li>Organizations with IT staff to manage complexity</li>
+          <li>Businesses in markets with full payment gateway support</li>
+        </ul>
+        <p>
+          For a typical Nigerian salon, spa, or creative studio? It's overkill.
+        </p>
+
+        <h2>The Nigerian Market Reality</h2>
+        <p>
+          SimplyBook.me's payment gateway options are limited for Nigerian businesses. They primarily support:
+        </p>
+        <ul>
+          <li>Stripe (limited in Nigeria)</li>
+          <li>PayPal (complex for Nigerian businesses)</li>
+          <li>Various European payment processors</li>
+        </ul>
+        <p>
+          FastAppoint's Paystack integration means:
+        </p>
+        <ul>
+          <li>All Nigerian bank cards accepted</li>
+          <li>Bank transfer payments</li>
+          <li>Direct settlement to Nigerian bank accounts</li>
+          <li>Support for Naira transactions</li>
+        </ul>
+
+        <h2>The Bottom Line</h2>
+        <p>
+          SimplyBook.me tries to be everything for everyone. FastAppoint focuses on being perfect for service businesses in Nigeria.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+          <div class="bg-sand-3 rounded-xl p-6">
+            <h4 class="font-semibold text-sand-12 mt-0 mb-3">Choose SimplyBook.me if you:</h4>
+            <ul class="text-sand-11 space-y-2 mb-0 text-sm">
+              <li>Need 50+ advanced features</li>
+              <li>Have IT resources to manage complexity</li>
+              <li>Can afford &#8358;90K/month for unlimited bookings</li>
+              <li>Don't need Nigerian payment processing</li>
+            </ul>
+          </div>
+          <div class="bg-primary/10 rounded-xl p-6">
+            <h4 class="font-semibold text-primary mt-0 mb-3">Choose FastAppoint if you:</h4>
+            <ul class="text-sand-11 space-y-2 mb-0 text-sm">
+              <li>Want to start taking bookings today</li>
+              <li>Need unlimited bookings at a fair price</li>
+              <li>Want payments that work in Nigeria</li>
+              <li>Prefer simplicity over complexity</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-sand-3 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0 mb-4">Experience Simple, Powerful Booking</h3>
+          <p class="mb-4">
+            No feature overload. No booking limits. No complexity tax. Just what you need to run your service business.
+          </p>
+          <a
+            href="{{ route('auth.signup.show') }}"
+            class="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  {{-- Related Posts --}}
+  @if(relatedPosts.length > 0)
+    <div class="bg-sand-2 py-12">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-sand-12 mb-8">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          @each(related in relatedPosts)
+            <a href="{{ route('blog.show', { slug: related.slug }) }}" class="group">
+              <div class="relative rounded-xl overflow-hidden mb-4 aspect-[16/9]">
+                <img
+                  src="{{ related.image }}"
+                  alt="{{ related.title }}"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <h3 class="font-semibold text-sand-12 group-hover:text-primary transition-colors mb-2">
+                {{ related.title }}
+              </h3>
+              <div class="text-xs text-sand-9">{{ related.readTime }}</div>
+            </a>
+          @endeach
+        </div>
+      </div>
+    </div>
+  @endif
+@endsection

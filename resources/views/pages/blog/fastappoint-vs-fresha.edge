@@ -1,0 +1,301 @@
+@layout('layouts/blog')
+
+@set('title', post.title + ' - FastAppoint Blog')
+@set('description', post.excerpt)
+
+@section('content')
+  {{-- Article Header --}}
+  <article>
+    <div class="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 mb-4">
+          <a href="{{ route('blog.index') }}" class="text-primary hover:underline text-sm">Blog</a>
+          <span class="text-sand-9">/</span>
+          <span class="text-sand-11 text-sm">{{ post.category }}</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-sand-12 mb-4">
+          {{ post.title }}
+        </h1>
+        <p class="text-lg text-sand-11 mb-6">
+          {{ post.excerpt }}
+        </p>
+        <div class="flex items-center gap-4 text-sm text-sand-9">
+          <span>{{ post.publishedAt }}</span>
+          <span>&middot;</span>
+          <span>{{ post.readTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    {{-- Featured Image --}}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <img
+        src="{{ post.image }}"
+        alt="{{ post.title }}"
+        class="w-full rounded-xl shadow-lg aspect-[2/1] object-cover"
+      />
+    </div>
+
+    {{-- Article Content --}}
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="prose prose-lg max-w-none">
+        <p class="lead text-xl text-sand-11">
+          "Free booking software" - sounds perfect, right? Fresha (formerly Shedul) has built their entire brand around being free. But as the saying goes, if something seems too good to be true, it probably is. Let's peel back the layers and see what "free" really costs.
+        </p>
+
+        <h2>How Fresha's "Free" Model Works</h2>
+        <p>
+          Fresha's pitch is simple: use our booking software for free, forever. No subscription fees. But how do they make money?
+        </p>
+
+        <div class="bg-warning/10 rounded-xl p-6 my-8 border border-warning/30">
+          <h3 class="text-lg font-semibold text-warning mt-0 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            The "Free" Trap
+          </h3>
+          <ul class="text-sand-11 mb-0 mt-4">
+            <li><strong>Payment processing fees:</strong> 2.19% + 20p per card transaction</li>
+            <li><strong>New client fees:</strong> 20% commission on first visit from marketplace</li>
+            <li><strong>Blast campaigns:</strong> Pay per message for marketing</li>
+            <li><strong>Fresha marketplace:</strong> They promote your competitors too</li>
+          </ul>
+        </div>
+
+        <h2>Breaking Down Fresha's Real Costs</h2>
+        <p>
+          Let's calculate what "free" actually costs for a typical Nigerian salon:
+        </p>
+
+        <div class="bg-sand-2 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0">Scenario: Salon doing &#8358;800,000/month</h3>
+
+          <div class="space-y-4 mt-4">
+            <div class="bg-white rounded-lg p-4">
+              <h4 class="font-semibold text-sand-12 mb-3">If Using Fresha's Payments:</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span>Card processing (2.19%)</span>
+                  <span>&#8358;17,520</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Per-transaction fees (&#8358;300 x 80 bookings)</span>
+                  <span>&#8358;24,000</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>New client commission (20% x &#8358;200,000 new clients)</span>
+                  <span>&#8358;40,000</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-sand-4 font-semibold">
+                  <span>Total Monthly Cost</span>
+                  <span class="text-error">&#8358;81,520</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-lg p-4">
+              <h4 class="font-semibold text-sand-12 mb-3">With FastAppoint:</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span>Monthly subscription (Pro)</span>
+                  <span>&#8358;15,000</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Paystack fees (1.5%)</span>
+                  <span>&#8358;12,000</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-sand-4 font-semibold">
+                  <span>Total Monthly Cost</span>
+                  <span class="text-success">&#8358;27,000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-lg font-semibold text-center mt-6 mb-0">
+            Savings with FastAppoint: <span class="text-success">&#8358;54,520/month</span> (&#8358;654,240/year)
+          </p>
+        </div>
+
+        <h2>The 20% New Client Commission: A Closer Look</h2>
+        <p>
+          This is Fresha's most controversial policy. When a new client books through their marketplace, Fresha takes <strong>20% of that first appointment</strong>.
+        </p>
+        <p>
+          Think about it:
+        </p>
+        <ul>
+          <li>Client books a &#8358;15,000 hair styling session</li>
+          <li>Fresha takes &#8358;3,000 - just for the booking</li>
+          <li>That's on top of payment processing fees</li>
+          <li>You still pay for your time, products, and overhead</li>
+        </ul>
+        <p>
+          And here's the kicker: that client came to Fresha's marketplace, which means they might book with your competitor next time if they offer lower prices.
+        </p>
+
+        <h2>Feature Comparison</h2>
+
+        <div class="overflow-x-auto my-8">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-sand-3">
+                <th class="text-left p-4 border border-sand-6">Feature</th>
+                <th class="text-center p-4 border border-sand-6">FastAppoint</th>
+                <th class="text-center p-4 border border-sand-6">Fresha</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-4 border border-sand-6">Monthly Subscription</td>
+                <td class="text-center p-4 border border-sand-6">From &#8358;5,000</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Free</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Payment Processing</td>
+                <td class="text-center p-4 border border-sand-6 text-success">1.5% (Paystack)</td>
+                <td class="text-center p-4 border border-sand-6">2.19% + per-transaction</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">New Client Commission</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Never</td>
+                <td class="text-center p-4 border border-sand-6 text-error">20%</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Nigerian Naira Support</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Native</td>
+                <td class="text-center p-4 border border-sand-6 text-error">Limited</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Customer Data Ownership</td>
+                <td class="text-center p-4 border border-sand-6 text-success">100% yours</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Shared</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Marketplace Competition</td>
+                <td class="text-center p-4 border border-sand-6 text-success">No marketplace</td>
+                <td class="text-center p-4 border border-sand-6 text-error">Your competitors listed</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">SMS/Email Marketing</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Included</td>
+                <td class="text-center p-4 border border-sand-6">Pay per message</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>The Marketplace Problem (Again)</h2>
+        <p>
+          Like Booksy, Fresha runs a consumer marketplace. The issues are the same:
+        </p>
+        <ul>
+          <li><strong>You're listed alongside competitors</strong> - customers can easily shop around</li>
+          <li><strong>Price pressure</strong> - marketplace encourages undercutting</li>
+          <li><strong>Fresha's customers, not yours</strong> - they control the relationship</li>
+          <li><strong>Algorithm dependency</strong> - your visibility can change without warning</li>
+        </ul>
+
+        <h2>When "Free" Makes Sense (Spoiler: Rarely)</h2>
+        <p>
+          To be fair, Fresha's free model might work if:
+        </p>
+        <ul>
+          <li>You have almost no online bookings</li>
+          <li>You don't take card payments</li>
+          <li>You're okay with competitors on your booking page</li>
+          <li>You don't mind paying 20% for new clients</li>
+          <li>You're in a market with full Fresha payment support</li>
+        </ul>
+        <p>
+          For most growing Nigerian businesses, these conditions don't apply.
+        </p>
+
+        <h2>The True Value of Predictable Pricing</h2>
+        <p>
+          With FastAppoint, you know exactly what you're paying each month:
+        </p>
+        <ul>
+          <li><strong>Starter:</strong> &#8358;5,000/month - up to 3 staff</li>
+          <li><strong>Pro:</strong> &#8358;15,000/month - up to 10 staff, SMS reminders</li>
+          <li><strong>Business:</strong> &#8358;40,000/month - unlimited staff, API access</li>
+        </ul>
+        <p>
+          Plus Paystack's transparent 1.5% on successful transactions. That's it. No surprises. No commissions eating into your margins. No paying for your own customer acquisition.
+        </p>
+
+        <div class="bg-primary/10 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0">The Math is Simple</h3>
+          <p class="text-sand-11 mb-0">
+            If you're doing any meaningful volume of bookings with payments, FastAppoint's flat fee almost always costs less than Fresha's "free" model. And you keep 100% ownership of your customer relationships.
+          </p>
+        </div>
+
+        <h2>What Successful Salons Know</h2>
+        <p>
+          The most successful beauty businesses understand:
+        </p>
+        <ol>
+          <li><strong>Your brand matters</strong> - don't dilute it with marketplace listings</li>
+          <li><strong>Customer relationships are gold</strong> - own them completely</li>
+          <li><strong>Predictable costs help planning</strong> - know your overhead</li>
+          <li><strong>Quality tools pay for themselves</strong> - invest in your business</li>
+        </ol>
+
+        <h2>Making the Switch from Fresha</h2>
+        <p>
+          If you're currently on Fresha and seeing these costs add up, switching to FastAppoint is straightforward:
+        </p>
+        <ol>
+          <li>Sign up for a 5-day free trial</li>
+          <li>Import your services and pricing</li>
+          <li>Set up your staff schedules</li>
+          <li>Start sharing your new booking link</li>
+        </ol>
+        <p>
+          Your existing customers will appreciate the simpler, more professional booking experience.
+        </p>
+
+        <div class="bg-sand-3 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0 mb-4">Stop Paying the "Free" Tax</h3>
+          <p class="mb-4">
+            Calculate your true cost with Fresha, then try FastAppoint's predictable pricing. Most businesses save money from month one.
+          </p>
+          <a
+            href="{{ route('auth.signup.show') }}"
+            class="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  {{-- Related Posts --}}
+  @if(relatedPosts.length > 0)
+    <div class="bg-sand-2 py-12">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-sand-12 mb-8">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          @each(related in relatedPosts)
+            <a href="{{ route('blog.show', { slug: related.slug }) }}" class="group">
+              <div class="relative rounded-xl overflow-hidden mb-4 aspect-[16/9]">
+                <img
+                  src="{{ related.image }}"
+                  alt="{{ related.title }}"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <h3 class="font-semibold text-sand-12 group-hover:text-primary transition-colors mb-2">
+                {{ related.title }}
+              </h3>
+              <div class="text-xs text-sand-9">{{ related.readTime }}</div>
+            </a>
+          @endeach
+        </div>
+      </div>
+    </div>
+  @endif
+@endsection
