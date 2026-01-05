@@ -606,7 +606,7 @@ class EmailService {
           Welcome to FastAppoint! We're excited to have you and <strong>${data.businessName}</strong> on board.
         </p>
         <p style="color: #63635e; font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
-          You now have a <strong>7-day free trial</strong> to explore all our features. Get started by setting up your booking page and adding your services.
+          You now have a <strong>5-day free trial</strong> to explore all our features. Get started by setting up your booking page and adding your services.
         </p>
         <div style="text-align: center; margin: 32px 0;">
           <a href="${data.dashboardUrl}" style="display: inline-block; background: #5A45FF; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">

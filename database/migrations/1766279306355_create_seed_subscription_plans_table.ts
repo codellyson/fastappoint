@@ -4,7 +4,7 @@ export default class extends BaseSchema {
   protected tableName = 'subscription_plans'
 
   async up() {
-    // Insert default subscription plans (no free plan - using 7-day trial instead)
+    // Insert default subscription plans (no free plan - using 5-day trial instead)
     await this.db.table('subscription_plans').multiInsert([
       {
         name: 'starter',
@@ -13,7 +13,12 @@ export default class extends BaseSchema {
         interval: 'monthly',
         max_staff: 3,
         max_bookings_per_month: null, // unlimited
-        features: JSON.stringify(['basic_booking_page', 'email_notifications', 'unlimited_bookings']),
+        features: JSON.stringify([
+          'basic_booking_page',
+          'email_notifications',
+          'unlimited_bookings',
+          'support',
+        ]),
         description: 'For growing businesses',
         is_active: true,
         sort_order: 1,
@@ -23,7 +28,7 @@ export default class extends BaseSchema {
       {
         name: 'pro',
         display_name: 'Pro',
-        price: 1500000, // ₦15,000 (in kobo)
+        price: 1000000, // ₦10,000 (in kobo) - 100% increase from Starter
         interval: 'monthly',
         max_staff: 10,
         max_bookings_per_month: null, // unlimited
@@ -34,6 +39,7 @@ export default class extends BaseSchema {
           'unlimited_bookings',
           'analytics',
           'custom_domain',
+          'support',
         ]),
         description: 'For established businesses',
         is_active: true,
@@ -44,7 +50,7 @@ export default class extends BaseSchema {
       {
         name: 'business',
         display_name: 'Business',
-        price: 4000000, // ₦40,000 (in kobo)
+        price: 2000000, // ₦20,000 (in kobo) - 100% increase from Pro
         interval: 'monthly',
         max_staff: null, // unlimited
         max_bookings_per_month: null, // unlimited
@@ -69,6 +75,9 @@ export default class extends BaseSchema {
   }
 
   async down() {
-    await this.db.from('subscription_plans').whereIn('name', ['starter', 'pro', 'business']).delete()
+    await this.db
+      .from('subscription_plans')
+      .whereIn('name', ['starter', 'pro', 'business'])
+      .delete()
   }
 }

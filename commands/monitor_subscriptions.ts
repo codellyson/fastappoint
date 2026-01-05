@@ -195,7 +195,7 @@ export default class MonitorSubscriptions extends BaseCommand {
           </div>
           <div class="content">
             <p>Hi ${businessName},</p>
-            <p>Your 7-day free trial has ended. To continue using FastAppoint and keep your booking page active, please choose a subscription plan.</p>
+            <p>Your 5-day free trial has ended. To continue using FastAppoint and keep your booking page active, please choose a subscription plan.</p>
             <p>All your data and settings are safe - simply choose a plan to reactivate your account.</p>
             <a href="${env.get('APP_URL', 'https://fastappoint.com')}/subscriptions/select" class="button">Choose a Plan</a>
             <p style="margin-top: 30px; font-size: 14px; color: #666;">

@@ -13,13 +13,13 @@ class SubscriptionService {
   }
 
   /**
-   * Create a 7-day free trial subscription
+   * Create a 5-day free trial subscription
    */
   async createTrial(business: Business): Promise<Subscription> {
     // Cancel any existing active subscription
     await this.cancelActiveSubscription(business.id)
 
-    const trialEndsAt = DateTime.now().plus({ days: 7 })
+    const trialEndsAt = DateTime.now().plus({ days: 5 })
 
     const subscription = await Subscription.create({
       businessId: business.id,
@@ -190,7 +190,7 @@ class SubscriptionService {
     if (trialExpired) {
       return {
         allowed: false,
-        reason: 'Your 7-day free trial has expired. Please choose a plan to continue.',
+        reason: 'Your 5-day free trial has expired. Please choose a plan to continue.',
       }
     }
 
@@ -245,7 +245,7 @@ class SubscriptionService {
     if (trialExpired) {
       return {
         allowed: false,
-        reason: 'Your 7-day free trial has expired. Please choose a plan to continue.',
+        reason: 'Your 5-day free trial has expired. Please choose a plan to continue.',
       }
     }
 

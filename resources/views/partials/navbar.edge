@@ -22,8 +22,8 @@
       @if(auth.isAuthenticated)
         <div class="flex items-center gap-2 sm:gap-4" x-data="{ menuOpen: false, userMenuOpen: false }">
           {{-- Mobile Menu Button --}}
-          <button 
-            @click="menuOpen = !menuOpen" 
+          <button
+            @click="menuOpen = !menuOpen"
             class="md:hidden p-2.5 rounded-lg hover:bg-sand-2 transition-colors"
             aria-label="Toggle menu"
           >
@@ -36,8 +36,8 @@
           </button>
 
           {{-- Mobile Menu --}}
-          <div 
-            x-show="menuOpen" 
+          <div
+            x-show="menuOpen"
             x-cloak
             @click.away="menuOpen = false"
             x-transition:enter="transition ease-out duration-200"
@@ -61,8 +61,8 @@
 
           {{-- User Menu --}}
           <div class="relative">
-            <button 
-              @click="userMenuOpen = !userMenuOpen" 
+            <button
+              @click="userMenuOpen = !userMenuOpen"
               class="flex items-center gap-2 p-2 hover:bg-sand-2 rounded-lg transition-colors min-w-[44px] min-h-[44px]"
               aria-label="User menu"
             >
@@ -73,8 +73,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
             </button>
-            <div 
-              x-show="userMenuOpen" 
+            <div
+              x-show="userMenuOpen"
               x-cloak
               @click.away="userMenuOpen = false"
               x-transition:enter="transition ease-out duration-200"
@@ -113,6 +113,7 @@
         </div>
       @else
         <div class="flex items-center gap-2 sm:gap-4">
+          <a href="{{ route('pricing') }}" class="text-sm text-sand-11 hover:text-sand-12 px-2 py-2 min-h-[44px] flex items-center hidden sm:block">Pricing</a>
           <a href="{{ route('auth.login.show') }}" class="text-sm text-sand-11 hover:text-sand-12 px-2 py-2 min-h-[44px] flex items-center">Login</a>
           <a href="{{ route('auth.signup.show') }}" class="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 min-h-[44px] flex items-center">
             Get Started

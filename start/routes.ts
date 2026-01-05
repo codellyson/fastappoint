@@ -22,6 +22,7 @@ const GoogleCalendarController = () => import('#controllers/google_calendar_cont
 const CustomerAuthsController = () => import('#controllers/customer_auths_controller')
 const HomeController = () => import('#controllers/home_controller')
 router.get('/', [HomeController, 'index']).as('home')
+router.get('/pricing', [HomeController, 'pricing']).as('pricing')
 
 router
   .group(() => {

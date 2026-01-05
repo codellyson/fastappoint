@@ -28,7 +28,11 @@ export default class SubscriptionsController {
     const user = auth.user!
     const business = await Business.findOrFail(user.businessId)
     const currentSubscription = await business.getCurrentSubscription()
-    const plans = await SubscriptionPlan.query().where('isActive', true).orderBy('sortOrder', 'asc')
+    const plans = await SubscriptionPlan.query()
+      .where('isActive', true)
+      .where('price', '>', 0)
+      .orderBy('sortOrder', 'asc')
+      .limit(3)
 
     // Check if trial is expired and calculate days remaining
     let trialExpired = false

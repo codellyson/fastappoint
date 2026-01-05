@@ -50,7 +50,7 @@ export default class AuthController {
 
       await auth.use('web').login(user)
 
-      // Create 7-day free trial
+      // Create 5-day free trial
       await subscriptionService.createTrial(business)
 
       // Send welcome email (non-blocking - don't fail signup if email fails)
@@ -88,7 +88,7 @@ export default class AuthController {
 
       session.flash(
         'success',
-        "Welcome! You have a 7-day free trial. Let's set up your booking page."
+        "Welcome! You have a 5-day free trial. Let's set up your booking page."
       )
       return response.redirect().toRoute('onboarding.show')
     } catch (error: any) {

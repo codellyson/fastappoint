@@ -46,7 +46,7 @@ export default class SubscriptionMiddleware {
     // Check if trial is expired
     if (subscription.status === 'trialing') {
       if (subscription.trialEndsAt && subscription.trialEndsAt < DateTime.now()) {
-        ctx.session.flash('error', 'Your 7-day free trial has expired. Please choose a plan to continue.')
+        ctx.session.flash('error', 'Your 5-day free trial has expired. Please choose a plan to continue.')
         return ctx.response.redirect().toRoute('subscriptions.select')
       }
     }

@@ -1,0 +1,391 @@
+@layout('layouts/app')
+
+@set('title', 'Pricing - FastAppoint')
+
+@section('content')
+  <div class="bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24">
+      <div class="text-center mb-12 sm:mb-16">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-sand-12 mb-4 sm:mb-6">Pricing</h1>
+        <p class="text-lg sm:text-xl md:text-2xl text-sand-11 mb-6 sm:mb-8 max-w-2xl mx-auto">
+          Choose the plan that's right for you. Change or cancel anytime.
+        </p>
+        <p class="text-base sm:text-lg text-sand-11 max-w-2xl mx-auto">
+          Start with a <strong>5-day free trial</strong> on any plan. Cancel anytime, no charge today.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto mb-16 sm:mb-20">
+        @each(plan in plans)
+          @set('isPopular', plan.name === 'pro')
+          <div class="bg-white border {{ isPopular ? 'border-primary border-2' : 'border-sand-7' }} rounded-xl p-6 sm:p-8 relative {{ isPopular ? 'ring-2 ring-primary/20' : '' }}">
+            @if(isPopular)
+              <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span class="inline-block px-4 py-1 bg-primary text-white text-xs font-semibold rounded-full">Most Popular</span>
+              </div>
+            @endif
+
+            <div class="text-center mb-6 sm:mb-8">
+              <h3 class="text-2xl sm:text-3xl font-bold text-sand-12 mb-4 sm:mb-6">{{ plan.displayName }}</h3>
+              <div class="mb-2">
+                <span class="text-5xl sm:text-6xl font-bold text-sand-12">{{ plan.formattedPrice }}</span>
+                <span class="text-lg sm:text-xl text-sand-11">/month</span>
+              </div>
+              @if(plan.description)
+                <p class="text-sm text-sand-11 mt-2">{{ plan.description }}</p>
+              @endif
+            </div>
+
+            <div class="space-y-3 mb-6 sm:mb-8">
+              <div class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-success mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span class="text-sm text-sand-12">
+                  @if(plan.isUnlimitedStaff)
+                    Unlimited staff
+                  @else
+                    Up to {{ plan.maxStaff }} staff
+                  @endif
+                </span>
+              </div>
+              <div class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-success mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span class="text-sm text-sand-12">
+                  @if(plan.isUnlimitedBookings)
+                    Unlimited bookings
+                  @else
+                    {{ plan.maxBookingsPerMonth }} bookings/month
+                  @endif
+                </span>
+              </div>
+              @if(plan.features)
+                @each(feature in plan.features)
+                  <div class="flex items-start gap-2">
+                    <svg class="w-5 h-5 text-success mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    <span class="text-sm text-sand-12">
+                      @if(feature === 'basic_booking_page')
+                        Basic booking page
+                      @elseif(feature === 'email_notifications')
+                        Email notifications
+                      @elseif(feature === 'sms_notifications')
+                        SMS notifications
+                      @elseif(feature === 'unlimited_bookings')
+                        Unlimited bookings
+                      @elseif(feature === 'unlimited_staff')
+                        Unlimited staff
+                      @elseif(feature === 'analytics')
+                        Analytics dashboard
+                      @elseif(feature === 'custom_domain')
+                        Custom domain
+                      @elseif(feature === 'api_access')
+                        API access
+                      @elseif(feature === 'support')
+                        Support
+                      @elseif(feature === 'priority_support')
+                        Priority support
+                      @else
+                        {{ feature }}
+                      @endif
+                    </span>
+                  </div>
+                @endeach
+              @endif
+            </div>
+
+            <div class="mb-6 sm:mb-8">
+              @if(auth.isAuthenticated)
+                <a
+                  href="{{ route('subscriptions.select') }}"
+                  class="block w-full py-3 sm:py-3.5 text-center font-semibold rounded-lg transition-colors bg-primary text-white hover:bg-primary/90"
+                >
+                  Start 5-day free trial
+                </a>
+              @else
+                <a
+                  href="{{ route('auth.signup.show') }}"
+                  class="block w-full py-3 sm:py-3.5 text-center font-semibold rounded-lg transition-colors bg-primary text-white hover:bg-primary/90"
+                >
+                  Start 5-day free trial
+                </a>
+              @endif
+            </div>
+          </div>
+        @endeach
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-sand-1 py-16 sm:py-20 md:py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="space-y-4" x-data="{ openFaq: null }">
+        <button
+          @click="openFaq = openFaq === 1 ? null : 1"
+          class="w-full text-left bg-white border border-sand-7 rounded-lg p-4 sm:p-6 flex items-center justify-between hover:bg-sand-2 transition-colors"
+        >
+          <span class="font-medium text-sand-12 pr-4">How does online booking work?</span>
+          <svg
+            class="w-5 h-5 text-sand-11 flex-shrink-0 transition-transform"
+            :class="{ 'rotate-180': openFaq === 1 }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div
+          x-show="openFaq === 1"
+          x-cloak
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 -translate-y-2"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          x-transition:leave="transition ease-in duration-150"
+          x-transition:leave-start="opacity-100 translate-y-0"
+          x-transition:leave-end="opacity-0 -translate-y-2"
+          class="bg-white border border-sand-7 border-t-0 rounded-b-lg px-4 sm:px-6 pb-4 sm:pb-6"
+        >
+          <p class="text-sand-11 pt-2">
+            Customers visit your personalized booking page, select a service, choose a date and time, and complete their booking. You receive instant notifications, and payments are processed securely. It's that simple!
+          </p>
+        </div>
+
+        <button
+          @click="openFaq = openFaq === 2 ? null : 2"
+          class="w-full text-left bg-white border border-sand-7 rounded-lg p-4 sm:p-6 flex items-center justify-between hover:bg-sand-2 transition-colors"
+        >
+          <span class="font-medium text-sand-12 pr-4">Is my payment information secure?</span>
+          <svg
+            class="w-5 h-5 text-sand-11 flex-shrink-0 transition-transform"
+            :class="{ 'rotate-180': openFaq === 2 }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div
+          x-show="openFaq === 2"
+          x-cloak
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 -translate-y-2"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          x-transition:leave="transition ease-in duration-150"
+          x-transition:leave-start="opacity-100 translate-y-0"
+          x-transition:leave-end="opacity-0 -translate-y-2"
+          class="bg-white border border-sand-7 border-t-0 rounded-b-lg px-4 sm:px-6 pb-4 sm:pb-6"
+        >
+          <p class="text-sand-11 pt-2">
+            Absolutely! FastAppoint uses Paystack, a PCI-compliant payment processor. All payment information is encrypted and handled securely. We never store your customers' full payment details on our servers.
+          </p>
+        </div>
+
+        <button
+          @click="openFaq = openFaq === 3 ? null : 3"
+          class="w-full text-left bg-white border border-sand-7 rounded-lg p-4 sm:p-6 flex items-center justify-between hover:bg-sand-2 transition-colors"
+        >
+          <span class="font-medium text-sand-12 pr-4">Can I customize my booking page?</span>
+          <svg
+            class="w-5 h-5 text-sand-11 flex-shrink-0 transition-transform"
+            :class="{ 'rotate-180': openFaq === 3 }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div
+          x-show="openFaq === 3"
+          x-cloak
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 -translate-y-2"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          x-transition:leave="transition ease-in duration-150"
+          x-transition:leave-start="opacity-100 translate-y-0"
+          x-transition:leave-end="opacity-0 -translate-y-2"
+          class="bg-white border border-sand-7 border-t-0 rounded-b-lg px-4 sm:px-6 pb-4 sm:pb-6"
+        >
+          <p class="text-sand-11 pt-2">
+            Yes! FastAppoint offers multiple theme templates and customization options. You can customize colors, add your logo, set up your business information, and even use a custom domain on Pro and Business plans.
+          </p>
+        </div>
+
+        <button
+          @click="openFaq = openFaq === 4 ? null : 4"
+          class="w-full text-left bg-white border border-sand-7 rounded-lg p-4 sm:p-6 flex items-center justify-between hover:bg-sand-2 transition-colors"
+        >
+          <span class="font-medium text-sand-12 pr-4">What happens if a customer cancels or no-shows?</span>
+          <svg
+            class="w-5 h-5 text-sand-11 flex-shrink-0 transition-transform"
+            :class="{ 'rotate-180': openFaq === 4 }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div
+          x-show="openFaq === 4"
+          x-cloak
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 -translate-y-2"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          x-transition:leave="transition ease-in duration-150"
+          x-transition:leave-start="opacity-100 translate-y-0"
+          x-transition:leave-end="opacity-0 -translate-y-2"
+          class="bg-white border border-sand-7 border-t-0 rounded-b-lg px-4 sm:px-6 pb-4 sm:pb-6"
+        >
+          <p class="text-sand-11 pt-2">
+            You can set your own cancellation policy in settings. FastAppoint automatically handles cancellations according to your policy, including refunds if applicable. You'll be notified of all cancellations in real-time.
+          </p>
+        </div>
+
+        <button
+          @click="openFaq = openFaq === 5 ? null : 5"
+          class="w-full text-left bg-white border border-sand-7 rounded-lg p-4 sm:p-6 flex items-center justify-between hover:bg-sand-2 transition-colors"
+        >
+          <span class="font-medium text-sand-12 pr-4">Can I manage multiple staff members?</span>
+          <svg
+            class="w-5 h-5 text-sand-11 flex-shrink-0 transition-transform"
+            :class="{ 'rotate-180': openFaq === 5 }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div
+          x-show="openFaq === 5"
+          x-cloak
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 -translate-y-2"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          x-transition:leave="transition ease-in duration-150"
+          x-transition:leave-start="opacity-100 translate-y-0"
+          x-transition:leave-end="opacity-0 -translate-y-2"
+          class="bg-white border border-sand-7 border-t-0 rounded-b-lg px-4 sm:px-6 pb-4 sm:pb-6"
+        >
+          <p class="text-sand-11 pt-2">
+            Yes! All plans support multiple staff members. Starter plan includes up to 3 staff, Pro plan up to 10 staff, and Business plan includes unlimited staff. Each staff member can have their own availability schedule.
+          </p>
+        </div>
+
+        <button
+          @click="openFaq = openFaq === 6 ? null : 6"
+          class="w-full text-left bg-white border border-sand-7 rounded-lg p-4 sm:p-6 flex items-center justify-between hover:bg-sand-2 transition-colors"
+        >
+          <span class="font-medium text-sand-12 pr-4">How much time can I save using FastAppoint?</span>
+          <svg
+            class="w-5 h-5 text-sand-11 flex-shrink-0 transition-transform"
+            :class="{ 'rotate-180': openFaq === 6 }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div
+          x-show="openFaq === 6"
+          x-cloak
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 -translate-y-2"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          x-transition:leave="transition ease-in duration-150"
+          x-transition:leave-start="opacity-100 translate-y-0"
+          x-transition:leave-end="opacity-0 -translate-y-2"
+          class="bg-white border border-sand-7 border-t-0 rounded-b-lg px-4 sm:px-6 pb-4 sm:pb-6"
+        >
+          <p class="text-sand-11 pt-2">
+            FastAppoint automates your entire booking process, saving you hours each week. From managing availability to sending reminders and processing payments, everything is handled automatically so you can focus on your business.
+          </p>
+        </div>
+
+        <button
+          @click="openFaq = openFaq === 7 ? null : 7"
+          class="w-full text-left bg-white border border-sand-7 rounded-lg p-4 sm:p-6 flex items-center justify-between hover:bg-sand-2 transition-colors"
+        >
+          <span class="font-medium text-sand-12 pr-4">Do I need a subscription to use FastAppoint?</span>
+          <svg
+            class="w-5 h-5 text-sand-11 flex-shrink-0 transition-transform"
+            :class="{ 'rotate-180': openFaq === 7 }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div
+          x-show="openFaq === 7"
+          x-cloak
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 -translate-y-2"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          x-transition:leave="transition ease-in duration-150"
+          x-transition:leave-start="opacity-100 translate-y-0"
+          x-transition:leave-end="opacity-0 -translate-y-2"
+          class="bg-white border border-sand-7 border-t-0 rounded-b-lg px-4 sm:px-6 pb-4 sm:pb-6"
+        >
+          <p class="text-sand-11 pt-2">
+            Yes, FastAppoint operates on a subscription model. We offer flexible plans to suit businesses of all sizes, with a 5-day free trial so you can experience all features before committing. You can change or cancel your plan anytime.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-12 sm:mt-16 text-center">
+        @if(auth.isAuthenticated)
+          <a
+            href="{{ route('subscriptions.select') }}"
+            class="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        @else
+          <a
+            href="{{ route('auth.signup.show') }}"
+            class="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        @endif
+        <p class="mt-4 text-sand-11">
+          Still have questions? <a href="mailto:support@fastappoint.com" class="text-primary hover:underline">Contact us</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-primary py-16 sm:py-20 md:py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6">Ready to get started?</h2>
+      <p class="text-lg sm:text-xl text-white/80 mb-8 sm:mb-10 max-w-2xl mx-auto">
+        Join thousands of businesses managing their appointments with FastAppoint.
+      </p>
+      @if(auth.isAuthenticated)
+        <a
+          href="{{ route('subscriptions.select') }}"
+          class="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-white text-primary font-semibold rounded-lg hover:bg-sand-1 transition-colors"
+        >
+          Start Free Trial
+        </a>
+      @else
+        <a
+          href="{{ route('auth.signup.show') }}"
+          class="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-white text-primary font-semibold rounded-lg hover:bg-sand-1 transition-colors"
+        >
+          Start Free Trial
+        </a>
+      @endif
+    </div>
+  </div>
+@endsection
+
