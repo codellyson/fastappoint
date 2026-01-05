@@ -24,6 +24,15 @@ export default class Subscription extends BaseModel {
   @column()
   declare paystackCustomerCode: string | null
 
+  @column()
+  declare stripeSubscriptionId: string | null
+
+  @column()
+  declare stripeCustomerId: string | null
+
+  @column()
+  declare currency: string | null // Currency used for payment (location-based)
+
   @column.dateTime()
   declare currentPeriodStart: DateTime | null
 

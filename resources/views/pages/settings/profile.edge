@@ -88,7 +88,7 @@
         </div>
 
         <div>
-          <label for="currency" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Currency *</label>
+          <label for="currency" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Base Currency *</label>
           <select
             id="currency"
             name="currency"
@@ -100,6 +100,9 @@
             <option value="GBP" {{ business.currency === 'GBP' ? 'selected' : '' }}>British Pound (£)</option>
             <option value="EUR" {{ business.currency === 'EUR' ? 'selected' : '' }}>Euro (€)</option>
           </select>
+          <p class="text-xs text-sand-11 mt-1">
+            This is your base currency for creating products/services. Prices will be converted to your customers' local currency automatically.
+          </p>
         </div>
       </div>
 

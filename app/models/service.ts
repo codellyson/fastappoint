@@ -3,6 +3,8 @@ import { BaseModel, belongsTo, column, manyToMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, ManyToMany } from '@adonisjs/lucid/types/relations'
 import Business from '#models/business'
 import User from '#models/user'
+import currencyService from '../services/currency_service.js'
+import exchangeRateService from '../services/exchange_rate_service.js'
 
 export default class Service extends BaseModel {
   @column({ isPrimary: true })
@@ -112,5 +114,50 @@ export default class Service extends BaseModel {
 
   get isFlexible() {
     return this.locationType === 'flexible'
+  }
+
+  /**
+   * Get price in target currency using real-time exchange rates
+   * Services are created in business's base currency and converted dynamically
+   * @param targetCurrency - Target currency code
+   * @returns Price in smallest unit of target currency
+   */
+  async getPriceForCurrency(targetCurrency: string): Promise<number> {
+    const business = await Business.findOrFail(this.businessId)
+    const businessCurrency = business.currency || 'NGN'
+
+    if (targetCurrency.toUpperCase() === businessCurrency.toUpperCase()) {
+      // Convert to smallest unit (price is stored as decimal)
+      return Math.round(this.price * 100)
+    }
+
+    // Convert from business currency to target currency
+    const priceInSmallestUnit = Math.round(this.price * 100)
+    return await exchangeRateService.convertAmount(
+      priceInSmallestUnit,
+      businessCurrency,
+      targetCurrency
+    )
+  }
+
+  /**
+   * Get formatted price in target currency
+   * @param targetCurrency - Target currency code
+   * @returns Formatted price string
+   */
+  async getFormattedPrice(targetCurrency: string): Promise<string> {
+    const price = await this.getPriceForCurrency(targetCurrency)
+    return currencyService.formatPrice(price, targetCurrency, true)
+  }
+
+  /**
+   * Get formatted price in business's base currency
+   * @returns Formatted price string
+   */
+  async getFormattedPriceInBusinessCurrency(): Promise<string> {
+    const business = await Business.findOrFail(this.businessId)
+    const currency = business.currency || 'NGN'
+    const priceInSmallestUnit = Math.round(this.price * 100)
+    return currencyService.formatPrice(priceInSmallestUnit, currency, true)
   }
 }

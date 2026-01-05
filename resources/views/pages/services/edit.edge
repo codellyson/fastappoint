@@ -67,7 +67,9 @@
           </div>
 
           <div>
-            <label for="price" class="block text-sm font-medium text-sand-12 mb-2">Price (NGN)</label>
+            <label for="price" class="block text-sm font-medium text-sand-12 mb-2">
+              Price ({{ currencyService.getCurrencySymbol(business.currency || 'NGN') }})
+            </label>
             <input
               id="price"
               name="price"
@@ -78,6 +80,7 @@
               value="{{ service.price }}"
               class="w-full px-4 py-3 border border-sand-7 rounded-lg text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary"
             />
+            <p class="text-xs text-sand-9 mt-1">Prices will be converted to customers' local currency automatically</p>
           </div>
         </div>
 
@@ -174,7 +177,9 @@
 
           <div x-show="locationType === 'client' || locationType === 'flexible'" x-cloak class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-sand-12 mb-2">Travel Fee (NGN)</label>
+              <label class="block text-sm font-medium text-sand-12 mb-2">
+                Travel Fee ({{ currencyService.getCurrencySymbol(business.currency || 'NGN') }})
+              </label>
               <input
                 type="number"
                 name="travelFee"
@@ -246,7 +251,9 @@
           <div x-show="depositType !== 'none'" x-cloak>
             <label class="block text-sm font-medium text-sand-12 mb-2">
               <span x-show="depositType === 'percentage'">Deposit Percentage (%)</span>
-              <span x-show="depositType === 'fixed'">Deposit Amount (NGN)</span>
+              <span x-show="depositType === 'fixed'">
+                Deposit Amount ({{ currencyService.getCurrencySymbol(business.currency || 'NGN') }})
+              </span>
             </label>
             <input
               type="number"
@@ -267,7 +274,7 @@
             <p class="text-sm text-sand-11">
               <span class="font-medium text-sand-12">Preview:</span>
               Customers will pay
-              <span class="font-medium text-primary" x-text="depositType === 'percentage' ? depositAmount + '%' : 'NGN ' + Number(depositAmount).toLocaleString()"></span>
+              <span class="font-medium text-primary" x-text="depositType === 'percentage' ? depositAmount + '%' : '{{ currencyService.getCurrencySymbol(business.currency || 'NGN') }} ' + Number(depositAmount).toLocaleString()"></span>
               as deposit when booking.
             </p>
           </div>

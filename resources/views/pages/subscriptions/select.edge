@@ -10,9 +10,15 @@
         <p class="text-lg sm:text-xl md:text-2xl text-sand-11 mb-6 sm:mb-8 max-w-2xl mx-auto">
           Choose the plan that's right for you. Change or cancel anytime.
         </p>
-        <p class="text-base sm:text-lg text-sand-11 max-w-2xl mx-auto">
+        <p class="text-base sm:text-lg text-sand-11 max-w-2xl mx-auto mb-4">
           Start with a <strong>5-day free trial</strong> on any plan. Cancel anytime, no charge today.
         </p>
+        @if(currency)
+          <div class="inline-flex items-center gap-2 px-4 py-2 bg-sand-3 rounded-lg">
+            <span class="text-sm text-sand-11">Prices shown in:</span>
+            <span class="text-sm font-semibold text-sand-12">{{ currency }}</span>
+          </div>
+        @endif
       </div>
 
       @if(flashMessages.has('success'))
@@ -96,7 +102,7 @@
             <div class="text-center mb-6 sm:mb-8">
               <h3 class="text-2xl sm:text-3xl font-bold text-sand-12 mb-4 sm:mb-6">{{ plan.displayName }}</h3>
               <div class="mb-2">
-                <span class="text-5xl sm:text-6xl font-bold text-sand-12">{{ plan.formattedPrice }}</span>
+                <span class="text-5xl sm:text-6xl font-bold text-sand-12">{{ plan.getFormattedPrice(currency || business?.currency || 'NGN') }}</span>
                 <span class="text-lg sm:text-xl text-sand-11">/month</span>
               </div>
               @if(plan.description)

@@ -19,6 +19,8 @@ import subscriptionService from '../services/subscription_service.js'
 import receiptService from '#services/receipt_service'
 import storageService from '../services/storage_service.js'
 import googleCalendarService from '../services/google_calendar_service.js'
+import currencyService from '../services/currency_service.js'
+import stripeService from '../services/stripe_service.js'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
 export default class BookingController {
@@ -51,7 +53,33 @@ export default class BookingController {
       .where('isActive', true)
       .where('role', 'staff')
 
-    const services = business.services
+    // Detect customer currency from location (for price conversion)
+    // Allow override via query parameter for testing (e.g., ?currency=USD)
+    const currencyOverride = request.qs().currency
+    const customerCurrency =
+      currencyOverride ||
+      currencyService.detectCurrencyFromCountry(request.header('cf-ipcountry') || '') ||
+      currencyService.detectCurrencyFromLocale(request.header('accept-language') || '') ||
+      business.currency ||
+      'NGN'
+
+    let services = business.services
+
+    // Convert service prices to customer's currency
+    if (services.length > 0) {
+      const convertedServices = await Promise.all(
+        services.map(async (service) => {
+          const convertedPrice = await service.getPriceForCurrency(customerCurrency)
+          const formattedPrice = await service.getFormattedPrice(customerCurrency)
+          return {
+            ...service.toJSON(),
+            convertedPrice: convertedPrice / 100, // Convert from smallest unit to decimal for display
+            formattedPrice,
+          }
+        })
+      )
+      services = convertedServices as any
+    }
 
     // Fetch portfolio items for the gallery
     const portfolioItems = await PortfolioItem.query()
@@ -63,11 +91,50 @@ export default class BookingController {
       .orderBy('createdAt', 'desc')
 
     // Fetch active service packages
-    const packages = await ServicePackage.query()
+    let packages = await ServicePackage.query()
       .where('businessId', business.id)
       .where('isActive', true)
       .orderBy('sortOrder')
       .orderBy('createdAt', 'desc')
+
+    // Convert package prices to customer's currency
+    if (packages.length > 0) {
+      const convertedPackages = await Promise.all(
+        packages.map(async (pkg) => {
+          // Convert package price from business currency to customer currency
+          const packagePriceInSmallestUnit = Math.round(pkg.packagePrice * 100)
+          const originalPriceInSmallestUnit = Math.round(pkg.originalPrice * 100)
+
+          const convertedPackagePrice = await currencyService.convertAmount(
+            packagePriceInSmallestUnit,
+            business.currency || 'NGN',
+            customerCurrency
+          )
+          const convertedOriginalPrice = await currencyService.convertAmount(
+            originalPriceInSmallestUnit,
+            business.currency || 'NGN',
+            customerCurrency
+          )
+
+          return {
+            ...pkg.toJSON(),
+            convertedPackagePrice: convertedPackagePrice / 100, // Convert from smallest unit to decimal
+            convertedOriginalPrice: convertedOriginalPrice / 100,
+            formattedPackagePrice: currencyService.formatPrice(
+              convertedPackagePrice,
+              customerCurrency,
+              true
+            ),
+            formattedOriginalPrice: currencyService.formatPrice(
+              convertedOriginalPrice,
+              customerCurrency,
+              true
+            ),
+          }
+        })
+      )
+      packages = convertedPackages as any
+    }
 
     return view.render(`pages/book/templates/${template}`, {
       business,
@@ -77,6 +144,8 @@ export default class BookingController {
       portfolioItems,
       packages,
       csrfToken: request.csrfToken,
+      customerCurrency, // Currency for displaying prices to customer
+      businessCurrency: business.currency, // Business base currency
     })
   }
 
@@ -479,7 +548,7 @@ export default class BookingController {
     }
   }
 
-  async showPayment({ params, view, response, session }: HttpContext) {
+  async showPayment({ params, view, response, session, request }: HttpContext) {
     const booking = await Booking.query()
       .where('id', params.bookingId)
       .preload('business')
@@ -505,7 +574,51 @@ export default class BookingController {
       })
     }
 
+    // Detect customer currency from location (for price conversion)
+    // Allow override via query parameter for testing (e.g., ?currency=USD)
+    const currencyOverride = request.qs().currency
+    const customerCurrency =
+      currencyOverride ||
+      currencyService.detectCurrencyFromCountry(request.header('cf-ipcountry') || '') ||
+      currencyService.detectCurrencyFromLocale(request.header('accept-language') || '') ||
+      booking.business.currency ||
+      'NGN'
+
+    // Convert booking amounts from business currency to customer currency
+    const businessCurrency = booking.business.currency || 'NGN'
+    const amountInSmallestUnit = Math.round(booking.amount * 100)
+    const depositAmountInSmallestUnit = Math.round(booking.depositAmount * 100)
+    const balanceDueInSmallestUnit = Math.round(booking.balanceDue * 100)
+
+    const convertedAmount = await currencyService.convertAmount(
+      amountInSmallestUnit,
+      businessCurrency,
+      customerCurrency
+    )
+    const convertedDepositAmount = await currencyService.convertAmount(
+      depositAmountInSmallestUnit,
+      businessCurrency,
+      customerCurrency
+    )
+    const convertedBalanceDue = await currencyService.convertAmount(
+      balanceDueInSmallestUnit,
+      businessCurrency,
+      customerCurrency
+    )
+
+    // Convert to decimal for display
+    const convertedAmountDecimal = convertedAmount / 100
+    const convertedDepositAmountDecimal = convertedDepositAmount / 100
+    const convertedBalanceDueDecimal = convertedBalanceDue / 100
+    const totalAmountDecimal = convertedDepositAmountDecimal + convertedBalanceDueDecimal
+
     const paystackPublicKey = env.get('PAYSTACK_PUBLIC_KEY', 'pk_test_xxxxx')
+    const stripePublicKey = env.get('STRIPE_PUBLIC_KEY')
+
+    // Determine payment provider based on currency
+    const paystackSupportedCurrencies = ['NGN', 'ZAR', 'KES', 'GHS', 'UGX']
+    const isPaystackCurrency = paystackSupportedCurrencies.includes(customerCurrency.toUpperCase())
+    const paymentProvider = isPaystackCurrency ? 'paystack' : 'stripe'
 
     // Calculate time remaining
     let timeRemaining: number | null = null
@@ -521,10 +634,80 @@ export default class BookingController {
     return view.render('pages/book/payment', {
       booking,
       paystackPublicKey,
+      stripePublicKey,
       timeRemaining,
       canRetry: booking.canRetryPayment,
       errorMessage,
+      customerCurrency,
+      businessCurrency,
+      convertedAmount: convertedAmountDecimal,
+      convertedDepositAmount: convertedDepositAmountDecimal,
+      convertedBalanceDue: convertedBalanceDueDecimal,
+      totalAmount: totalAmountDecimal,
+      paymentProvider,
     })
+  }
+
+  async createPaymentIntent({ params, request, response }: HttpContext) {
+    const booking = await Booking.query()
+      .where('id', params.bookingId)
+      .preload('business')
+      .preload('service')
+      .first()
+
+    if (!booking || booking.business.slug !== params.slug) {
+      return response.status(404).json({ error: 'Booking not found' })
+    }
+
+    if (booking.paymentStatus === 'paid') {
+      return response.status(400).json({ error: 'Booking already paid' })
+    }
+
+    // Detect customer currency from location
+    const currencyOverride = request.qs().currency
+    const customerCurrency =
+      currencyOverride ||
+      currencyService.detectCurrencyFromCountry(request.header('cf-ipcountry') || '') ||
+      currencyService.detectCurrencyFromLocale(request.header('accept-language') || '') ||
+      booking.business.currency ||
+      'NGN'
+
+    if (!stripeService.isConfigured()) {
+      return response.status(400).json({ error: 'Stripe is not configured' })
+    }
+
+    try {
+      // Convert booking amount from business currency to customer currency
+      const businessCurrency = booking.business.currency || 'NGN'
+      const amountInSmallestUnit = Math.round(booking.amount * 100)
+      const convertedAmount = await currencyService.convertAmount(
+        amountInSmallestUnit,
+        businessCurrency,
+        customerCurrency
+      )
+
+      // Create payment intent
+      const paymentIntent = await stripeService.createPaymentIntent(
+        convertedAmount / 100, // Convert from smallest unit to decimal
+        customerCurrency,
+        {
+          booking_id: booking.id.toString(),
+          business_id: booking.businessId.toString(),
+          business_slug: booking.business.slug,
+          service_name: booking.service?.name || '',
+        }
+      )
+
+      return response.json({
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+      })
+    } catch (error: any) {
+      console.error('[BOOKING] Error creating payment intent:', error)
+      return response
+        .status(500)
+        .json({ error: error.message || 'Failed to create payment intent' })
+    }
   }
 
   async confirmBooking({ params, view, response }: HttpContext) {
@@ -616,7 +799,7 @@ export default class BookingController {
   async getPaymentStatus({ params, response }: HttpContext) {
     const booking = await Booking.query().where('id', params.bookingId).first()
 
-    if (!booking || booking.business.slug !== params.slug) {
+    if (!booking || booking.business?.slug !== params.slug) {
       return response.notFound('Booking not found')
     }
 
@@ -633,7 +816,102 @@ export default class BookingController {
 
   async verifyPayment({ params, request, response, session }: HttpContext) {
     const reference = request.qs().reference
+    const paymentIntentId = request.qs().payment_intent
 
+    // Handle Stripe payment
+    if (paymentIntentId && stripeService.isConfigured()) {
+      try {
+        const paymentIntent = await stripeService.retrievePaymentIntent(paymentIntentId)
+
+        if (paymentIntent.status !== 'succeeded') {
+          session.flash('error', 'Payment was not successful. Please try again.')
+          return response.redirect().toRoute('book.payment', {
+            slug: params.slug,
+            bookingId: params.bookingId,
+          })
+        }
+
+        const booking = await Booking.query()
+          .where('id', params.bookingId)
+          .preload('business')
+          .preload('service')
+          .first()
+
+        if (!booking || booking.business.slug !== params.slug) {
+          return response.notFound('Booking not found')
+        }
+
+        // Idempotency check
+        if (booking.paymentStatus === 'paid' && booking.status === 'confirmed') {
+          return response.redirect().toRoute('book.confirmation', {
+            slug: params.slug,
+            bookingId: booking.id,
+          })
+        }
+
+        // Process Stripe payment (similar to Paystack flow)
+        await booking.load('business')
+        await booking.load('service')
+
+        // Update booking status
+        booking.paymentStatus = 'paid'
+        booking.status = 'confirmed'
+        booking.paymentReference = paymentIntentId
+        await booking.save()
+
+        // Create transaction record
+        const amount = paymentIntent.amount / 100
+        const platformFee = Math.round(amount * 0.025)
+
+        const transaction = new Transaction()
+        transaction.businessId = booking.businessId
+        transaction.bookingId = booking.id
+        transaction.amount = amount
+        transaction.platformFee = platformFee
+        transaction.businessAmount = amount - platformFee
+        transaction.status = 'success'
+        transaction.provider = 'stripe'
+        transaction.reference = paymentIntentId
+        transaction.providerReference = paymentIntentId
+        await transaction.save()
+
+        // Send confirmation email
+        try {
+          await emailService.sendBookingConfirmation({
+            customerName: booking.customerName,
+            customerEmail: booking.customerEmail,
+            businessName: booking.business.name,
+            serviceName: booking.service?.name || '',
+            date: booking.date.toFormat('EEE, MMM d, yyyy'),
+            time: booking.startTime,
+            duration: `${booking.service?.durationMinutes || 30} minutes`,
+            amount: amount,
+            currency: paymentIntent.currency.toUpperCase(),
+            reference: paymentIntentId,
+          })
+        } catch (error) {
+          console.error('[EMAIL] Failed to send booking confirmation:', error)
+        }
+
+        // Redirect to confirmation
+        return response.redirect().toRoute('book.confirmation', {
+          slug: params.slug,
+          bookingId: booking.id,
+        })
+      } catch (error: any) {
+        console.error('[BOOKING] Error verifying Stripe payment:', error)
+        session.flash(
+          'error',
+          'Payment verification failed. Please contact support if payment was deducted.'
+        )
+        return response.redirect().toRoute('book.payment', {
+          slug: params.slug,
+          bookingId: params.bookingId,
+        })
+      }
+    }
+
+    // Handle Paystack payment (existing logic)
     if (!reference) {
       session.flash('error', 'Payment reference is required')
       return response.redirect().toRoute('book.payment', {
@@ -699,6 +977,7 @@ export default class BookingController {
               status: string
               reference: string
               amount: number
+              currency: string
               paid_at: string
               gateway_response?: string
             }
@@ -838,6 +1117,20 @@ export default class BookingController {
         })
       }
 
+      // Get currency from transaction metadata or detect from payment provider
+      let paymentCurrency = booking.business.currency || 'NGN'
+
+      // For Stripe payments, try to get currency from payment intent
+      if (booking.paymentReference && booking.paymentReference.startsWith('pi_')) {
+        try {
+          const paymentIntent = await stripeService.retrievePaymentIntent(booking.paymentReference)
+          paymentCurrency = paymentIntent.currency.toUpperCase()
+        } catch (error) {
+          // Fallback to business currency
+          console.warn('[BOOKING] Could not retrieve payment intent for currency:', error)
+        }
+      }
+
       await emailService.sendBookingConfirmation({
         customerName: booking.customerName,
         customerEmail: booking.customerEmail,
@@ -846,7 +1139,8 @@ export default class BookingController {
         date: dateFormatted,
         time: `${booking.startTime} - ${booking.endTime}`,
         duration: booking.service.formattedDuration,
-        amount: booking.amount,
+        amount: transaction?.amount || booking.amount,
+        currency: paymentCurrency,
         reference: booking.paymentReference?.substring(0, 8).toUpperCase() || '',
         bookingUrl: manageUrl,
       })

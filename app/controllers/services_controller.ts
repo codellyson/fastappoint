@@ -16,8 +16,10 @@ export default class ServicesController {
     return view.render('pages/services/index', { services, business })
   }
 
-  async create({ view }: HttpContext) {
-    return view.render('pages/services/create')
+  async create({ view, auth }: HttpContext) {
+    const user = auth.user!
+    const business = await Business.findOrFail(user.businessId)
+    return view.render('pages/services/create', { business })
   }
 
   async store({ request, response, auth, session }: HttpContext) {
@@ -91,7 +93,8 @@ export default class ServicesController {
       return response.notFound('Service not found')
     }
 
-    return view.render('pages/services/edit', { service })
+    const business = await Business.findOrFail(user.businessId)
+    return view.render('pages/services/edit', { service, business })
   }
 
   async update({ params, request, response, auth, session }: HttpContext) {

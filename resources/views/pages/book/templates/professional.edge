@@ -118,7 +118,7 @@
                   <tr
                     class="hover:bg-gray-50 cursor-pointer transition-colors"
                     :class="{ 'bg-teal-50': selectedService?.id === {{ service.id }} }"
-                    @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.price }}, {{ service.durationMinutes || 30 }})"
+                    @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.convertedPrice || service.price }}, {{ service.durationMinutes || 30 }})"
                   >
                     <td class="px-6 py-4">
                       <div class="font-medium">{{ service.name }}</div>
@@ -127,7 +127,7 @@
                       @endif
                     </td>
                     <td class="px-6 py-4 text-sm opacity-70">{{ service.durationMinutes || 30 }} min</td>
-                    <td class="px-6 py-4 text-right font-semibold" style="color: var(--theme-primary)">₦{{ Number(service.price).toLocaleString() }}</td>
+                    <td class="px-6 py-4 text-right font-semibold" style="color: var(--theme-primary)">{{ service.formattedPrice || (currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') + Number(service.convertedPrice || service.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</td>
                     <td class="px-6 py-4">
                       <div
                         class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors"
@@ -151,7 +151,7 @@
                 class="bg-white border rounded-lg p-4 cursor-pointer transition-all min-h-[60px]"
                 :class="{ 'ring-2': selectedService?.id === {{ service.id }} }"
                 :style="selectedService?.id === {{ service.id }} ? 'border-color: var(--theme-primary); ring-color: var(--theme-primary)' : 'border-color: var(--theme-secondary)'"
-                @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.price }}, {{ service.durationMinutes || 30 }})"
+                @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.convertedPrice || service.price }}, {{ service.durationMinutes || 30 }})"
               >
                 <div class="flex justify-between items-start gap-3">
                   <div class="flex-1 min-w-0">
@@ -171,7 +171,7 @@
                 </div>
                 <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
                   <span class="text-sm opacity-60">{{ service.durationMinutes || 30 }} min</span>
-                  <span class="font-semibold" style="color: var(--theme-primary)">₦{{ Number(service.price).toLocaleString() }}</span>
+                  <span class="font-semibold" style="color: var(--theme-primary)">{{ service.formattedPrice || (currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') + Number(service.convertedPrice || service.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
                 </div>
               </div>
             @end
@@ -219,9 +219,9 @@
                       </td>
                       <td class="px-6 py-4 text-sm opacity-70">{{ pkg.durationMinutes }} min</td>
                       <td class="px-6 py-4 text-right">
-                        <span class="font-semibold" style="color: var(--theme-primary)">₦{{ Number(pkg.packagePrice).toLocaleString() }}</span>
-                        @if(pkg.originalPrice > pkg.packagePrice)
-                          <span class="text-sm opacity-50 line-through ml-1">₦{{ Number(pkg.originalPrice).toLocaleString() }}</span>
+                        <span class="font-semibold" style="color: var(--theme-primary)">{{ pkg.formattedPackagePrice || (currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') + Number(pkg.convertedPackagePrice || pkg.packagePrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
+                        @if((pkg.convertedOriginalPrice || pkg.originalPrice) > (pkg.convertedPackagePrice || pkg.packagePrice))
+                          <span class="text-sm opacity-50 line-through ml-1">{{ pkg.formattedOriginalPrice || (currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') + Number(pkg.convertedOriginalPrice || pkg.originalPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
                         @endif
                       </td>
                       <td class="px-6 py-4">
@@ -276,9 +276,9 @@
                   <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
                     <span class="text-sm opacity-60">{{ pkg.durationMinutes }} min</span>
                     <div>
-                      <span class="font-semibold" style="color: var(--theme-primary)">₦{{ Number(pkg.packagePrice).toLocaleString() }}</span>
-                      @if(pkg.originalPrice > pkg.packagePrice)
-                        <span class="text-sm opacity-50 line-through ml-1">₦{{ Number(pkg.originalPrice).toLocaleString() }}</span>
+                      <span class="font-semibold" style="color: var(--theme-primary)">{{ pkg.formattedPackagePrice || (currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') + Number(pkg.convertedPackagePrice || pkg.packagePrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
+                      @if((pkg.convertedOriginalPrice || pkg.originalPrice) > (pkg.convertedPackagePrice || pkg.packagePrice))
+                        <span class="text-sm opacity-50 line-through ml-1">{{ pkg.formattedOriginalPrice || (currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') + Number(pkg.convertedOriginalPrice || pkg.originalPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
                       @endif
                     </div>
                   </div>
@@ -385,13 +385,13 @@
                     <p class="font-semibold" x-text="selectedPackage?.name"></p>
                     <span class="px-2 py-0.5 text-xs font-medium rounded" style="background: white; color: var(--theme-primary)">Package</span>
                   </div>
-                  <p class="text-sm opacity-70"><span x-text="selectedPackage?.duration"></span> minutes | ₦<span x-text="selectedPackage?.price?.toLocaleString()"></span></p>
+                  <p class="text-sm opacity-70"><span x-text="selectedPackage?.duration"></span> minutes | {{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}<span x-text="(selectedPackage?.convertedPackagePrice || selectedPackage?.price)?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })"></span></p>
                 </div>
               </template>
               <template x-if="!selectedPackage && selectedService">
                 <div>
                   <p class="font-semibold" x-text="selectedService?.name"></p>
-                  <p class="text-sm opacity-70"><span x-text="selectedService?.duration"></span> minutes | ₦<span x-text="selectedService?.price?.toLocaleString()"></span></p>
+                  <p class="text-sm opacity-70"><span x-text="selectedService?.duration"></span> minutes | {{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}<span x-text="(selectedService?.convertedPrice || selectedService?.price)?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })"></span></p>
                 </div>
               </template>
             </div>

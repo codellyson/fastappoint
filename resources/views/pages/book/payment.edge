@@ -62,7 +62,11 @@
       }
     };
   </script>
-  <script src="https://js.paystack.co/v1/inline.js"></script>
+  @if(paymentProvider === 'paystack')
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+  @else
+    <script src="https://js.stripe.com/v3/"></script>
+  @endif
 </head>
 <body class="bg-sand-2 text-sand-12 min-h-screen font-sans">
   <div class="max-w-md mx-auto px-4 py-8">
@@ -99,20 +103,20 @@
           @if(booking.depositAmount > 0)
             <div class="flex justify-between">
               <span class="text-sand-11">Service Total</span>
-              <span class="text-sand-12">₦{{ Number(booking.depositAmount + booking.balanceDue).toLocaleString() }}</span>
+              <span class="text-sand-12">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(totalAmount || (convertedDepositAmount + convertedBalanceDue)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-sand-11">Deposit (due now)</span>
-              <span class="font-bold text-primary text-lg">₦{{ Number(booking.amount).toLocaleString() }}</span>
+              <span class="font-bold text-primary text-lg">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(convertedAmount || convertedDepositAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
             <div class="flex justify-between text-sm">
               <span class="text-sand-9">Balance (due at appointment)</span>
-              <span class="text-sand-11">₦{{ Number(booking.balanceDue).toLocaleString() }}</span>
+              <span class="text-sand-11">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(convertedBalanceDue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
           @else
             <div class="flex justify-between">
               <span class="font-medium text-sand-12">Total</span>
-              <span class="font-bold text-primary text-lg">₦{{ Number(booking.amount).toLocaleString() }}</span>
+              <span class="font-bold text-primary text-lg">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(convertedAmount || booking.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
           @endif
         </div>
@@ -174,19 +178,30 @@
       </div>
     @endif
 
+    {{-- Stripe Card Element (only shown for Stripe) --}}
+    @if(paymentProvider === 'stripe')
+      <div class="bg-white border border-sand-7 rounded-xl p-6 mb-6">
+        <h3 class="font-medium text-sand-12 mb-4">Payment Details</h3>
+        <div id="stripe-card-element" class="p-3 border border-sand-7 rounded-lg mb-3">
+          <!-- Stripe Elements will create form elements here -->
+        </div>
+        <div id="stripe-card-errors" class="text-sm text-error mt-2" role="alert"></div>
+      </div>
+    @endif
+
     {{-- Pay Button --}}
     <button
       id="payBtn"
-      onclick="payWithPaystack()"
+      onclick="{{ paymentProvider === 'paystack' ? 'payWithPaystack()' : 'payWithStripe()' }}"
       class="w-full py-4 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
       {{ timeRemaining === 0 ? 'disabled' : '' }}
     >
       @if(timeRemaining === 0)
         Payment Expired
       @elseif(booking.depositAmount > 0)
-        Pay Deposit ₦{{ Number(booking.amount).toLocaleString() }}
+        Pay Deposit {{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(convertedAmount || convertedDepositAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
       @else
-        Pay ₦{{ Number(booking.amount).toLocaleString() }}
+        Pay {{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(convertedAmount || booking.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
       @endif
     </button>
 
@@ -201,7 +216,7 @@
     @endif
 
     <p class="text-center text-sm text-sand-11 mt-4">
-      Secure payment powered by Paystack
+      Secure payment powered by {{ paymentProvider === 'paystack' ? 'Paystack' : 'Stripe' }}
     </p>
 
     {{-- Footer --}}
@@ -216,13 +231,13 @@
       let timeRemaining = {{ timeRemaining }};
       const timerElement = document.getElementById('timer');
       const payBtn = document.getElementById('payBtn');
-      
+
       function formatTime(seconds) {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
       }
-      
+
       function updateTimer() {
         if (timeRemaining <= 0) {
           timerElement.textContent = '00:00';
@@ -237,11 +252,11 @@
           }, 2000);
           return;
         }
-        
+
         timerElement.textContent = formatTime(timeRemaining);
         timeRemaining--;
       }
-      
+
       updateTimer();
       setInterval(updateTimer, 1000);
     @endif
@@ -252,7 +267,7 @@
         try {
           const response = await fetch('/book/{{ booking.business.slug }}/booking/{{ booking.id }}/payment-status');
           const data = await response.json();
-          
+
           if (data.paymentStatus === 'paid' && data.status === 'confirmed') {
             clearInterval(statusCheckInterval);
             // Redirect to confirmation page
@@ -265,45 +280,152 @@
           console.error('Error checking payment status:', error);
         }
       }, 3000); // Check every 3 seconds
-      
+
       // Stop polling after 5 minutes
       setTimeout(() => {
         clearInterval(statusCheckInterval);
       }, 300000);
     @endif
 
-    function payWithPaystack() {
-      const payBtn = document.getElementById('payBtn');
-      if (payBtn && payBtn.disabled) {
-        return;
+    @if(paymentProvider === 'paystack')
+      function payWithPaystack() {
+        const payBtn = document.getElementById('payBtn');
+        if (payBtn && payBtn.disabled) {
+          return;
+        }
+
+        const handler = PaystackPop.setup({
+          key: '{{ paystackPublicKey }}',
+          email: '{{ booking.customerEmail }}',
+          amount: {{ Math.round((convertedAmount || booking.amount) * 100) }},
+          currency: '{{ customerCurrency || businessCurrency || 'NGN' }}',
+          ref: '{{ booking.paymentReference }}',
+          metadata: {
+            booking_id: {{ booking.id }},
+            business_slug: '{{ booking.business.slug }}',
+            custom_fields: [
+              {
+                display_name: 'Service',
+                variable_name: 'service',
+                value: '{{ booking.service.name }}'
+              }
+            ]
+          },
+          callback: function(response) {
+            window.location.href = '/book/{{ booking.business.slug }}/booking/{{ booking.id }}/verify?reference=' + response.reference + '&currency={{ customerCurrency || businessCurrency || 'NGN' }}';
+          },
+          onClose: function() {
+            console.log('Payment window closed');
+          }
+        });
+        handler.openIframe();
       }
-      
-      const handler = PaystackPop.setup({
-        key: '{{ paystackPublicKey }}',
-        email: '{{ booking.customerEmail }}',
-        amount: {{ booking.amount * 100 }},
-        currency: 'NGN',
-        ref: '{{ booking.paymentReference }}',
-        metadata: {
-          booking_id: {{ booking.id }},
-          business_slug: '{{ booking.business.slug }}',
-          custom_fields: [
-            {
-              display_name: 'Service',
-              variable_name: 'service',
-              value: '{{ booking.service.name }}'
-            }
-          ]
+    @else
+      const stripe = Stripe('{{ stripePublicKey }}');
+      let card;
+      let clientSecret;
+      let paymentIntentId;
+
+      // Initialize Stripe Elements
+      const elements = stripe.elements();
+      card = elements.create('card', {
+        style: {
+          base: {
+            fontSize: '16px',
+            color: '#21201c',
+            '::placeholder': {
+              color: '#82827c',
+            },
+          },
         },
-        callback: function(response) {
-          window.location.href = '/book/{{ booking.business.slug }}/booking/{{ booking.id }}/verify?reference=' + response.reference;
-        },
-        onClose: function() {
-          console.log('Payment window closed');
+      });
+
+      // Mount card element
+      const cardElement = document.getElementById('stripe-card-element');
+      if (cardElement) {
+        card.mount('#stripe-card-element');
+      }
+
+      // Handle real-time validation errors
+      card.on('change', function(event) {
+        const displayError = document.getElementById('stripe-card-errors');
+        if (displayError) {
+          if (event.error) {
+            displayError.textContent = event.error.message;
+          } else {
+            displayError.textContent = '';
+          }
         }
       });
-      handler.openIframe();
-    }
+
+      async function payWithStripe() {
+        const payBtn = document.getElementById('payBtn');
+        const displayError = document.getElementById('stripe-card-errors');
+
+        if (payBtn && payBtn.disabled) {
+          return;
+        }
+
+        if (displayError) {
+          displayError.textContent = '';
+        }
+
+        if (payBtn) {
+          payBtn.disabled = true;
+          payBtn.textContent = 'Processing...';
+        }
+
+        try {
+          // Create payment intent via backend
+          const response = await fetch('/book/{{ booking.business.slug }}/booking/{{ booking.id }}/create-payment-intent?currency={{ customerCurrency || businessCurrency || 'NGN' }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': '{{ csrfToken }}'
+            },
+            credentials: 'same-origin'
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to create payment intent');
+          }
+
+          const data = await response.json();
+          clientSecret = data.clientSecret;
+          paymentIntentId = data.paymentIntentId;
+
+          // Confirm payment with card element
+          const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+              card: card,
+            }
+          });
+
+          if (error) {
+            if (displayError) {
+              displayError.textContent = error.message;
+            }
+            if (payBtn) {
+              payBtn.disabled = false;
+              payBtn.textContent = '{{ booking.depositAmount > 0 ? "Pay Deposit" : "Pay" }} {{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || "NGN") }}{{ Number(convertedAmount || booking.amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}';
+            }
+          } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+            // Payment succeeded, redirect to verify
+            window.location.href = '/book/{{ booking.business.slug }}/booking/{{ booking.id }}/verify?payment_intent=' + paymentIntentId + '&currency={{ customerCurrency || businessCurrency || "NGN" }}';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          if (displayError) {
+            displayError.textContent = error.message || 'An error occurred. Please try again.';
+          }
+          if (payBtn) {
+            payBtn.disabled = false;
+            payBtn.textContent = '{{ booking.depositAmount > 0 ? "Pay Deposit" : "Pay" }} {{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || "NGN") }}{{ Number(convertedAmount || booking.amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}';
+          }
+        }
+      }
+    @endif
   </script>
 </body>
 </html>

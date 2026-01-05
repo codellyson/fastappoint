@@ -3,6 +3,7 @@ import Business from '#models/business'
 import Subscription from '#models/subscription'
 import SubscriptionPlan from '#models/subscription_plan'
 import SubscriptionPayment from '#models/subscription_payment'
+import stripeService from './stripe_service.js'
 import { DateTime } from 'luxon'
 
 class SubscriptionService {
@@ -47,59 +48,201 @@ class SubscriptionService {
     business: Business,
     plan: SubscriptionPlan,
     email: string,
-    authorizationCode?: string
+    authorizationCode?: string,
+    paymentIntentId?: string,
+    currency?: string
   ): Promise<Subscription> {
     // Cancel any existing active subscription
     await this.cancelActiveSubscription(business.id)
-
-    // For now, create subscription directly without Paystack subscription API
-    // This allows immediate activation after payment
-    // Recurring billing can be set up later via webhooks
 
     const now = DateTime.now()
     const periodEnd = now.plus({
       months: plan.interval === 'yearly' ? 12 : 1,
     })
 
-    // Create subscription record
+    // Check payment provider
+    const paymentProvider = business.paymentProvider || 'paystack'
+
+    if (paymentProvider === 'stripe' && stripeService.isConfigured()) {
+      return await this.createStripeSubscription(business, plan, email, paymentIntentId, currency)
+    }
+
+    // Paystack flow (existing)
     const subscription = await Subscription.create({
       businessId: business.id,
       planId: plan.id,
       status: 'active',
-      paystackSubscriptionCode: null, // Will be set up later if needed for recurring
+      paystackSubscriptionCode: null,
       paystackCustomerCode: business.paystackSubaccountCode || null,
+      currency: currency || business.currency || 'NGN', // Store the currency used for payment
       currentPeriodStart: now,
       currentPeriodEnd: periodEnd,
       cancelAtPeriodEnd: false,
     })
 
-    // Update business subscription fields
     business.subscriptionTier = plan.name as any
     business.subscriptionStatus = 'active'
     business.subscriptionEndsAt = subscription.currentPeriodEnd
     await business.save()
 
-    // If authorization code provided, save it for future recurring billing setup
     if (authorizationCode && this.secretKey) {
-      // Create Paystack customer if needed
       let customerCode = business.paystackSubaccountCode
       if (!customerCode) {
         customerCode = await this.createPaystackCustomer(email, business.name)
         business.paystackSubaccountCode = customerCode
         await business.save()
       }
-
-      // Store authorization for future recurring billing setup
-      // For now, we'll handle renewals manually or via webhooks
     }
 
     return subscription
   }
 
   /**
+   * Create a Stripe subscription
+   */
+  private async createStripeSubscription(
+    business: Business,
+    plan: SubscriptionPlan,
+    email: string,
+    paymentIntentId?: string,
+    currency?: string
+  ): Promise<Subscription> {
+    if (!stripeService.isConfigured()) {
+      throw new Error('Stripe is not configured')
+    }
+
+    // Ensure plan has Stripe price ID for the correct currency
+    const targetCurrency = currency || business.currency || 'NGN'
+    if (!plan.stripePriceId) {
+      await this.syncPlanToStripe(plan, targetCurrency)
+      await plan.refresh()
+    } else {
+      // Verify the price is for the correct currency
+      try {
+        const existingPrice = await stripeService.retrievePrice(plan.stripePriceId)
+        if (existingPrice.currency !== targetCurrency.toLowerCase()) {
+          // Price exists but for different currency, create new one
+          await this.syncPlanToStripe(plan, targetCurrency)
+          await plan.refresh()
+        }
+      } catch (error) {
+        // Price doesn't exist or error retrieving, create new one
+        console.warn('[STRIPE] Error retrieving price, creating new one:', error)
+        await this.syncPlanToStripe(plan, targetCurrency)
+        await plan.refresh()
+      }
+    }
+
+    // Create or get Stripe customer
+    let customerId = business.stripeAccountId
+    if (!customerId) {
+      const customer = await stripeService.createCustomer(email, business.name, {
+        business_id: business.id.toString(),
+      })
+      customerId = customer.id
+      business.stripeAccountId = customerId
+      await business.save()
+    }
+
+    // Create Stripe subscription
+    const stripeSubResult = await stripeService.createSubscription(
+      customerId,
+      plan.stripePriceId!,
+      {
+        business_id: business.id.toString(),
+        plan_id: plan.id.toString(),
+      }
+    )
+
+    // If payment intent provided, confirm it
+    if (paymentIntentId) {
+      const paymentIntent = await stripeService.retrievePaymentIntent(paymentIntentId)
+      if (paymentIntent.status === 'succeeded') {
+        // Payment succeeded, subscription is active
+      }
+    }
+
+    const stripeSubData = stripeSubResult as any
+    const periodEnd = DateTime.fromSeconds(stripeSubData.current_period_end)
+
+    const subscriptionStatus =
+      stripeSubData.status === 'active'
+        ? 'active'
+        : stripeSubData.status === 'trialing'
+          ? 'trialing'
+          : 'active'
+
+    const currentPeriodStart = DateTime.fromSeconds(stripeSubData.current_period_start)
+
+    const subscriptionRecord = await Subscription.create({
+      businessId: business.id,
+      planId: plan.id,
+      status: subscriptionStatus,
+      stripeSubscriptionId: stripeSubData.id,
+      stripeCustomerId: customerId,
+      currency: targetCurrency, // Store the currency used for payment
+      currentPeriodStart,
+      currentPeriodEnd: periodEnd,
+      cancelAtPeriodEnd: stripeSubData.cancel_at_period_end || false,
+    })
+
+    business.subscriptionTier = plan.name as any
+    business.subscriptionStatus = stripeSubData.status === 'active' ? 'active' : 'active'
+    business.subscriptionEndsAt = periodEnd
+    await business.save()
+
+    return subscriptionRecord
+  }
+
+  /**
+   * Sync a plan to Stripe (create product and price if not exists)
+   */
+  async syncPlanToStripe(plan: SubscriptionPlan, targetCurrency?: string): Promise<void> {
+    if (!stripeService.isConfigured()) {
+      return
+    }
+
+    const currency = (targetCurrency || plan.currency || 'NGN').toLowerCase()
+
+    // Create product if not exists
+    if (!plan.stripeProductId) {
+      const product = await stripeService.createProduct(
+        plan.displayName,
+        plan.description || undefined
+      )
+      plan.stripeProductId = product.id
+    }
+
+    // Create price if not exists
+    if (!plan.stripePriceId) {
+      const priceAmount = plan.getPriceForCurrency(currency.toUpperCase())
+      const amount = priceAmount / 100
+      const price = await stripeService.createPrice(
+        plan.stripeProductId!,
+        amount,
+        currency,
+        plan.interval === 'yearly' ? 'year' : 'month'
+      )
+      plan.stripePriceId = price.id
+    }
+
+    await plan.save()
+  }
+
+  /**
    * Cancel a subscription
    */
   async cancelSubscription(subscription: Subscription, cancelImmediately = false): Promise<void> {
+    // Handle Stripe subscription
+    if (subscription.stripeSubscriptionId && stripeService.isConfigured()) {
+      try {
+        await stripeService.cancelSubscription(subscription.stripeSubscriptionId, cancelImmediately)
+      } catch (error) {
+        console.error('Error cancelling Stripe subscription:', error)
+      }
+    }
+
+    // Handle Paystack subscription
     if (subscription.paystackSubscriptionCode && this.secretKey) {
       try {
         await fetch(
@@ -126,7 +269,6 @@ class SubscriptionService {
 
     await subscription.save()
 
-    // Update business
     const business = await Business.findOrFail(subscription.businessId)
     if (cancelImmediately) {
       business.subscriptionStatus = 'cancelled'
@@ -140,6 +282,16 @@ class SubscriptionService {
    * Resume a cancelled subscription
    */
   async resumeSubscription(subscription: Subscription): Promise<void> {
+    // Handle Stripe subscription
+    if (subscription.stripeSubscriptionId && stripeService.isConfigured()) {
+      try {
+        await stripeService.resumeSubscription(subscription.stripeSubscriptionId)
+      } catch (error) {
+        console.error('Error resuming Stripe subscription:', error)
+      }
+    }
+
+    // Handle Paystack subscription
     if (subscription.paystackSubscriptionCode && this.secretKey) {
       try {
         await fetch(

@@ -22,6 +22,9 @@ export default class SubscriptionPayment extends BaseModel {
   @column()
   declare paystackTransactionReference: string | null
 
+  @column()
+  declare stripeInvoiceId: string | null
+
   @column.dateTime()
   declare paidAt: DateTime | null
 

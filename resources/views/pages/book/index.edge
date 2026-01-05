@@ -158,7 +158,7 @@
         </h2>
         @each(service in business.services)
           <button
-            @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.durationMinutes }}, {{ service.price }}, {{ JSON.stringify(service.staff ? service.staff.map(s => ({ id: s.id, fullName: s.fullName })) : []) }})"
+            @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.durationMinutes }}, {{ service.convertedPrice || service.price }}, {{ JSON.stringify(service.staff ? service.staff.map(s => ({ id: s.id, fullName: s.fullName })) : []) }})"
             class="w-full text-left p-3 sm:p-4 bg-white border border-sand-7 rounded-xl hover:border-primary transition-colors min-h-[44px]"
             :class="selectedService?.id === {{ service.id }} ? 'border-primary ring-2 ring-primary/20' : ''"
           >
@@ -176,7 +176,7 @@
                   {{ service.formattedDuration }}
                 </p>
               </div>
-              <span class="font-semibold text-primary text-sm sm:text-base flex-shrink-0">₦{{ Number(service.price).toLocaleString() }}</span>
+              <span class="font-semibold text-primary text-sm sm:text-base flex-shrink-0">{{ service.formattedPrice || (currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') + Number(service.convertedPrice || service.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
             </div>
           </button>
         @endeach
@@ -266,7 +266,7 @@
           </p>
           <p
             class="text-xs sm:text-sm text-sand-10"
-            x-text="selectedService?.duration + ' min • ₦' + selectedService?.price.toLocaleString()"
+            x-text="selectedService?.duration + ' min • {{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}' + (selectedService?.convertedPrice || selectedService?.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })"
           >
           </p>
           <p class="text-xs sm:text-sm text-sand-11 mt-2">
@@ -570,7 +570,7 @@
 
           <div class="border-t border-sand-6 pt-3 mt-3 flex items-center justify-between">
             <span class="text-sm sm:text-base text-sand-11">Total</span>
-            <span class="text-base sm:text-lg font-bold text-primary" x-text="'₦' + selectedService?.price.toLocaleString()"></span>
+            <span class="text-base sm:text-lg font-bold text-primary" x-text="'{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}' + (selectedService?.convertedPrice || selectedService?.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })"></span>
           </div>
         </div>
 

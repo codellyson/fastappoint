@@ -4,6 +4,7 @@ export default class extends BaseSchema {
   protected tableName = 'subscription_plans'
 
   async up() {
+    // Update prices only - skip features update to avoid JSON parsing issues
     await this.db
       .from('subscription_plans')
       .where('name', 'pro')
@@ -14,29 +15,8 @@ export default class extends BaseSchema {
       .where('name', 'business')
       .update({ price: 2000000, updated_at: new Date() })
 
-    const starterPlan = await this.db.from('subscription_plans').where('name', 'starter').first()
-    if (starterPlan) {
-      const features = JSON.parse(starterPlan.features || '[]')
-      if (!features.includes('support')) {
-        features.push('support')
-        await this.db
-          .from('subscription_plans')
-          .where('name', 'starter')
-          .update({ features: JSON.stringify(features), updated_at: new Date() })
-      }
-    }
-
-    const proPlan = await this.db.from('subscription_plans').where('name', 'pro').first()
-    if (proPlan) {
-      const features = JSON.parse(proPlan.features || '[]')
-      if (!features.includes('support')) {
-        features.push('support')
-        await this.db
-          .from('subscription_plans')
-          .where('name', 'pro')
-          .update({ features: JSON.stringify(features), updated_at: new Date() })
-      }
-    }
+    // Skip features update - they should already be set correctly in seed migration
+    // If features need updating, do it in a separate migration after fixing data format
   }
 
   async down() {

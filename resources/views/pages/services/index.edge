@@ -49,10 +49,12 @@
               <div class="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-sand-11">
                 <span>{{ service.formattedDuration }}</span>
                 <span>•</span>
-                <span class="font-medium text-sand-12">₦{{ Number(service.price).toLocaleString() }}</span>
+                <span class="font-medium text-sand-12">
+                  {{ currencyService.getCurrencySymbol(business.currency || 'NGN') }}{{ Number(service.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                </span>
                 @if(service.hasDeposit)
                   <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                    {{ service.depositType === 'percentage' ? service.depositAmount + '%' : '₦' + Number(service.depositAmount).toLocaleString() }} deposit
+                    {{ service.depositType === 'percentage' ? service.depositAmount + '%' : currencyService.getCurrencySymbol(business.currency || 'NGN') + Number(service.depositAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} deposit
                   </span>
                 @endif
               </div>

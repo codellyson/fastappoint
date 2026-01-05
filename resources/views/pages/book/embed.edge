@@ -85,7 +85,7 @@
           <div 
             class="p-4 border-2 rounded-xl cursor-pointer transition-all hover:border-primary"
             :class="{ 'border-primary': selectedService?.id === {{ service.id }} }"
-            @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.price }}, {{ service.durationMinutes || 30 }})"
+            @click="selectService({{ service.id }}, '{{ service.name }}', {{ service.convertedPrice || service.price }}, {{ service.durationMinutes || 30 }})"
           >
             <div class="flex justify-between items-start">
               <div>
@@ -96,7 +96,7 @@
                 <p class="text-sm opacity-60 mt-2">{{ service.durationMinutes || 30 }} minutes</p>
               </div>
               <div class="text-right">
-                <p class="text-lg font-bold" style="color: var(--theme-primary)">₦{{ Number(service.price).toLocaleString() }}</p>
+                <p class="text-lg font-bold" style="color: var(--theme-primary)">{{ service.formattedPrice || (currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') + Number(service.convertedPrice || service.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</p>
               </div>
             </div>
           </div>
@@ -106,7 +106,7 @@
       <div x-show="selectedService" x-cloak class="space-y-4">
         <div class="p-3 rounded-lg" style="background-color: var(--theme-secondary)">
           <p class="font-medium" x-text="selectedService?.name"></p>
-          <p class="text-sm opacity-70"><span x-text="selectedService?.duration"></span> min • ₦<span x-text="selectedService?.price?.toLocaleString()"></span></p>
+          <p class="text-sm opacity-70"><span x-text="selectedService?.duration"></span> min • {{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}<span x-text="(selectedService?.convertedPrice || selectedService?.price)?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })"></span></p>
         </div>
 
         @if(staff.length > 1)

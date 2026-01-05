@@ -62,7 +62,7 @@
           <div>
             <p class="text-sm text-sand-11">Plan</p>
             <p class="text-lg font-semibold text-sand-12">{{ subscription.plan.displayName }}</p>
-            <p class="text-sm text-sand-10">{{ subscription.plan.formattedPrice }}/month</p>
+            <p class="text-sm text-sand-10">{{ subscription.plan.getFormattedPrice(currency) }}/month</p>
           </div>
 
           @if(subscription.currentPeriodEnd)
@@ -118,7 +118,7 @@
           <div class="border border-sand-6 rounded-lg p-4 {{ subscription?.plan?.id === plan.id ? 'ring-2 ring-primary' : '' }}">
             <div class="mb-3">
               <h3 class="font-semibold text-sand-12">{{ plan.displayName }}</h3>
-              <p class="text-2xl font-bold text-sand-12 mt-1">{{ plan.formattedPrice }}</p>
+              <p class="text-2xl font-bold text-sand-12 mt-1">{{ plan.getFormattedPrice(currency) }}</p>
               @if(plan.price > 0)
                 <p class="text-xs text-sand-10">/month</p>
               @endif

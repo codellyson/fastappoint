@@ -16,7 +16,7 @@
           <p class="text-sm text-sand-11">{{ plan.description }}</p>
         </div>
         <div class="text-right">
-          <p class="text-2xl font-bold text-primary">{{ plan.formattedPrice }}</p>
+          <p class="text-2xl font-bold text-primary">{{ plan.getFormattedPrice(currency) }}</p>
           <p class="text-sm text-sand-10">per month</p>
         </div>
       </div>
@@ -24,53 +24,153 @@
       <div class="space-y-2 text-sm">
         <div class="flex justify-between">
           <span class="text-sand-11">Plan price</span>
-          <span class="text-sand-12">{{ plan.formattedPrice }}/month</span>
+          <span class="text-sand-12">{{ plan.getFormattedPrice(currency) }}/month</span>
         </div>
         <div class="flex justify-between pt-2 border-t border-sand-6">
           <span class="font-semibold text-sand-12">Total</span>
-          <span class="font-bold text-primary text-lg">{{ plan.formattedPrice }}/month</span>
+          <span class="font-bold text-primary text-lg">{{ plan.getFormattedPrice(currency) }}/month</span>
         </div>
       </div>
     </div>
 
     <div class="bg-white border border-sand-7 rounded-xl p-6">
       <h3 class="font-semibold text-sand-12 mb-4">Payment Details</h3>
+      
       <p class="text-sm text-sand-11 mb-6">
-        You'll be charged {{ plan.formattedPrice }} monthly. You can cancel anytime.
+        You'll be charged {{ plan.getFormattedPrice(currency) }} monthly. You can cancel anytime.
       </p>
 
-      <button
-        onclick="payWithPaystack()"
-        class="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90"
-      >
-        Subscribe Now
-      </button>
+      @if(paymentProvider === 'paystack')
+        <button
+          onclick="payWithPaystack()"
+          class="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90"
+        >
+          Subscribe Now
+        </button>
+      @elseif(paymentProvider === 'stripe' && stripePublicKey)
+        <div id="stripe-card-element" class="mb-4 p-4 border border-sand-7 rounded-lg bg-white">
+          <!-- Stripe Elements will be mounted here -->
+        </div>
+        <div id="stripe-card-errors" class="text-error text-sm mb-4" role="alert"></div>
+        <button
+          onclick="payWithStripe()"
+          class="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90"
+        >
+          Subscribe Now
+        </button>
+      @else
+        <div class="p-3 bg-error/10 border border-error/20 rounded-lg">
+          <p class="text-sm text-error">Payment provider not configured. Please contact support.</p>
+        </div>
+      @endif
     </div>
   </div>
 
-  <script src="https://js.paystack.co/v1/inline.js"></script>
-  <script>
-    function payWithPaystack() {
-      const handler = PaystackPop.setup({
-        key: '{{ paystackPublicKey }}',
-        email: '{{ business.email }}',
-        amount: {{ plan.price }},
-        currency: 'NGN',
-        ref: 'SUB-' + Date.now(),
-        metadata: {
-          business_id: {{ business.id }},
-          plan_id: {{ plan.id }},
-          plan_name: '{{ plan.name }}',
-        },
+  @if(paymentProvider === 'paystack')
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script>
+      function payWithPaystack() {
+        const handler = PaystackPop.setup({
+          key: '{{ paystackPublicKey }}',
+          email: '{{ business.email }}',
+          amount: {{ plan.getPriceForCurrency(currency) }},
+          currency: '{{ currency }}',
+          ref: 'SUB-' + Date.now(),
+          metadata: {
+            business_id: {{ business.id }},
+            plan_id: {{ plan.id }},
+            plan_name: '{{ plan.name }}',
+          },
         callback: function(response) {
+          // Currency is detected from location, no need to pass it
           window.location.href = '/subscriptions/{{ plan.id }}/verify?reference=' + response.reference;
         },
-        onClose: function() {
-          console.log('Payment window closed');
+          onClose: function() {
+            console.log('Payment window closed');
+          }
+        });
+        handler.openIframe();
+      }
+    </script>
+  @endif
+
+  @if(paymentProvider === 'stripe' && stripePublicKey)
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+      const stripe = Stripe('{{ stripePublicKey }}');
+      let card;
+      let clientSecret;
+      let paymentIntentId;
+      
+      // Initialize Stripe Elements
+      const elements = stripe.elements();
+      card = elements.create('card', {
+        style: {
+          base: {
+            fontSize: '16px',
+            color: '#21201c',
+            '::placeholder': {
+              color: '#82827c',
+            },
+          },
+        },
+      });
+      
+      card.mount('#stripe-card-element');
+      
+      // Handle real-time validation errors
+      card.on('change', function(event) {
+        const displayError = document.getElementById('stripe-card-errors');
+        if (event.error) {
+          displayError.textContent = event.error.message;
+        } else {
+          displayError.textContent = '';
         }
       });
-      handler.openIframe();
-    }
-  </script>
+      
+      async function payWithStripe() {
+        const displayError = document.getElementById('stripe-card-errors');
+        displayError.textContent = '';
+        
+        try {
+          // Create payment intent via your backend
+          const response = await fetch('/subscriptions/{{ plan.id }}/create-payment-intent', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': '{{ csrfToken }}'
+            },
+            credentials: 'same-origin'
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to create payment intent');
+          }
+          
+          const data = await response.json();
+          clientSecret = data.clientSecret;
+          paymentIntentId = data.paymentIntentId;
+          
+          // Confirm payment with card element
+          const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+              card: card,
+            }
+          });
+          
+          if (error) {
+            displayError.textContent = error.message;
+          } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+            // Payment succeeded, redirect to verify
+            window.location.href = '/subscriptions/{{ plan.id }}/verify?payment_intent=' + paymentIntentId;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          displayError.textContent = error.message || 'An error occurred. Please try again.';
+        }
+      }
+    </script>
+  @endif
 @endsection
 

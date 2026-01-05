@@ -65,6 +65,24 @@ export default class Business extends BaseModel {
   declare paystackSubaccountCode: string | null
 
   @column()
+  declare paymentProvider: 'paystack' | 'stripe'
+
+  @column()
+  declare stripeAccountId: string | null
+
+  @column()
+  declare stripeAccountStatus: string | null
+
+  @column()
+  declare stripeOnboardingUrl: string | null
+
+  @column()
+  declare stripeChargesEnabled: boolean
+
+  @column()
+  declare stripePayoutsEnabled: boolean
+
+  @column()
   declare isActive: boolean
 
   @column()

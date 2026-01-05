@@ -162,7 +162,7 @@ class ReceiptService {
         }
       })
 
-      doc.on('error', (error: any) => {
+      doc.on('error', (error: Error) => {
         reject(error)
       })
 

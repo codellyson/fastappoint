@@ -9,7 +9,13 @@ export default class extends BaseSchema {
       {
         name: 'starter',
         display_name: 'Starter',
-        price: 500000, // ₦5,000 (in kobo)
+        price: 500000, // ₦5,000 (in kobo) - Legacy field
+        price_usd: 3000, // $30.00 (in cents) - Legacy field
+        currency: 'NGN', // Legacy field
+        price_ngn: 500000, // ₦5,000 (in kobo) for African countries
+        price_usd_group: 3000, // $30.00 (in cents) for USD countries
+        price_gbp: 2400, // £24.00 (in pence) for GBP countries
+        price_eur: 2800, // €28.00 (in cents) for EUR countries
         interval: 'monthly',
         max_staff: 3,
         max_bookings_per_month: null, // unlimited
@@ -28,7 +34,13 @@ export default class extends BaseSchema {
       {
         name: 'pro',
         display_name: 'Pro',
-        price: 1000000, // ₦10,000 (in kobo) - 100% increase from Starter
+        price: 1000000, // ₦10,000 (in kobo) - Legacy field
+        price_usd: 6000, // $60.00 (in cents) - Legacy field
+        currency: 'NGN', // Legacy field
+        price_ngn: 1000000, // ₦10,000 (in kobo) for African countries
+        price_usd_group: 6000, // $60.00 (in cents) for USD countries
+        price_gbp: 4800, // £48.00 (in pence) for GBP countries
+        price_eur: 5600, // €56.00 (in cents) for EUR countries
         interval: 'monthly',
         max_staff: 10,
         max_bookings_per_month: null, // unlimited
@@ -50,7 +62,13 @@ export default class extends BaseSchema {
       {
         name: 'business',
         display_name: 'Business',
-        price: 2000000, // ₦20,000 (in kobo) - 100% increase from Pro
+        price: 2000000, // ₦20,000 (in kobo) - Legacy field
+        price_usd: 12000, // $120.00 (in cents) - Legacy field
+        currency: 'NGN', // Legacy field
+        price_ngn: 2000000, // ₦20,000 (in kobo) for African countries
+        price_usd_group: 12000, // $120.00 (in cents) for USD countries
+        price_gbp: 9600, // £96.00 (in pence) for GBP countries
+        price_eur: 11200, // €112.00 (in cents) for EUR countries
         interval: 'monthly',
         max_staff: null, // unlimited
         max_bookings_per_month: null, // unlimited

@@ -17,6 +17,7 @@ const PortfoliosController = () => import('#controllers/portfolios_controller')
 const PackagesController = () => import('#controllers/packages_controller')
 const SubscriptionsController = () => import('#controllers/subscriptions_controller')
 const WithdrawalsController = () => import('#controllers/withdrawals_controller')
+const StripeController = () => import('#controllers/stripe_controller')
 
 const GoogleCalendarController = () => import('#controllers/google_calendar_controller')
 const CustomerAuthsController = () => import('#controllers/customer_auths_controller')
@@ -135,6 +136,18 @@ router
     router
       .post('/settings/payments', [SettingsController, 'updatePayments'])
       .as('settings.payments.update')
+    router
+      .post('/settings/payments/stripe/create', [StripeController, 'createAccount'])
+      .as('settings.stripe.create')
+    router
+      .get('/settings/payments/stripe/return', [StripeController, 'return'])
+      .as('settings.stripe.return')
+    router
+      .get('/settings/payments/stripe/refresh', [StripeController, 'refresh'])
+      .as('settings.stripe.refresh')
+    router
+      .get('/settings/payments/stripe/dashboard', [StripeController, 'dashboard'])
+      .as('settings.stripe.dashboard')
     router
       .get('/settings/booking-page', [SettingsController, 'bookingPage'])
       .as('settings.booking-page')
@@ -284,6 +297,12 @@ router
       .get('/subscriptions/:planId/payment', [SubscriptionsController, 'payment'])
       .as('subscriptions.payment')
     router
+      .post('/subscriptions/:planId/create-payment-intent', [
+        SubscriptionsController,
+        'createPaymentIntent',
+      ])
+      .as('subscriptions.createPaymentIntent')
+    router
       .get('/subscriptions/:planId/verify', [SubscriptionsController, 'verify'])
       .as('subscriptions.verify')
     router
@@ -320,6 +339,12 @@ router
       .get('/:slug/booking/:bookingId/payment', [BookingController, 'showPayment'])
       .as('book.payment')
     router
+      .post('/:slug/booking/:bookingId/create-payment-intent', [
+        BookingController,
+        'createPaymentIntent',
+      ])
+      .as('book.createPaymentIntent')
+    router
       .get('/:slug/booking/:bookingId/verify', [BookingController, 'verifyPayment'])
       .as('book.verify')
     router
@@ -351,6 +376,7 @@ router
 router.get('/api/featured', [FeaturedController, 'getActiveFeatured']).as('api.featured')
 
 router.post('/webhooks/paystack', [WebhookController, 'paystack']).as('webhooks.paystack')
+router.post('/webhooks/stripe', [WebhookController, 'stripe']).as('webhooks.stripe')
 
 // Customer portal routes
 router

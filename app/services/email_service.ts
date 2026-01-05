@@ -1,4 +1,5 @@
 import env from '#start/env'
+import currencyService from './currency_service.js'
 
 interface BookingConfirmationData {
   customerName: string
@@ -9,6 +10,7 @@ interface BookingConfirmationData {
   time: string
   duration: string
   amount: number
+  currency?: string
   reference: string
   bookingUrl?: string
 }
@@ -350,6 +352,11 @@ class EmailService {
 </html>`
   }
 
+  private formatAmountForEmail(amount: number, currency: string): string {
+    const symbol = currencyService.getCurrencySymbol(currency)
+    return `${symbol}${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  }
+
   private getBookingConfirmationHtml(data: BookingConfirmationData): string {
     return `
 <!DOCTYPE html>
@@ -392,7 +399,7 @@ class EmailService {
             </tr>
             <tr style="border-top: 1px solid #e9e8e6;">
               <td style="padding: 12px 0 8px; color: #21201c; font-size: 15px; font-weight: 600;">Total Paid</td>
-              <td style="padding: 12px 0 8px; color: #5A45FF; font-size: 15px; text-align: right; font-weight: 600;">₦${data.amount.toLocaleString()}</td>
+              <td style="padding: 12px 0 8px; color: #5A45FF; font-size: 15px; text-align: right; font-weight: 600;">${this.formatAmountForEmail(data.amount, data.currency || 'NGN')}</td>
             </tr>
           </table>
         </div>

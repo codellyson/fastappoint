@@ -21,6 +21,10 @@ export default await Env.create(new URL('../', import.meta.url), {
   PAYSTACK_SECRET_KEY: Env.schema.string.optional(),
   PAYSTACK_PUBLIC_KEY: Env.schema.string.optional(),
 
+  STRIPE_SECRET_KEY: Env.schema.string.optional(),
+  STRIPE_PUBLIC_KEY: Env.schema.string.optional(),
+  STRIPE_WEBHOOK_SECRET: Env.schema.string.optional(),
+
   BREVO_API_KEY: Env.schema.string.optional(),
   FROM_EMAIL: Env.schema.string.optional(),
   FROM_NAME: Env.schema.string.optional(),
@@ -36,4 +40,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   R2_SECRET_ACCESS_KEY: Env.schema.string.optional(),
   R2_BUCKET_NAME: Env.schema.string.optional(),
   R2_PUBLIC_URL: Env.schema.string.optional(),
+
+  EXCHANGE_RATE_API_KEY: Env.schema.string.optional(),
 })
