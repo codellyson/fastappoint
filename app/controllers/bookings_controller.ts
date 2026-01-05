@@ -2,7 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Booking from '#models/booking'
 import Business from '#models/business'
 import { DateTime } from 'luxon'
-import refundService from '#services/refund-service'
+import refundService from '../services/refund_service.js'
 
 export default class BookingsController {
   async index({ view, auth, request }: HttpContext) {

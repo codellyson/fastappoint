@@ -4,7 +4,7 @@ import env from '#start/env'
 import Booking from '#models/booking'
 import Transaction from '#models/transaction'
 import emailService from '#services/email-service'
-import subscriptionService from '#services/subscription-service'
+import subscriptionService from '../services/subscription_service.js'
 import receiptService from '#services/receipt-service'
 import withdrawalService from '#services/withdrawal-service'
 

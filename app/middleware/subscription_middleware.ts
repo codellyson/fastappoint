@@ -1,7 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import Business from '#models/business'
-import subscriptionService from '#services/subscription-service'
+import subscriptionService from '../services/subscription_service.js'
 import { DateTime } from 'luxon'
 
 export default class SubscriptionMiddleware {
@@ -37,7 +37,7 @@ export default class SubscriptionMiddleware {
 
     // Check if subscription is active or trial is valid
     const subscription = await business.getCurrentSubscription()
-    
+
     if (!subscription) {
       ctx.session.flash('error', 'No active subscription. Please choose a plan to continue.')
       return ctx.response.redirect().toRoute('subscriptions.select')

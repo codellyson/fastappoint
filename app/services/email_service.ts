@@ -269,11 +269,11 @@ class EmailService {
     })
 
     if (result.success && result.data) {
-      const data = result.data as { messageId?: string }
+      const data2 = result.data as { messageId?: string }
       console.log('[EmailService] Brevo API response:', JSON.stringify(data, null, 2))
 
-      if (data.messageId) {
-        console.log('[EmailService] Email sent with message ID:', data.messageId)
+      if (data2.messageId) {
+        console.log('[EmailService] Email sent with message ID:', data2.messageId)
       }
     }
 
@@ -870,7 +870,11 @@ class EmailService {
 </html>`
   }
 
-  private getGenericEmailHtml(data: { title: string; preheader?: string; content: string }): string {
+  private getGenericEmailHtml(data: {
+    title: string
+    preheader?: string
+    content: string
+  }): string {
     return `
 <!DOCTYPE html>
 <html>

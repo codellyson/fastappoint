@@ -8,7 +8,7 @@ import { errors } from '@vinejs/vine'
 import { DateTime } from 'luxon'
 import { randomBytes } from 'node:crypto'
 import emailService from '#services/email-service'
-import subscriptionService from '#services/subscription-service'
+import subscriptionService from '../services/subscription_service.js'
 import env from '#start/env'
 
 export default class AuthController {

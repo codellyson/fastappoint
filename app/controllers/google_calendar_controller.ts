@@ -1,6 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Business from '#models/business'
-import googleCalendarService from '#services/google-calendar-service'
+import googleCalendarService from '../services/google_calendar_service.js'
 
 export default class GoogleCalendarController {
   /**

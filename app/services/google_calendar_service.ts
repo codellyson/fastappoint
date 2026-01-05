@@ -86,7 +86,9 @@ class GoogleCalendarService {
   /**
    * Refresh access token
    */
-  async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string; expiresAt: DateTime }> {
+  async refreshAccessToken(
+    refreshToken: string
+  ): Promise<{ accessToken: string; expiresAt: DateTime }> {
     const oauth2Client = this.createOAuth2Client()
     oauth2Client.setCredentials({ refresh_token: refreshToken })
 
@@ -127,7 +129,9 @@ class GoogleCalendarService {
 
     if (tokenExpired) {
       try {
-        const { accessToken, expiresAt } = await this.refreshAccessToken(business.googleRefreshToken)
+        const { accessToken, expiresAt } = await this.refreshAccessToken(
+          business.googleRefreshToken
+        )
         business.googleAccessToken = accessToken
         business.googleTokenExpiresAt = expiresAt
         await business.save()
@@ -167,7 +171,7 @@ class GoogleCalendarService {
     const response = await calendar.calendarList.list()
 
     return (
-      response.data.items?.map((cal) => ({
+      response.data.items?.map((cal: any) => ({
         id: cal.id || '',
         summary: cal.summary || 'Unnamed Calendar',
         primary: cal.primary || false,
@@ -361,12 +365,11 @@ Booking Reference: ${booking.paymentReference?.substring(0, 8).toUpperCase() || 
         },
       })
 
-      const busyTimes =
-        response.data.calendars?.[business.googleCalendarId]?.busy || []
+      const busyTimes = response.data.calendars?.[business.googleCalendarId]?.busy || []
 
       return busyTimes
-        .filter((busy) => busy.start && busy.end)
-        .map((busy) => ({
+        .filter((busy: any) => busy.start && busy.end)
+        .map((busy: any) => ({
           start: DateTime.fromISO(busy.start!),
           end: DateTime.fromISO(busy.end!),
         }))

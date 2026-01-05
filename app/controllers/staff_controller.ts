@@ -9,7 +9,7 @@ import {
   staffAvailabilityValidator,
 } from '#validators/staff-validator'
 import { errors } from '@vinejs/vine'
-import subscriptionService from '#services/subscription-service'
+import subscriptionService from '../services/subscription_service.js'
 
 export default class StaffController {
   async index({ view, auth }: HttpContext) {

@@ -55,7 +55,7 @@ class SubscriptionService {
     // For now, create subscription directly without Paystack subscription API
     // This allows immediate activation after payment
     // Recurring billing can be set up later via webhooks
-    
+
     const now = DateTime.now()
     const periodEnd = now.plus({
       months: plan.interval === 'yearly' ? 12 : 1,
@@ -88,7 +88,7 @@ class SubscriptionService {
         business.paystackSubaccountCode = customerCode
         await business.save()
       }
-      
+
       // Store authorization for future recurring billing setup
       // For now, we'll handle renewals manually or via webhooks
     }
@@ -102,12 +102,15 @@ class SubscriptionService {
   async cancelSubscription(subscription: Subscription, cancelImmediately = false): Promise<void> {
     if (subscription.paystackSubscriptionCode && this.secretKey) {
       try {
-        await fetch(`https://api.paystack.co/subscription/${subscription.paystackSubscriptionCode}`, {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${this.secretKey}`,
-          },
-        })
+        await fetch(
+          `https://api.paystack.co/subscription/${subscription.paystackSubscriptionCode}`,
+          {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${this.secretKey}`,
+            },
+          }
+        )
       } catch (error) {
         console.error('Error cancelling Paystack subscription:', error)
       }
@@ -139,14 +142,17 @@ class SubscriptionService {
   async resumeSubscription(subscription: Subscription): Promise<void> {
     if (subscription.paystackSubscriptionCode && this.secretKey) {
       try {
-        await fetch(`https://api.paystack.co/subscription/${subscription.paystackSubscriptionCode}`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${this.secretKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({}),
-        })
+        await fetch(
+          `https://api.paystack.co/subscription/${subscription.paystackSubscriptionCode}`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${this.secretKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}),
+          }
+        )
       } catch (error) {
         console.error('Error resuming Paystack subscription:', error)
       }
@@ -184,7 +190,7 @@ class SubscriptionService {
    */
   async canAddStaff(businessId: number): Promise<{ allowed: boolean; reason?: string }> {
     const business = await Business.findOrFail(businessId)
-    
+
     // Check if trial is expired
     const trialExpired = await this.isTrialExpired(businessId)
     if (trialExpired) {
@@ -195,12 +201,16 @@ class SubscriptionService {
     }
 
     const subscription = await business.getCurrentSubscription()
-    
+
     // During trial, allow unlimited (or use starter plan limits)
     if (subscription?.status === 'trialing') {
       const starterPlan = await SubscriptionPlan.findBy('name', 'starter')
       if (starterPlan && starterPlan.maxStaff) {
-        const staffCount = await business.related('users').query().where('isActive', true).count('* as total')
+        const staffCount = await business
+          .related('users')
+          .query()
+          .where('isActive', true)
+          .count('* as total')
         const currentStaff = Number(staffCount[0].$extras.total)
         if (currentStaff >= starterPlan.maxStaff) {
           return {
@@ -221,7 +231,11 @@ class SubscriptionService {
       return { allowed: true }
     }
 
-    const staffCount = await business.related('users').query().where('isActive', true).count('* as total')
+    const staffCount = await business
+      .related('users')
+      .query()
+      .where('isActive', true)
+      .count('* as total')
     const currentStaff = Number(staffCount[0].$extras.total)
 
     if (currentStaff >= plan.maxStaff!) {
@@ -239,7 +253,7 @@ class SubscriptionService {
    */
   async canCreateBooking(businessId: number): Promise<{ allowed: boolean; reason?: string }> {
     const business = await Business.findOrFail(businessId)
-    
+
     // Check if trial is expired
     const trialExpired = await this.isTrialExpired(businessId)
     if (trialExpired) {
@@ -250,7 +264,7 @@ class SubscriptionService {
     }
 
     const subscription = await business.getCurrentSubscription()
-    
+
     // During trial, allow unlimited bookings
     if (subscription?.status === 'trialing') {
       return { allowed: true }
@@ -308,7 +322,10 @@ class SubscriptionService {
   }
 
   private async handleSubscriptionActive(data: any): Promise<void> {
-    const subscription = await Subscription.findBy('paystackSubscriptionCode', data.subscription_code)
+    const subscription = await Subscription.findBy(
+      'paystackSubscriptionCode',
+      data.subscription_code
+    )
     if (subscription) {
       subscription.status = 'active'
       await subscription.save()
@@ -316,7 +333,10 @@ class SubscriptionService {
   }
 
   private async handleSubscriptionDisabled(data: any): Promise<void> {
-    const subscription = await Subscription.findBy('paystackSubscriptionCode', data.subscription_code)
+    const subscription = await Subscription.findBy(
+      'paystackSubscriptionCode',
+      data.subscription_code
+    )
     if (subscription) {
       subscription.status = 'cancelled'
       subscription.cancelledAt = DateTime.now()
@@ -329,7 +349,10 @@ class SubscriptionService {
   }
 
   private async handlePaymentFailed(data: any): Promise<void> {
-    const subscription = await Subscription.findBy('paystackSubscriptionCode', data.subscription.subscription_code)
+    const subscription = await Subscription.findBy(
+      'paystackSubscriptionCode',
+      data.subscription.subscription_code
+    )
     if (subscription) {
       subscription.status = 'past_due'
       await subscription.save()
@@ -341,7 +364,10 @@ class SubscriptionService {
   }
 
   private async handlePaymentSucceeded(data: any): Promise<void> {
-    const subscription = await Subscription.findBy('paystackSubscriptionCode', data.subscription.subscription_code)
+    const subscription = await Subscription.findBy(
+      'paystackSubscriptionCode',
+      data.subscription.subscription_code
+    )
     if (subscription) {
       // Record payment
       await SubscriptionPayment.create({
@@ -356,7 +382,9 @@ class SubscriptionService {
       // Update subscription period
       subscription.status = 'active'
       subscription.currentPeriodStart = DateTime.fromISO(data.subscription.next_payment_date)
-      subscription.currentPeriodEnd = DateTime.fromISO(data.subscription.next_payment_date).plus({ months: 1 })
+      subscription.currentPeriodEnd = DateTime.fromISO(data.subscription.next_payment_date).plus({
+        months: 1,
+      })
       await subscription.save()
 
       const business = await Business.findOrFail(subscription.businessId)
@@ -381,13 +409,13 @@ class SubscriptionService {
     const response = await fetch('https://api.paystack.co/customer', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${this.secretKey}`,
+        'Authorization': `Bearer ${this.secretKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email, name }),
     })
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       status: boolean
       message?: string
       data?: { customer_code: string }
@@ -417,13 +445,13 @@ class SubscriptionService {
     const response = await fetch('https://api.paystack.co/subscription', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${this.secretKey}`,
+        'Authorization': `Bearer ${this.secretKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
     })
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       status: boolean
       message?: string
       data: any
@@ -437,4 +465,3 @@ class SubscriptionService {
 }
 
 export default new SubscriptionService()
-

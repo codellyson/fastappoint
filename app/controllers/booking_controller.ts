@@ -16,9 +16,9 @@ import { errors } from '@vinejs/vine'
 import { randomUUID } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import emailService from '#services/email-service'
-import subscriptionService from '#services/subscription-service'
+import subscriptionService from '../services/subscription_service.js'
 import receiptService from '#services/receipt-service'
-import googleCalendarService from '#services/google-calendar-service'
+import googleCalendarService from '../services/google_calendar_service.js'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
 export default class BookingController {

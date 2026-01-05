@@ -2,7 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import Business from '#models/business'
 import SubscriptionPlan from '#models/subscription_plan'
-import subscriptionService from '#services/subscription-service'
+import subscriptionService from '../services/subscription_service.js'
 import env from '#start/env'
 
 export default class SubscriptionsController {
