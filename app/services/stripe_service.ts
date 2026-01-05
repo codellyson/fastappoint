@@ -10,7 +10,7 @@ class StripeService {
     this.secretKey = env.get('STRIPE_SECRET_KEY') || null
     if (this.secretKey) {
       this.stripe = new Stripe(this.secretKey, {
-        apiVersion: '2024-12-18.acacia',
+        apiVersion: '2025-12-15.clover',
       })
     }
   }

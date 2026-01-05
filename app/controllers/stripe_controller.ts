@@ -59,7 +59,7 @@ export default class StripeController {
     }
   }
 
-  async return({ auth, response, session, request }: HttpContext) {
+  async return({ auth, response, session }: HttpContext) {
     const user = auth.user!
     const business = await Business.findOrFail(user.businessId)
 

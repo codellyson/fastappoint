@@ -83,7 +83,7 @@ class CurrencyService {
     return Math.round(planPrice)
   }
 
-  getSmallestUnit(currency: string): number {
+  getSmallestUnit(_currency: string): number {
     return 100
   }
 
@@ -96,7 +96,7 @@ class CurrencyService {
   }
 
   getSupportedCurrencies(): string[] {
-    return Object.keys(this.exchangeRates)
+    return ['NGN', 'USD', 'GBP', 'EUR', 'ZAR', 'KES', 'GHS', 'UGX']
   }
 
   detectCurrencyFromLocale(locale: string): string {

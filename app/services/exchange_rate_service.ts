@@ -11,13 +11,14 @@ interface ExchangeRateResponse {
 }
 
 class ExchangeRateService {
-  private apiKey: string | null = null
   private baseUrl = 'https://api.exchangerate-api.com/v4/latest'
   private cache: Map<string, { rates: Record<string, number>; timestamp: number }> = new Map()
   private cacheTimeout = 60 * 60 * 1000 // 1 hour cache
 
   constructor() {
-    this.apiKey = env.get('EXCHANGE_RATE_API_KEY') || null
+    // API key can be used in the future for premium exchange rate APIs
+    // Currently using free tier which doesn't require API key
+    void env.get('EXCHANGE_RATE_API_KEY')
   }
 
   /**
@@ -36,7 +37,7 @@ class ExchangeRateService {
 
     try {
       const response = await fetch(`${this.baseUrl}/${baseCurrency}`)
-      const data: ExchangeRateResponse = await response.json()
+      const data = (await response.json()) as ExchangeRateResponse
 
       if (!response.ok || !data.rates) {
         console.error('[EXCHANGE_RATE] API error:', data.error)
@@ -64,11 +65,7 @@ class ExchangeRateService {
    * @param toCurrency - Target currency code
    * @returns Amount in smallest unit of toCurrency
    */
-  async convertAmount(
-    amount: number,
-    fromCurrency: string,
-    toCurrency: string
-  ): Promise<number> {
+  async convertAmount(amount: number, fromCurrency: string, toCurrency: string): Promise<number> {
     if (fromCurrency === toCurrency) {
       return amount
     }
@@ -141,11 +138,7 @@ class ExchangeRateService {
   /**
    * Fallback conversion using approximate rates
    */
-  private fallbackConvert(
-    amount: number,
-    fromCurrency: string,
-    toCurrency: string
-  ): number {
+  private fallbackConvert(amount: number, fromCurrency: string, toCurrency: string): number {
     const rates = this.getFallbackRates('USD')
     const fromRate = rates[fromCurrency.toUpperCase()] || 1
     const toRate = rates[toCurrency.toUpperCase()] || 1
@@ -163,4 +156,3 @@ class ExchangeRateService {
 }
 
 export default new ExchangeRateService()
-
