@@ -1,0 +1,327 @@
+@layout('layouts/blog')
+
+@set('title', post.title + ' - FastAppoint Blog')
+@set('description', post.excerpt)
+
+@section('content')
+  {{-- Article Header --}}
+  <article>
+    <div class="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 mb-4">
+          <a href="{{ route('blog.index') }}" class="text-primary hover:underline text-sm">Blog</a>
+          <span class="text-sand-9">/</span>
+          <span class="text-sand-11 text-sm">{{ post.category }}</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-sand-12 mb-4">
+          {{ post.title }}
+        </h1>
+        <p class="text-lg text-sand-11 mb-6">
+          {{ post.excerpt }}
+        </p>
+        <div class="flex items-center gap-4 text-sm text-sand-9">
+          <span>{{ post.publishedAt }}</span>
+          <span>&middot;</span>
+          <span>{{ post.readTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    {{-- Featured Image --}}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <img
+        src="{{ post.image }}"
+        alt="{{ post.title }}"
+        class="w-full rounded-xl shadow-lg aspect-[2/1] object-cover"
+      />
+    </div>
+
+    {{-- Article Content --}}
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="prose prose-lg max-w-none">
+        <p class="lead text-xl text-sand-11">
+          Nigerian service businesses have unique needs. You need payment processing that works with local banks. You need prices that don't fluctuate with the dollar. You need software that understands how business works here. FastAppoint was built from the ground up for exactly this.
+        </p>
+
+        <h2>The Problem with International Booking Platforms</h2>
+        <p>
+          Most booking software is built for American or European markets. This creates real problems for Nigerian businesses:
+        </p>
+
+        <h3>1. Payment Processing Doesn't Work</h3>
+        <p>
+          Stripe has limited functionality in Nigeria. Square isn't available at all. PayPal is complicated. International platforms that rely on these processors leave Nigerian businesses without a reliable way to collect payments.
+        </p>
+
+        <h3>2. Pricing in Dollars</h3>
+        <p>
+          When a platform charges $30/month, you're subject to exchange rate fluctuations. One month it might be &#8358;45,000, the next &#8358;50,000. Budgeting becomes impossible.
+        </p>
+
+        <h3>3. Features Built for Different Needs</h3>
+        <p>
+          Features like Zoom integration and multi-timezone support are great for remote consultants. But a hair salon in Lekki needs portfolio galleries, staff management, and deposit collection.
+        </p>
+
+        <h2>How FastAppoint Solves These Problems</h2>
+
+        <div class="bg-primary/10 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0">Built for Nigerian Realities</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <div>
+                <strong class="text-sand-12">Paystack Payments</strong>
+                <p class="text-sm text-sand-11 mb-0">Accept all Nigerian bank cards and bank transfers</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <div>
+                <strong class="text-sand-12">Naira Pricing</strong>
+                <p class="text-sm text-sand-11 mb-0">Fixed prices in &#8358; that don't change with exchange rates</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <div>
+                <strong class="text-sand-12">Service Business Focus</strong>
+                <p class="text-sm text-sand-11 mb-0">Features designed for salons, photographers, spas, and more</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <div>
+                <strong class="text-sand-12">Local Support</strong>
+                <p class="text-sm text-sand-11 mb-0">Help when you need it, in your timezone</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h2>Complete Payment Processing with Paystack</h2>
+        <p>
+          FastAppoint integrates directly with Paystack, Nigeria's leading payment processor. This means:
+        </p>
+        <ul>
+          <li><strong>All Nigerian bank cards:</strong> Verve, Mastercard, Visa - they all work</li>
+          <li><strong>Bank transfers:</strong> Customers can pay via direct transfer</li>
+          <li><strong>USSD payments:</strong> Options for customers without smartphones</li>
+          <li><strong>Direct settlement:</strong> Money goes to your Nigerian bank account</li>
+          <li><strong>No forex hassle:</strong> Everything stays in Naira</li>
+        </ul>
+        <p>
+          When a customer books on your FastAppoint page, they can pay instantly using the payment method that works for them. No "we don't accept your card" errors. No complex workarounds.
+        </p>
+
+        <h2>Pricing That Respects Your Budget</h2>
+        <p>
+          FastAppoint's pricing is designed for Nigerian business realities:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
+          <div class="bg-white rounded-xl border border-sand-4 p-6 text-center">
+            <h3 class="font-semibold text-sand-12 mb-2">Starter</h3>
+            <div class="text-3xl font-bold text-primary mb-2">&#8358;5,000</div>
+            <p class="text-sm text-sand-11 mb-4">/month</p>
+            <ul class="text-sm text-left text-sand-11 space-y-2">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Up to 3 staff
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Unlimited bookings
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Payments included
+              </li>
+            </ul>
+          </div>
+          <div class="bg-primary/5 rounded-xl border-2 border-primary p-6 text-center">
+            <div class="text-xs font-semibold text-primary mb-2">MOST POPULAR</div>
+            <h3 class="font-semibold text-sand-12 mb-2">Pro</h3>
+            <div class="text-3xl font-bold text-primary mb-2">&#8358;15,000</div>
+            <p class="text-sm text-sand-11 mb-4">/month</p>
+            <ul class="text-sm text-left text-sand-11 space-y-2">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Up to 10 staff
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                SMS reminders
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Custom domain
+              </li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-xl border border-sand-4 p-6 text-center">
+            <h3 class="font-semibold text-sand-12 mb-2">Business</h3>
+            <div class="text-3xl font-bold text-primary mb-2">&#8358;40,000</div>
+            <p class="text-sm text-sand-11 mb-4">/month</p>
+            <ul class="text-sm text-left text-sand-11 space-y-2">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Unlimited staff
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                API access
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Priority support
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <p>
+          Compare this to Calendly at &#8358;15,000+ for basic features, Acuity at &#8358;30,000+, or Booksy at &#8358;45,000+. FastAppoint offers more relevant features at a fraction of the cost.
+        </p>
+
+        <h2>Features Nigerian Service Businesses Actually Need</h2>
+
+        <h3>Portfolio Galleries</h3>
+        <p>
+          For creative professionals - photographers, makeup artists, hair stylists - your work is your marketing. FastAppoint includes built-in portfolio galleries where you can showcase your best work directly on your booking page. Customers can see what you do before they book.
+        </p>
+
+        <h3>Staff Management</h3>
+        <p>
+          If you run a salon or studio with multiple team members, FastAppoint lets you:
+        </p>
+        <ul>
+          <li>Add staff with individual profiles</li>
+          <li>Set different services for each team member</li>
+          <li>Configure individual working hours</li>
+          <li>Let customers choose their preferred stylist/artist</li>
+        </ul>
+
+        <h3>Flexible Payment Options</h3>
+        <p>
+          Not every business operates the same way. FastAppoint gives you options:
+        </p>
+        <ul>
+          <li><strong>Full payment:</strong> Collect the full amount at booking</li>
+          <li><strong>Deposits:</strong> Collect a percentage or fixed amount upfront</li>
+          <li><strong>Pay later:</strong> Let customers pay at the appointment</li>
+        </ul>
+
+        <h3>Service Packages</h3>
+        <p>
+          Bundle services together for special offers. Create wedding packages, monthly maintenance deals, or new customer specials - all with dedicated pricing and time allocation.
+        </p>
+
+        <h3>Google Calendar Sync</h3>
+        <p>
+          Your FastAppoint bookings sync automatically with Google Calendar. See all your appointments alongside personal events, never double-book, and stay organized.
+        </p>
+
+        <h2>Who Uses FastAppoint?</h2>
+        <p>
+          FastAppoint is perfect for Nigerian service businesses including:
+        </p>
+        <ul>
+          <li><strong>Hair Salons & Barbershops:</strong> Manage stylists, services, and bookings</li>
+          <li><strong>Makeup Artists:</strong> Showcase portfolio, collect deposits for bridal bookings</li>
+          <li><strong>Photographers:</strong> Book sessions, manage packages, get paid upfront</li>
+          <li><strong>Nail Technicians:</strong> Schedule appointments, reduce no-shows</li>
+          <li><strong>Spa & Wellness:</strong> Offer multiple services, manage therapists</li>
+          <li><strong>Personal Trainers:</strong> Book sessions, manage client schedules</li>
+          <li><strong>Consultants:</strong> Schedule meetings, collect consultation fees</li>
+        </ul>
+
+        <h2>Getting Started is Easy</h2>
+        <p>
+          Setting up FastAppoint takes less than an hour:
+        </p>
+        <ol>
+          <li><strong>Sign up</strong> - Start your 5-day free trial (no credit card required)</li>
+          <li><strong>Add your business details</strong> - Name, description, photos</li>
+          <li><strong>Create your services</strong> - List what you offer with prices and duration</li>
+          <li><strong>Set your availability</strong> - Working hours for you and your team</li>
+          <li><strong>Connect Paystack</strong> - Link your account to accept payments</li>
+          <li><strong>Share your link</strong> - Put it in your Instagram bio, WhatsApp status, everywhere!</li>
+        </ol>
+
+        <h2>The Bottom Line</h2>
+        <p>
+          International booking platforms weren't built for Nigerian businesses. They have payment processing that doesn't work here, prices that fluctuate with exchange rates, and features designed for different markets.
+        </p>
+        <p>
+          FastAppoint was built specifically for service businesses in Nigeria and Africa. Native Paystack integration. Naira pricing. Features that matter for local businesses.
+        </p>
+
+        <div class="bg-sand-3 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0 mb-4">Ready to Grow Your Business?</h3>
+          <p class="mb-4">
+            Join thousands of Nigerian service businesses using FastAppoint. Start your 5-day free trial today - no credit card required.
+          </p>
+          <a
+            href="{{ route('auth.signup.show') }}"
+            class="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  {{-- Related Posts --}}
+  @if(relatedPosts.length > 0)
+    <div class="bg-sand-2 py-12">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-sand-12 mb-8">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          @each(related in relatedPosts)
+            <a href="{{ route('blog.show', { slug: related.slug }) }}" class="group">
+              <div class="relative rounded-xl overflow-hidden mb-4 aspect-[16/9]">
+                <img
+                  src="{{ related.image }}"
+                  alt="{{ related.title }}"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <h3 class="font-semibold text-sand-12 group-hover:text-primary transition-colors mb-2">
+                {{ related.title }}
+              </h3>
+              <div class="text-xs text-sand-9">{{ related.readTime }}</div>
+            </a>
+          @endeach
+        </div>
+      </div>
+    </div>
+  @endif
+@endsection

@@ -1,0 +1,306 @@
+@layout('layouts/blog')
+
+@set('title', post.title + ' - FastAppoint Blog')
+@set('description', post.excerpt)
+
+@section('content')
+  {{-- Article Header --}}
+  <article>
+    <div class="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 mb-4">
+          <a href="{{ route('blog.index') }}" class="text-primary hover:underline text-sm">Blog</a>
+          <span class="text-sand-9">/</span>
+          <span class="text-sand-11 text-sm">{{ post.category }}</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-sand-12 mb-4">
+          {{ post.title }}
+        </h1>
+        <p class="text-lg text-sand-11 mb-6">
+          {{ post.excerpt }}
+        </p>
+        <div class="flex items-center gap-4 text-sm text-sand-9">
+          <span>{{ post.publishedAt }}</span>
+          <span>&middot;</span>
+          <span>{{ post.readTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    {{-- Featured Image --}}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <img
+        src="{{ post.image }}"
+        alt="{{ post.title }}"
+        class="w-full rounded-xl shadow-lg aspect-[2/1] object-cover"
+      />
+    </div>
+
+    {{-- Article Content --}}
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="prose prose-lg max-w-none">
+        <p class="lead text-xl text-sand-11">
+          Acuity Scheduling (now part of Squarespace) has been a popular choice for appointment booking since 2006. But does "popular" mean "best"? For service businesses in Nigeria and Africa, there's a better alternative. Let's compare.
+        </p>
+
+        <h2>What is Acuity Scheduling?</h2>
+        <p>
+          Acuity Scheduling is a cloud-based appointment scheduling software that lets businesses manage their bookings online. In 2021, Squarespace acquired Acuity, integrating it into their website builder ecosystem.
+        </p>
+        <p>
+          While Acuity has strong features for Western markets, it has significant limitations for businesses operating in Nigeria and across Africa.
+        </p>
+
+        <h2>The Complete Feature Comparison</h2>
+
+        <div class="overflow-x-auto my-8">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-sand-3">
+                <th class="text-left p-4 border border-sand-6">Feature</th>
+                <th class="text-center p-4 border border-sand-6">FastAppoint</th>
+                <th class="text-center p-4 border border-sand-6">Acuity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-4 border border-sand-6">African Payment Processing</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Paystack (Native)</td>
+                <td class="text-center p-4 border border-sand-6 text-error">Stripe/Square only</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Naira (&#8358;) Currency</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Full Support</td>
+                <td class="text-center p-4 border border-sand-6 text-error">No</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Multi-Staff Support</td>
+                <td class="text-center p-4 border border-sand-6 text-success">All Plans</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Growing+ Plans</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Custom Booking Page</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Full themes</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Basic styling</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Portfolio/Gallery</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Built-in</td>
+                <td class="text-center p-4 border border-sand-6 text-error">No</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Service Packages</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Yes</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Limited</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Google Calendar Sync</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Yes</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Yes</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">SMS Reminders</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Pro plan</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Growing+ Plans</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Entry Price</td>
+                <td class="text-center p-4 border border-sand-6 font-semibold">&#8358;5,000/mo</td>
+                <td class="text-center p-4 border border-sand-6">$20/mo (~&#8358;30,000)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>The Payment Problem: Why This Matters Most</h2>
+        <p>
+          Acuity's biggest limitation for African businesses is payments. It only supports:
+        </p>
+        <ul>
+          <li>Stripe (very limited in Nigeria)</li>
+          <li>Square (not available in Nigeria)</li>
+          <li>PayPal (complex for Nigerian businesses)</li>
+        </ul>
+        <p>
+          This means your customers in Nigeria can't easily pay when they book. They can't use their GTBank, Access Bank, or UBA cards. They can't do a quick bank transfer. The payment friction alone loses you bookings.
+        </p>
+
+        <div class="bg-error/10 rounded-xl p-6 my-8 border border-error/30">
+          <h3 class="text-lg font-semibold text-error mt-0 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            The Hidden Cost of Payment Friction
+          </h3>
+          <p class="text-sand-11 mb-0">
+            Studies show that every additional step in the payment process reduces conversion by 10-15%. If your Nigerian customers can't pay in Naira with their local cards, you're losing bookings to simpler alternatives.
+          </p>
+        </div>
+
+        <p>
+          FastAppoint uses <strong>Paystack</strong>, which is built for African payments:
+        </p>
+        <ul>
+          <li>All Nigerian bank cards accepted</li>
+          <li>Bank transfer option</li>
+          <li>USSD payments for those without smartphones</li>
+          <li>Payments settle directly to your Nigerian bank account</li>
+          <li>No currency conversion hassles</li>
+        </ul>
+
+        <h2>Pricing: 6x More Affordable</h2>
+        <p>
+          Let's break down the real cost:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+          <div class="bg-primary/10 rounded-xl p-6">
+            <h4 class="font-semibold text-sand-12 mb-4">FastAppoint</h4>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span>Starter</span>
+                <span class="font-semibold">&#8358;5,000/mo</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Pro</span>
+                <span class="font-semibold">&#8358;15,000/mo</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Business</span>
+                <span class="font-semibold">&#8358;40,000/mo</span>
+              </div>
+            </div>
+            <p class="text-sm text-sand-11 mt-4 mb-0">All plans include payments, staff, and core features.</p>
+          </div>
+          <div class="bg-sand-3 rounded-xl p-6">
+            <h4 class="font-semibold text-sand-12 mb-4">Acuity Scheduling</h4>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span>Emerging</span>
+                <span class="font-semibold">$20/mo (~&#8358;30k)</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Growing</span>
+                <span class="font-semibold">$34/mo (~&#8358;51k)</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Powerhouse</span>
+                <span class="font-semibold">$61/mo (~&#8358;92k)</span>
+              </div>
+            </div>
+            <p class="text-sm text-sand-11 mt-4 mb-0">Prices in USD, fluctuates with exchange rate.</p>
+          </div>
+        </div>
+
+        <p>
+          For a small salon paying &#8358;5,000 vs &#8358;30,000 per month, that's <strong>&#8358;300,000 saved per year</strong>. That's money that could go to marketing, equipment, or your team.
+        </p>
+
+        <h2>Where Acuity Shines</h2>
+        <p>
+          To be fair, Acuity has some strengths:
+        </p>
+        <ul>
+          <li><strong>Mature platform:</strong> Nearly 20 years of development</li>
+          <li><strong>Squarespace integration:</strong> Seamless if you're already on Squarespace</li>
+          <li><strong>Client management:</strong> Good CRM-style client tracking</li>
+          <li><strong>Intake forms:</strong> Customizable pre-appointment forms</li>
+          <li><strong>Time zone handling:</strong> Great for international clients</li>
+        </ul>
+        <p>
+          But for Nigerian and African service businesses, the payment and pricing barriers outweigh these benefits.
+        </p>
+
+        <h2>What Makes FastAppoint Different</h2>
+
+        <h3>1. Built for African Business Realities</h3>
+        <p>
+          FastAppoint wasn't adapted for Africa - it was built for Africa from day one. This means:
+        </p>
+        <ul>
+          <li>Prices in Naira that stay consistent</li>
+          <li>Payment processing that actually works here</li>
+          <li>Features that match how Nigerian businesses operate</li>
+        </ul>
+
+        <h3>2. Portfolio Showcase</h3>
+        <p>
+          For creative service providers (photographers, makeup artists, hair stylists), showing your work is crucial. FastAppoint includes a built-in portfolio gallery. Acuity doesn't have this at all.
+        </p>
+
+        <h3>3. Simpler Pricing, More Value</h3>
+        <p>
+          No confusing tier restrictions. No features locked behind premium plans that cost more than your monthly rent. Just straightforward plans with honest pricing.
+        </p>
+
+        <h2>Migration: Easier Than You Think</h2>
+        <p>
+          Switching from Acuity to FastAppoint is straightforward:
+        </p>
+        <ol>
+          <li><strong>Sign up for FastAppoint</strong> (5-day free trial)</li>
+          <li><strong>Set up your services</strong> (usually takes 30 minutes)</li>
+          <li><strong>Add your staff</strong> if applicable</li>
+          <li><strong>Connect your payment account</strong></li>
+          <li><strong>Share your new booking link</strong></li>
+        </ol>
+        <p>
+          Most businesses complete the switch in under an hour. Your customers will appreciate the smoother payment experience.
+        </p>
+
+        <h2>The Verdict</h2>
+        <p>
+          Acuity Scheduling is a solid platform for Western markets with Stripe/Square access. But for Nigerian and African service businesses, its limitations are significant:
+        </p>
+        <ul>
+          <li>No native African payment support</li>
+          <li>Pricing in USD that fluctuates</li>
+          <li>6x more expensive than local alternatives</li>
+          <li>Missing features important to service businesses</li>
+        </ul>
+        <p>
+          FastAppoint delivers everything you need at a price that makes sense for the Nigerian market.
+        </p>
+
+        <div class="bg-sand-3 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0 mb-4">Try FastAppoint Risk-Free</h3>
+          <p class="mb-4">
+            Start your 5-day free trial. No credit card required. Experience the difference a locally-built booking platform makes.
+          </p>
+          <a
+            href="{{ route('auth.signup.show') }}"
+            class="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  {{-- Related Posts --}}
+  @if(relatedPosts.length > 0)
+    <div class="bg-sand-2 py-12">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-sand-12 mb-8">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          @each(related in relatedPosts)
+            <a href="{{ route('blog.show', { slug: related.slug }) }}" class="group">
+              <div class="relative rounded-xl overflow-hidden mb-4 aspect-[16/9]">
+                <img
+                  src="{{ related.image }}"
+                  alt="{{ related.title }}"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <h3 class="font-semibold text-sand-12 group-hover:text-primary transition-colors mb-2">
+                {{ related.title }}
+              </h3>
+              <div class="text-xs text-sand-9">{{ related.readTime }}</div>
+            </a>
+          @endeach
+        </div>
+      </div>
+    </div>
+  @endif
+@endsection

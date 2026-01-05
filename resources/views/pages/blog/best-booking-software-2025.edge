@@ -1,0 +1,407 @@
+@layout('layouts/blog')
+
+@set('title', post.title + ' - FastAppoint Blog')
+@set('description', post.excerpt)
+
+@section('content')
+  {{-- Article Header --}}
+  <article>
+    <div class="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 mb-4">
+          <a href="{{ route('blog.index') }}" class="text-primary hover:underline text-sm">Blog</a>
+          <span class="text-sand-9">/</span>
+          <span class="text-sand-11 text-sm">{{ post.category }}</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-sand-12 mb-4">
+          {{ post.title }}
+        </h1>
+        <p class="text-lg text-sand-11 mb-6">
+          {{ post.excerpt }}
+        </p>
+        <div class="flex items-center gap-4 text-sm text-sand-9">
+          <span>{{ post.publishedAt }}</span>
+          <span>&middot;</span>
+          <span>{{ post.readTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    {{-- Featured Image --}}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <img
+        src="{{ post.image }}"
+        alt="{{ post.title }}"
+        class="w-full rounded-xl shadow-lg aspect-[2/1] object-cover"
+      />
+    </div>
+
+    {{-- Article Content --}}
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="prose prose-lg max-w-none">
+        <p class="lead text-xl text-sand-11">
+          Choosing the right booking software can make or break your service business. Too many features and you're overwhelmed. Too few and you're limited. Wrong market focus and payments don't work. This guide compares all major booking platforms to help you make the right choice.
+        </p>
+
+        <div class="bg-sand-2 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0">Quick Summary</h3>
+          <ul class="text-sand-11 mb-0">
+            <li><strong>For Nigerian service businesses:</strong> FastAppoint (only option with full Naira support)</li>
+            <li><strong>For virtual meetings:</strong> Calendly or Acuity</li>
+            <li><strong>For large enterprises:</strong> SimplyBook.me or custom solutions</li>
+            <li><strong>For beauty with marketplace exposure:</strong> Booksy or Fresha (with caveats)</li>
+          </ul>
+        </div>
+
+        <h2>The 8 Major Booking Platforms Compared</h2>
+
+        <h3>1. FastAppoint</h3>
+        <p><strong>Best for:</strong> Nigerian and African service businesses</p>
+        <p><strong>Starting price:</strong> &#8358;5,000/month</p>
+
+        <div class="flex gap-4 my-4">
+          <div class="flex-1 bg-success/10 rounded-lg p-4">
+            <h4 class="text-success font-semibold mt-0 mb-2 text-sm">Strengths</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>Native Paystack integration</li>
+              <li>Naira pricing</li>
+              <li>Portfolio galleries</li>
+              <li>Unlimited bookings</li>
+              <li>Fast setup</li>
+            </ul>
+          </div>
+          <div class="flex-1 bg-error/10 rounded-lg p-4">
+            <h4 class="text-error font-semibold mt-0 mb-2 text-sm">Limitations</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>Africa-focused (limited elsewhere)</li>
+              <li>No video meeting integration</li>
+              <li>Newer platform</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>2. Calendly</h3>
+        <p><strong>Best for:</strong> Virtual meetings and consultations</p>
+        <p><strong>Starting price:</strong> Free (limited) / $10/seat/month</p>
+
+        <div class="flex gap-4 my-4">
+          <div class="flex-1 bg-success/10 rounded-lg p-4">
+            <h4 class="text-success font-semibold mt-0 mb-2 text-sm">Strengths</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>Excellent meeting scheduling</li>
+              <li>Great Zoom/Teams integration</li>
+              <li>Clean interface</li>
+              <li>Time zone handling</li>
+            </ul>
+          </div>
+          <div class="flex-1 bg-error/10 rounded-lg p-4">
+            <h4 class="text-error font-semibold mt-0 mb-2 text-sm">Limitations</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>No Nigerian payment support</li>
+              <li>No service catalogs</li>
+              <li>No staff management</li>
+              <li>USD pricing</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>3. Acuity Scheduling (Squarespace)</h3>
+        <p><strong>Best for:</strong> Squarespace users, Western markets</p>
+        <p><strong>Starting price:</strong> $20/month</p>
+
+        <div class="flex gap-4 my-4">
+          <div class="flex-1 bg-success/10 rounded-lg p-4">
+            <h4 class="text-success font-semibold mt-0 mb-2 text-sm">Strengths</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>Mature platform</li>
+              <li>Good intake forms</li>
+              <li>Squarespace integration</li>
+              <li>Client management</li>
+            </ul>
+          </div>
+          <div class="flex-1 bg-error/10 rounded-lg p-4">
+            <h4 class="text-error font-semibold mt-0 mb-2 text-sm">Limitations</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>No African payment support</li>
+              <li>Expensive for teams</li>
+              <li>USD pricing</li>
+              <li>No portfolio feature</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>4. Square Appointments</h3>
+        <p><strong>Best for:</strong> US businesses using Square POS</p>
+        <p><strong>Starting price:</strong> Free (with transaction fees)</p>
+
+        <div class="flex gap-4 my-4">
+          <div class="flex-1 bg-success/10 rounded-lg p-4">
+            <h4 class="text-success font-semibold mt-0 mb-2 text-sm">Strengths</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>Free tier available</li>
+              <li>Integrated POS</li>
+              <li>Good mobile app</li>
+            </ul>
+          </div>
+          <div class="flex-1 bg-error/10 rounded-lg p-4">
+            <h4 class="text-error font-semibold mt-0 mb-2 text-sm">Limitations</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>NOT available in Nigeria</li>
+              <li>High transaction fees</li>
+              <li>Limited to Square ecosystem</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>5. Booksy</h3>
+        <p><strong>Best for:</strong> Beauty businesses wanting marketplace exposure</p>
+        <p><strong>Starting price:</strong> $29.99/month</p>
+
+        <div class="flex gap-4 my-4">
+          <div class="flex-1 bg-success/10 rounded-lg p-4">
+            <h4 class="text-success font-semibold mt-0 mb-2 text-sm">Strengths</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>Consumer marketplace</li>
+              <li>Beauty industry focus</li>
+              <li>Marketing tools</li>
+            </ul>
+          </div>
+          <div class="flex-1 bg-error/10 rounded-lg p-4">
+            <h4 class="text-error font-semibold mt-0 mb-2 text-sm">Limitations</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>Limited Nigeria support</li>
+              <li>Marketplace commissions</li>
+              <li>You don't own customers</li>
+              <li>USD pricing</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>6. Fresha</h3>
+        <p><strong>Best for:</strong> Low-volume beauty businesses</p>
+        <p><strong>Starting price:</strong> Free (with transaction fees)</p>
+
+        <div class="flex gap-4 my-4">
+          <div class="flex-1 bg-success/10 rounded-lg p-4">
+            <h4 class="text-success font-semibold mt-0 mb-2 text-sm">Strengths</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>No subscription fee</li>
+              <li>Beauty focus</li>
+              <li>Marketplace exposure</li>
+            </ul>
+          </div>
+          <div class="flex-1 bg-error/10 rounded-lg p-4">
+            <h4 class="text-error font-semibold mt-0 mb-2 text-sm">Limitations</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>20% commission on new clients</li>
+              <li>High transaction fees</li>
+              <li>Limited Nigeria support</li>
+              <li>Gets expensive at scale</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>7. SimplyBook.me</h3>
+        <p><strong>Best for:</strong> Complex enterprise needs</p>
+        <p><strong>Starting price:</strong> Free (50 bookings) / $9.9-$59.9/month</p>
+
+        <div class="flex gap-4 my-4">
+          <div class="flex-1 bg-success/10 rounded-lg p-4">
+            <h4 class="text-success font-semibold mt-0 mb-2 text-sm">Strengths</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>50+ features</li>
+              <li>Highly customizable</li>
+              <li>Multi-location support</li>
+            </ul>
+          </div>
+          <div class="flex-1 bg-error/10 rounded-lg p-4">
+            <h4 class="text-error font-semibold mt-0 mb-2 text-sm">Limitations</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>Booking limits on plans</li>
+              <li>Complex to set up</li>
+              <li>Limited Africa payment support</li>
+              <li>Feature overwhelm</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>8. Setmore</h3>
+        <p><strong>Best for:</strong> Basic scheduling needs</p>
+        <p><strong>Starting price:</strong> Free / $12/user/month</p>
+
+        <div class="flex gap-4 my-4">
+          <div class="flex-1 bg-success/10 rounded-lg p-4">
+            <h4 class="text-success font-semibold mt-0 mb-2 text-sm">Strengths</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>Generous free plan</li>
+              <li>Video integrations</li>
+              <li>Good mobile apps</li>
+            </ul>
+          </div>
+          <div class="flex-1 bg-error/10 rounded-lg p-4">
+            <h4 class="text-error font-semibold mt-0 mb-2 text-sm">Limitations</h4>
+            <ul class="text-sm text-sand-11 mb-0">
+              <li>No free plan payments</li>
+              <li>Per-user pricing</li>
+              <li>Limited Nigeria support</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>Complete Feature Comparison Table</h2>
+
+        <div class="overflow-x-auto my-8">
+          <table class="w-full border-collapse text-sm">
+            <thead>
+              <tr class="bg-sand-3">
+                <th class="text-left p-3 border border-sand-6">Platform</th>
+                <th class="text-center p-3 border border-sand-6">Nigeria Payments</th>
+                <th class="text-center p-3 border border-sand-6">Booking Limit</th>
+                <th class="text-center p-3 border border-sand-6">Portfolio</th>
+                <th class="text-center p-3 border border-sand-6">Starting Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="bg-primary/5">
+                <td class="p-3 border border-sand-6 font-semibold">FastAppoint</td>
+                <td class="text-center p-3 border border-sand-6 text-success">Yes</td>
+                <td class="text-center p-3 border border-sand-6 text-success">Unlimited</td>
+                <td class="text-center p-3 border border-sand-6 text-success">Yes</td>
+                <td class="text-center p-3 border border-sand-6">&#8358;5,000</td>
+              </tr>
+              <tr>
+                <td class="p-3 border border-sand-6">Calendly</td>
+                <td class="text-center p-3 border border-sand-6 text-error">No</td>
+                <td class="text-center p-3 border border-sand-6 text-success">Unlimited</td>
+                <td class="text-center p-3 border border-sand-6 text-error">No</td>
+                <td class="text-center p-3 border border-sand-6">$10/user</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-3 border border-sand-6">Acuity</td>
+                <td class="text-center p-3 border border-sand-6 text-error">No</td>
+                <td class="text-center p-3 border border-sand-6 text-success">Unlimited</td>
+                <td class="text-center p-3 border border-sand-6 text-error">No</td>
+                <td class="text-center p-3 border border-sand-6">$20</td>
+              </tr>
+              <tr>
+                <td class="p-3 border border-sand-6">Square</td>
+                <td class="text-center p-3 border border-sand-6 text-error">N/A</td>
+                <td class="text-center p-3 border border-sand-6 text-success">Unlimited</td>
+                <td class="text-center p-3 border border-sand-6 text-error">No</td>
+                <td class="text-center p-3 border border-sand-6">Free*</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-3 border border-sand-6">Booksy</td>
+                <td class="text-center p-3 border border-sand-6 text-warning">Limited</td>
+                <td class="text-center p-3 border border-sand-6 text-success">Unlimited</td>
+                <td class="text-center p-3 border border-sand-6 text-success">Yes</td>
+                <td class="text-center p-3 border border-sand-6">$29.99</td>
+              </tr>
+              <tr>
+                <td class="p-3 border border-sand-6">Fresha</td>
+                <td class="text-center p-3 border border-sand-6 text-warning">Limited</td>
+                <td class="text-center p-3 border border-sand-6 text-success">Unlimited</td>
+                <td class="text-center p-3 border border-sand-6 text-success">Yes</td>
+                <td class="text-center p-3 border border-sand-6">Free*</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-3 border border-sand-6">SimplyBook</td>
+                <td class="text-center p-3 border border-sand-6 text-warning">Limited</td>
+                <td class="text-center p-3 border border-sand-6 text-error">50-2000</td>
+                <td class="text-center p-3 border border-sand-6 text-warning">Add-on</td>
+                <td class="text-center p-3 border border-sand-6">Free*</td>
+              </tr>
+              <tr>
+                <td class="p-3 border border-sand-6">Setmore</td>
+                <td class="text-center p-3 border border-sand-6 text-error">No</td>
+                <td class="text-center p-3 border border-sand-6 text-success">Unlimited</td>
+                <td class="text-center p-3 border border-sand-6 text-error">No</td>
+                <td class="text-center p-3 border border-sand-6">Free*</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-xs text-sand-9 mt-2">* Free plans have significant limitations. See individual reviews for details.</p>
+        </div>
+
+        <h2>How to Choose the Right Platform</h2>
+
+        <h3>Consider Your Location First</h3>
+        <p>
+          If you're in Nigeria or Africa, payment processing is your primary filter. Most platforms simply won't work properly. FastAppoint is the only major platform with native African payment support.
+        </p>
+
+        <h3>Match Features to Your Business Type</h3>
+        <ul>
+          <li><strong>Physical service businesses (salons, spas, studios):</strong> Need payments, staff management, deposits</li>
+          <li><strong>Virtual consultants:</strong> Need video integration, timezone handling</li>
+          <li><strong>Creative professionals:</strong> Need portfolio, packages, deposits</li>
+        </ul>
+
+        <h3>Calculate True Costs</h3>
+        <p>
+          "Free" platforms often cost more through:
+        </p>
+        <ul>
+          <li>Higher transaction fees</li>
+          <li>Commissions on new clients</li>
+          <li>Per-user pricing that scales</li>
+          <li>Paid add-ons for essential features</li>
+        </ul>
+        <p>
+          A &#8358;5,000/month platform with lower fees often saves money vs. "free" alternatives.
+        </p>
+
+        <h2>Our Recommendation</h2>
+        <p>
+          For Nigerian and African service businesses, <strong>FastAppoint</strong> is the clear choice. It's the only platform that combines:
+        </p>
+        <ul>
+          <li>Native Paystack payment processing</li>
+          <li>Naira pricing that doesn't fluctuate</li>
+          <li>Features designed for service businesses</li>
+          <li>Unlimited bookings on all plans</li>
+          <li>Affordable, predictable pricing</li>
+        </ul>
+
+        <div class="bg-sand-3 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0 mb-4">Try FastAppoint Free</h3>
+          <p class="mb-4">
+            See why FastAppoint is the best booking software for Nigerian service businesses. Start your 5-day free trial - no credit card required.
+          </p>
+          <a
+            href="{{ route('auth.signup.show') }}"
+            class="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  {{-- Related Posts --}}
+  @if(relatedPosts.length > 0)
+    <div class="bg-sand-2 py-12">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-sand-12 mb-8">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          @each(related in relatedPosts)
+            <a href="{{ route('blog.show', { slug: related.slug }) }}" class="group">
+              <div class="relative rounded-xl overflow-hidden mb-4 aspect-[16/9]">
+                <img
+                  src="{{ related.image }}"
+                  alt="{{ related.title }}"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <h3 class="font-semibold text-sand-12 group-hover:text-primary transition-colors mb-2">
+                {{ related.title }}
+              </h3>
+              <div class="text-xs text-sand-9">{{ related.readTime }}</div>
+            </a>
+          @endeach
+        </div>
+      </div>
+    </div>
+  @endif
+@endsection

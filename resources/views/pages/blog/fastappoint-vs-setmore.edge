@@ -1,0 +1,360 @@
+@layout('layouts/blog')
+
+@set('title', post.title + ' - FastAppoint Blog')
+@set('description', post.excerpt)
+
+@section('content')
+  {{-- Article Header --}}
+  <article>
+    <div class="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 mb-4">
+          <a href="{{ route('blog.index') }}" class="text-primary hover:underline text-sm">Blog</a>
+          <span class="text-sand-9">/</span>
+          <span class="text-sand-11 text-sm">{{ post.category }}</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-sand-12 mb-4">
+          {{ post.title }}
+        </h1>
+        <p class="text-lg text-sand-11 mb-6">
+          {{ post.excerpt }}
+        </p>
+        <div class="flex items-center gap-4 text-sm text-sand-9">
+          <span>{{ post.publishedAt }}</span>
+          <span>&middot;</span>
+          <span>{{ post.readTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    {{-- Featured Image --}}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <img
+        src="{{ post.image }}"
+        alt="{{ post.title }}"
+        class="w-full rounded-xl shadow-lg aspect-[2/1] object-cover"
+      />
+    </div>
+
+    {{-- Article Content --}}
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="prose prose-lg max-w-none">
+        <p class="lead text-xl text-sand-11">
+          Setmore offers a free tier that catches the eye of budget-conscious business owners. But what are you really getting? And what are you giving up? Let's compare Setmore with FastAppoint to see which delivers genuine value.
+        </p>
+
+        <h2>Setmore's Free Plan: What's Included?</h2>
+        <p>
+          Setmore offers a genuinely free plan, which includes:
+        </p>
+        <ul>
+          <li>Up to 4 staff logins</li>
+          <li>Unlimited appointments</li>
+          <li>Email reminders</li>
+          <li>Basic booking page</li>
+          <li>Video meetings integration</li>
+        </ul>
+        <p>
+          On the surface, this looks generous. But dig deeper and you'll find significant limitations.
+        </p>
+
+        <h2>What Setmore's Free Plan Is Missing</h2>
+
+        <div class="bg-error/10 rounded-xl p-6 my-8 border border-error/30">
+          <h3 class="text-lg font-semibold text-error mt-0">Free Plan Limitations</h3>
+          <ul class="text-sand-11 mb-0 mt-4">
+            <li><strong>No payment processing</strong> - customers can't pay when booking</li>
+            <li><strong>No SMS reminders</strong> - email only (lower open rates)</li>
+            <li><strong>No recurring appointments</strong> - manual rebooking required</li>
+            <li><strong>No Google Calendar 2-way sync</strong> - only 1-way</li>
+            <li><strong>Limited customization</strong> - Setmore branding on your page</li>
+            <li><strong>No class booking</strong> - individual appointments only</li>
+          </ul>
+        </div>
+
+        <p>
+          The most critical missing feature? <strong>Payment processing.</strong> Without it, you're back to chasing payments manually - defeating much of the purpose of online booking.
+        </p>
+
+        <h2>Feature Comparison</h2>
+
+        <div class="overflow-x-auto my-8">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-sand-3">
+                <th class="text-left p-4 border border-sand-6">Feature</th>
+                <th class="text-center p-4 border border-sand-6">FastAppoint Starter</th>
+                <th class="text-center p-4 border border-sand-6">Setmore Free</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-4 border border-sand-6">Price</td>
+                <td class="text-center p-4 border border-sand-6">&#8358;5,000/mo</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Free</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Online Payments</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Paystack (Built-in)</td>
+                <td class="text-center p-4 border border-sand-6 text-error">Not included</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Nigerian Naira Support</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Native</td>
+                <td class="text-center p-4 border border-sand-6 text-error">No</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">SMS Reminders</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Pro plan</td>
+                <td class="text-center p-4 border border-sand-6 text-error">Paid plans only</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">Portfolio Gallery</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Included</td>
+                <td class="text-center p-4 border border-sand-6 text-error">Not available</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Custom Branding</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Full control</td>
+                <td class="text-center p-4 border border-sand-6 text-warning">Setmore branding</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-sand-6">2-Way Calendar Sync</td>
+                <td class="text-center p-4 border border-sand-6 text-success">Google Calendar</td>
+                <td class="text-center p-4 border border-sand-6 text-error">Paid plans only</td>
+              </tr>
+              <tr class="bg-sand-2">
+                <td class="p-4 border border-sand-6">Staff Members</td>
+                <td class="text-center p-4 border border-sand-6">Up to 3</td>
+                <td class="text-center p-4 border border-sand-6">Up to 4</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Setmore's Paid Plans</h2>
+        <p>
+          To get the features most businesses need, you'll need Setmore's paid tiers:
+        </p>
+        <ul>
+          <li><strong>Pro:</strong> $12/user/month (~&#8358;18,000 per user)</li>
+          <li><strong>Team:</strong> Custom pricing for larger teams</li>
+        </ul>
+        <p>
+          Notice it's <strong>per user</strong>. If you have 4 staff members, you're looking at &#8358;72,000/month just to unlock features like payments and SMS.
+        </p>
+
+        <div class="bg-primary/10 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0">Cost Comparison: 4-Staff Salon</h3>
+          <div class="grid grid-cols-2 gap-4 mt-4">
+            <div class="bg-white rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-primary">&#8358;5,000</div>
+              <div class="text-sm text-sand-11">FastAppoint Starter</div>
+              <div class="text-xs text-sand-9 mt-1">3 staff, payments included</div>
+            </div>
+            <div class="bg-white rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-sand-12">&#8358;72,000</div>
+              <div class="text-sm text-sand-11">Setmore Pro</div>
+              <div class="text-xs text-sand-9 mt-1">4 users x &#8358;18k each</div>
+            </div>
+          </div>
+          <p class="text-sm text-sand-11 mt-4 mb-0 text-center">
+            FastAppoint's Pro plan (&#8358;15,000) covers up to 10 staff - still 5x cheaper than Setmore.
+          </p>
+        </div>
+
+        <h2>The Payment Processing Gap</h2>
+        <p>
+          This is the deal-breaker for Nigerian businesses. Even on Setmore's paid plans, payment processing options are limited:
+        </p>
+        <ul>
+          <li>Stripe (limited Nigeria support)</li>
+          <li>Square (not available in Nigeria)</li>
+          <li>PayPal (complex setup for Nigerian businesses)</li>
+        </ul>
+        <p>
+          FastAppoint's Paystack integration means:
+        </p>
+        <ul>
+          <li>Nigerian bank cards work out of the box</li>
+          <li>Bank transfer payments accepted</li>
+          <li>Funds settle to your Nigerian account</li>
+          <li>No currency conversion headaches</li>
+        </ul>
+
+        <h2>When Free Becomes Expensive</h2>
+        <p>
+          Using Setmore's free plan might seem like saving money. But consider the hidden costs:
+        </p>
+
+        <h3>1. No-Show Costs</h3>
+        <p>
+          Without payment upfront, no-shows increase significantly. Industry average no-show rates:
+        </p>
+        <ul>
+          <li><strong>Without payment:</strong> 20-30% no-show rate</li>
+          <li><strong>With payment/deposit:</strong> 5-10% no-show rate</li>
+        </ul>
+        <p>
+          If you're doing &#8358;500,000/month in bookings and losing 20% to no-shows, that's &#8358;100,000 lost. FastAppoint's &#8358;5,000/month + deposits could save you &#8358;50,000+ monthly.
+        </p>
+
+        <h3>2. Admin Time</h3>
+        <p>
+          Without integrated payments, you're spending time:
+        </p>
+        <ul>
+          <li>Sending payment reminders</li>
+          <li>Chasing unpaid invoices</li>
+          <li>Reconciling payments manually</li>
+          <li>Dealing with payment disputes</li>
+        </ul>
+        <p>
+          Your time has value. If you're spending 5+ hours per week on payment admin, that's time not spent on paying clients.
+        </p>
+
+        <h3>3. Professional Image</h3>
+        <p>
+          Setmore's free plan shows their branding on your booking page. Customers see "Powered by Setmore" instead of your professional brand. This matters for perception and trust.
+        </p>
+
+        <h2>What Setmore Does Well</h2>
+        <p>
+          Let's be fair - Setmore has genuine strengths:
+        </p>
+        <ul>
+          <li><strong>Video integrations:</strong> Built-in Teleport video, Zoom integration</li>
+          <li><strong>Mobile apps:</strong> Well-designed iOS and Android apps</li>
+          <li><strong>Booking page builder:</strong> Easy drag-and-drop customization</li>
+          <li><strong>Social media booking:</strong> Book directly from Facebook/Instagram</li>
+        </ul>
+        <p>
+          If your business is primarily virtual consultations with international clients who can pay via Stripe/PayPal, Setmore could work.
+        </p>
+
+        <h2>For Nigerian Service Businesses</h2>
+        <p>
+          If you're running a physical service business in Nigeria (salon, spa, photography, etc.), your priorities are different:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+          <div class="bg-sand-3 rounded-xl p-6">
+            <h4 class="font-semibold text-sand-12 mt-0 mb-3">What You Need</h4>
+            <ul class="text-sand-11 space-y-2 mb-0 text-sm">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Payments that work in Nigeria
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Deposit collection
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                No-show protection
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Portfolio to showcase work
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Professional branded page
+              </li>
+            </ul>
+          </div>
+          <div class="bg-sand-3 rounded-xl p-6">
+            <h4 class="font-semibold text-sand-12 mt-0 mb-3">What You Don't Need</h4>
+            <ul class="text-sand-11 space-y-2 mb-0 text-sm">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-sand-9" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                Video meeting software
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-sand-9" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                International payment processing
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-sand-9" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                Complex multi-location features
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>The Bottom Line</h2>
+        <p>
+          Setmore's free plan is truly free, but its limitations are significant for businesses that need to collect payments. For Nigerian service businesses, the lack of local payment support makes it impractical regardless of plan.
+        </p>
+        <p>
+          FastAppoint's Starter plan at &#8358;5,000/month delivers:
+        </p>
+        <ul>
+          <li>Payments that actually work in Nigeria</li>
+          <li>Deposit collection to reduce no-shows</li>
+          <li>Portfolio gallery to showcase your work</li>
+          <li>Professional branded booking page</li>
+          <li>Google Calendar sync</li>
+        </ul>
+        <p>
+          That &#8358;5,000 investment typically pays for itself by preventing just 1-2 no-shows per month.
+        </p>
+
+        <div class="bg-sand-3 rounded-xl p-6 my-8">
+          <h3 class="text-lg font-semibold text-sand-12 mt-0 mb-4">Ready to Upgrade From Free?</h3>
+          <p class="mb-4">
+            Try FastAppoint's full features for 5 days. See what you've been missing with "free" alternatives.
+          </p>
+          <a
+            href="{{ route('auth.signup.show') }}"
+            class="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Start Your Free Trial
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  {{-- Related Posts --}}
+  @if(relatedPosts.length > 0)
+    <div class="bg-sand-2 py-12">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-sand-12 mb-8">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          @each(related in relatedPosts)
+            <a href="{{ route('blog.show', { slug: related.slug }) }}" class="group">
+              <div class="relative rounded-xl overflow-hidden mb-4 aspect-[16/9]">
+                <img
+                  src="{{ related.image }}"
+                  alt="{{ related.title }}"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <h3 class="font-semibold text-sand-12 group-hover:text-primary transition-colors mb-2">
+                {{ related.title }}
+              </h3>
+              <div class="text-xs text-sand-9">{{ related.readTime }}</div>
+            </a>
+          @endeach
+        </div>
+      </div>
+    </div>
+  @endif
+@endsection
