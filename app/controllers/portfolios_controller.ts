@@ -3,10 +3,10 @@ import PortfolioItem from '#models/portfolio_item'
 import Service from '#models/service'
 import { portfolioValidator } from '#validators/business-validator'
 import { errors } from '@vinejs/vine'
-import app from '@adonisjs/core/services/app'
+
 import { cuid } from '@adonisjs/core/helpers'
 import sharp from 'sharp'
-import { unlink } from 'node:fs/promises'
+import storageService from '../services/storage_service.js'
 
 export default class PortfoliosController {
   async index({ view, auth }: HttpContext) {
@@ -58,15 +58,16 @@ export default class PortfoliosController {
       }
 
       const fileName = `${cuid()}.webp`
-      const uploadPath = app.publicPath('uploads/portfolio')
+      const storagePath = `portfolio/${fileName}`
 
-      // Process and optimize image with sharp
-      await sharp(image.tmpPath)
+      const processedImage = await sharp(image.tmpPath)
         .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
         .webp({ quality: 85 })
-        .toFile(`${uploadPath}/${fileName}`)
+        .toBuffer()
 
-      const imagePath = `/uploads/portfolio/${fileName}`
+      const imagePath = await storageService.save(storagePath, processedImage, {
+        contentType: 'image/webp',
+      })
 
       // Get the next sort order
       const maxSortOrder = await PortfolioItem.query()
@@ -146,24 +147,24 @@ export default class PortfoliosController {
         }
 
         const fileName = `${cuid()}.webp`
-        const uploadPath = app.publicPath('uploads/portfolio')
+        const storagePath = `portfolio/${fileName}`
 
-        // Process and optimize image with sharp
-        await sharp(image.tmpPath)
+        const processedImage = await sharp(image.tmpPath)
           .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
           .webp({ quality: 85 })
-          .toFile(`${uploadPath}/${fileName}`)
+          .toBuffer()
 
-        // Delete old image
         if (portfolioItem.image) {
           try {
-            await unlink(app.publicPath(portfolioItem.image))
+            await storageService.delete(portfolioItem.image)
           } catch {
             // Ignore if file doesn't exist
           }
         }
 
-        imagePath = `/uploads/portfolio/${fileName}`
+        imagePath = await storageService.save(storagePath, processedImage, {
+          contentType: 'image/webp',
+        })
       }
 
       portfolioItem.merge({
@@ -200,7 +201,10 @@ export default class PortfoliosController {
     portfolioItem.isActive = !portfolioItem.isActive
     await portfolioItem.save()
 
-    session.flash('success', portfolioItem.isActive ? 'Portfolio item enabled' : 'Portfolio item hidden')
+    session.flash(
+      'success',
+      portfolioItem.isActive ? 'Portfolio item enabled' : 'Portfolio item hidden'
+    )
     return response.redirect().back()
   }
 
@@ -218,7 +222,10 @@ export default class PortfoliosController {
     portfolioItem.isFeatured = !portfolioItem.isFeatured
     await portfolioItem.save()
 
-    session.flash('success', portfolioItem.isFeatured ? 'Marked as featured' : 'Removed from featured')
+    session.flash(
+      'success',
+      portfolioItem.isFeatured ? 'Marked as featured' : 'Removed from featured'
+    )
     return response.redirect().back()
   }
 
@@ -233,10 +240,9 @@ export default class PortfoliosController {
       return response.notFound('Portfolio item not found')
     }
 
-    // Delete image
     if (portfolioItem.image) {
       try {
-        await unlink(app.publicPath(portfolioItem.image))
+        await storageService.delete(portfolioItem.image)
       } catch {
         // Ignore if file doesn't exist
       }
@@ -256,11 +262,11 @@ export default class PortfoliosController {
     }
 
     // Update sort order for each item
-    for (let i = 0; i < items.length; i++) {
+    for (const [index, item] of items.entries()) {
       await PortfolioItem.query()
-        .where('id', items[i])
+        .where('id', item)
         .where('businessId', user.businessId!)
-        .update({ sortOrder: i })
+        .update({ sortOrder: index })
     }
 
     return response.json({ success: true })

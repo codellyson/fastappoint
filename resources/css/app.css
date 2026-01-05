@@ -59,10 +59,17 @@ button:disabled {
   }
 
   /* Better form input sizing on mobile */
-  input,
+  input:not([type="checkbox"]):not([type="radio"]),
   textarea,
   select {
     font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Exclude checkboxes and radios from min-size rules */
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-width: auto;
+    min-height: auto;
   }
 }
 

@@ -3,7 +3,7 @@ import env from '#start/env'
 import Transaction from '#models/transaction'
 import WithdrawalRequest from '#models/withdrawal-request'
 import BusinessBankAccount from '#models/business-bank-account'
-import emailService from '#services/email-service'
+import emailService from '#services/email_service'
 
 interface PaystackBank {
   name: string

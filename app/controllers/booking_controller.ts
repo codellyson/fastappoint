@@ -14,10 +14,10 @@ import Customer from '#models/customer'
 import { bookingValidator, rescheduleValidator } from '#validators/booking-validator'
 import { errors } from '@vinejs/vine'
 import { randomUUID } from 'node:crypto'
-import { readFileSync } from 'node:fs'
-import emailService from '#services/email-service'
+import emailService from '#services/email_service'
 import subscriptionService from '../services/subscription_service.js'
-import receiptService from '#services/receipt-service'
+import receiptService from '#services/receipt_service'
+import storageService from '../services/storage_service.js'
 import googleCalendarService from '../services/google_calendar_service.js'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
@@ -549,7 +549,7 @@ export default class BookingController {
     let receiptAvailable = false
     if (transaction) {
       const receiptNumber = `REC-${transaction.id}-${transaction.createdAt.toFormat('yyyyMMdd')}`
-      receiptAvailable = receiptService.receiptExists(receiptNumber)
+      receiptAvailable = await receiptService.receiptExists(receiptNumber)
     }
 
     return view.render('pages/book/confirmation', {
@@ -585,10 +585,8 @@ export default class BookingController {
     }
 
     const receiptNumber = `REC-${transaction.id}-${transaction.createdAt.toFormat('yyyyMMdd')}`
-    const receiptPath = receiptService.getReceiptPath(receiptNumber)
 
-    // Generate receipt if it doesn't exist
-    if (!receiptService.receiptExists(receiptNumber)) {
+    if (!(await receiptService.receiptExists(receiptNumber))) {
       try {
         await receiptService.generateReceipt(booking, transaction)
       } catch (error) {
@@ -602,7 +600,9 @@ export default class BookingController {
     }
 
     try {
-      const fileContent = readFileSync(receiptPath)
+      const receiptPath = await receiptService.getReceiptPath(receiptNumber)
+      const fileContent = await storageService.read(receiptPath)
+
       return response
         .header('Content-Type', 'application/pdf')
         .header('Content-Disposition', `attachment; filename="${receiptNumber}.pdf"`)

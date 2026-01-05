@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import env from '#start/env'
 import Booking from '#models/booking'
 import Transaction from '#models/transaction'
-import emailService from '#services/email-service'
+import emailService from '#services/email_service'
 
 interface RefundRequest {
   bookingId: number
@@ -21,7 +21,9 @@ class RefundService {
   /**
    * Process a refund for a booking
    */
-  async processRefund(request: RefundRequest): Promise<{ success: boolean; message: string; refundReference?: string }> {
+  async processRefund(
+    request: RefundRequest
+  ): Promise<{ success: boolean; message: string; refundReference?: string }> {
     const booking = await Booking.query()
       .where('id', request.bookingId)
       .preload('business')
@@ -71,7 +73,7 @@ class RefundService {
         }),
       })
 
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         status: boolean
         message?: string
         data?: {
@@ -100,7 +102,12 @@ class RefundService {
         await booking.save()
 
         // Send notification emails
-        await this.sendRefundNotifications(booking, refundAmount, request.reason, request.initiatedBy)
+        await this.sendRefundNotifications(
+          booking,
+          refundAmount,
+          request.reason,
+          request.initiatedBy
+        )
 
         return {
           success: true,
@@ -108,7 +115,10 @@ class RefundService {
           refundReference: data.data.transaction?.reference || data.data.reference,
         }
       } else {
-        return { success: false, message: (data as { message?: string }).message || 'Refund failed' }
+        return {
+          success: false,
+          message: (data as { message?: string }).message || 'Refund failed',
+        }
       }
     } catch (error: any) {
       console.error('[Refund] Error processing refund:', error)
@@ -217,4 +227,3 @@ class RefundService {
 }
 
 export default new RefundService()
-

@@ -29,4 +29,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   TERMII_SENDER_ID: Env.schema.string.optional(),
 
   REQUEST_TIMEOUT: Env.schema.number.optional(),
+
+  R2_ENABLED: Env.schema.string.optional(),
+  R2_ACCOUNT_ID: Env.schema.string.optional(),
+  R2_ACCESS_KEY_ID: Env.schema.string.optional(),
+  R2_SECRET_ACCESS_KEY: Env.schema.string.optional(),
+  R2_BUCKET_NAME: Env.schema.string.optional(),
+  R2_PUBLIC_URL: Env.schema.string.optional(),
 })

@@ -7,7 +7,7 @@ import string from '@adonisjs/core/helpers/string'
 import { errors } from '@vinejs/vine'
 import { DateTime } from 'luxon'
 import { randomBytes } from 'node:crypto'
-import emailService from '#services/email-service'
+import emailService from '#services/email_service'
 import subscriptionService from '../services/subscription_service.js'
 import env from '#start/env'
 

@@ -3,10 +3,9 @@ import ServicePackage from '#models/service_package'
 import Service from '#models/service'
 import { packageValidator } from '#validators/business-validator'
 import { errors } from '@vinejs/vine'
-import app from '@adonisjs/core/services/app'
 import { cuid } from '@adonisjs/core/helpers'
 import sharp from 'sharp'
-import { unlink } from 'node:fs/promises'
+import storageService from '#services/storage_service'
 
 export default class PackagesController {
   async index({ view, auth }: HttpContext) {
@@ -77,14 +76,16 @@ export default class PackagesController {
         }
 
         const fileName = `${cuid()}.webp`
-        const uploadPath = app.publicPath('uploads/packages')
+        const storagePath = `packages/${fileName}`
 
-        await sharp(image.tmpPath)
+        const processedImage = await sharp(image.tmpPath)
           .resize(800, 600, { fit: 'cover' })
           .webp({ quality: 85 })
-          .toFile(`${uploadPath}/${fileName}`)
+          .toBuffer()
 
-        imagePath = `/uploads/packages/${fileName}`
+        imagePath = await storageService.save(storagePath, processedImage, {
+          contentType: 'image/webp',
+        })
       }
 
       // Get the next sort order
@@ -188,23 +189,24 @@ export default class PackagesController {
         }
 
         const fileName = `${cuid()}.webp`
-        const uploadPath = app.publicPath('uploads/packages')
+        const storagePath = `packages/${fileName}`
 
-        await sharp(image.tmpPath)
+        const processedImage = await sharp(image.tmpPath)
           .resize(800, 600, { fit: 'cover' })
           .webp({ quality: 85 })
-          .toFile(`${uploadPath}/${fileName}`)
+          .toBuffer()
 
-        // Delete old image
         if (pkg.image) {
           try {
-            await unlink(app.publicPath(pkg.image))
+            await storageService.delete(pkg.image)
           } catch {
             // Ignore if file doesn't exist
           }
         }
 
-        imagePath = `/uploads/packages/${fileName}`
+        imagePath = await storageService.save(storagePath, processedImage, {
+          contentType: 'image/webp',
+        })
       }
 
       pkg.merge({
@@ -259,10 +261,9 @@ export default class PackagesController {
       return response.notFound('Package not found')
     }
 
-    // Delete image
     if (pkg.image) {
       try {
-        await unlink(app.publicPath(pkg.image))
+        await storageService.delete(pkg.image)
       } catch {
         // Ignore if file doesn't exist
       }

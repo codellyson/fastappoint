@@ -20,7 +20,6 @@ export const cancellationPolicyValidator = vine.compile(
 
 export const paystackSettingsValidator = vine.compile(
   vine.object({
-    paystackSubaccountCode: vine.string().trim().optional(),
     allowInstallments: vine.boolean(),
   })
 )

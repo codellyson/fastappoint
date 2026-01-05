@@ -1,7 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Business from '#models/business'
 import BusinessBankAccount from '#models/business-bank-account'
-import withdrawalService from '#services/withdrawal-service'
+import withdrawalService from '#services/withdrawal_service'
 import {
   addBankAccountValidator,
   withdrawalRequestValidator,

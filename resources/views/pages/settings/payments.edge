@@ -33,47 +33,17 @@
           </div>
         </div>
 
-        <div>
-          <label for="paystackSubaccountCode" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Paystack Subaccount Code</label>
-          <input
-            type="text"
-            id="paystackSubaccountCode"
-            name="paystackSubaccountCode"
-            value="{{ business.paystackSubaccountCode || '' }}"
-            class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono min-h-[44px]"
-            placeholder="ACCT_xxxxxxxxxx"
-          />
-          <p class="text-xs text-sand-11 mt-1">
-            Enter your Paystack subaccount code to receive payments directly.
-            <a href="https://paystack.com/docs/payments/split-payments" target="_blank" class="text-primary hover:underline">Learn how to create one →</a>
-          </p>
+        <div class="bg-success/10 border border-success/20 rounded-lg p-3 sm:p-4">
+          <div class="flex items-start gap-2 sm:gap-3">
+            <svg class="w-5 h-5 text-success flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <div class="text-xs sm:text-sm text-success flex-1 min-w-0">
+              <p class="font-medium">Paystack Integration Active</p>
+              <p class="mt-1">Your payment account is automatically configured. All payments will be processed securely through Paystack.</p>
+            </div>
+          </div>
         </div>
-
-        @if(!business.paystackSubaccountCode)
-          <div class="bg-warning/10 border border-warning/20 rounded-lg p-3 sm:p-4">
-            <div class="flex items-start gap-2 sm:gap-3">
-              <svg class="w-5 h-5 text-warning flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-              </svg>
-              <div class="text-xs sm:text-sm text-warning flex-1 min-w-0">
-                <p class="font-medium">No subaccount configured</p>
-                <p class="mt-1">Payments will be collected through the platform's default account. Set up your subaccount to receive payments directly.</p>
-              </div>
-            </div>
-          </div>
-        @else
-          <div class="bg-success/10 border border-success/20 rounded-lg p-3 sm:p-4">
-            <div class="flex items-start gap-2 sm:gap-3">
-              <svg class="w-5 h-5 text-success flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-              </svg>
-              <div class="text-xs sm:text-sm text-success flex-1 min-w-0">
-                <p class="font-medium">Paystack connected</p>
-                <p class="mt-1">Payments will be split and sent directly to your account.</p>
-              </div>
-            </div>
-          </div>
-        @endif
       </div>
 
       <div class="bg-white border border-sand-7 rounded-xl p-4 sm:p-6">
@@ -85,7 +55,7 @@
             name="allowInstallments"
             value="true"
             {{ business.allowInstallments ? 'checked' : '' }}
-            class="w-5 h-5 mt-0.5 text-primary border-sand-7 rounded focus:ring-primary min-w-[44px] min-h-[44px]"
+            class="w-5 h-5 mt-0.5 text-primary border-sand-7 rounded focus:ring-primary"
           />
           <div class="flex-1 min-w-0">
             <span class="font-medium text-sand-12 text-sm sm:text-base block">Allow installment payments</span>

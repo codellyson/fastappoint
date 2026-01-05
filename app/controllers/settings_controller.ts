@@ -93,7 +93,6 @@ export default class SettingsController {
       const data = await request.validateUsing(paystackSettingsValidator)
 
       business.merge({
-        paystackSubaccountCode: data.paystackSubaccountCode || null,
         allowInstallments: data.allowInstallments,
       })
       await business.save()

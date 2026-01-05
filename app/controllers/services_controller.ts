@@ -3,10 +3,9 @@ import Service from '#models/service'
 import Business from '#models/business'
 import { serviceValidator } from '#validators/business-validator'
 import { errors } from '@vinejs/vine'
-import app from '@adonisjs/core/services/app'
 import { cuid } from '@adonisjs/core/helpers'
 import sharp from 'sharp'
-import { unlink } from 'node:fs/promises'
+import storageService from '../services/storage_service.js'
 
 export default class ServicesController {
   async index({ view, auth }: HttpContext) {
@@ -41,15 +40,16 @@ export default class ServicesController {
         }
 
         const fileName = `${cuid()}.webp`
-        const uploadPath = app.publicPath('uploads/services')
+        const storagePath = `services/${fileName}`
 
-        // Process and optimize image with sharp
-        await sharp(image.tmpPath)
+        const processedImage = await sharp(image.tmpPath)
           .resize(800, 800, { fit: 'cover', withoutEnlargement: true })
           .webp({ quality: 80 })
-          .toFile(`${uploadPath}/${fileName}`)
+          .toBuffer()
 
-        imagePath = `/uploads/services/${fileName}`
+        imagePath = await storageService.save(storagePath, processedImage, {
+          contentType: 'image/webp',
+        })
       }
 
       await Service.create({
@@ -123,31 +123,30 @@ export default class ServicesController {
         }
 
         const fileName = `${cuid()}.webp`
-        const uploadPath = app.publicPath('uploads/services')
+        const storagePath = `services/${fileName}`
 
-        // Process and optimize image with sharp
-        await sharp(image.tmpPath)
+        const processedImage = await sharp(image.tmpPath)
           .resize(800, 800, { fit: 'cover', withoutEnlargement: true })
           .webp({ quality: 80 })
-          .toFile(`${uploadPath}/${fileName}`)
+          .toBuffer()
 
-        // Delete old image if exists
         if (service.image) {
           try {
-            await unlink(app.publicPath(service.image))
+            await storageService.delete(service.image)
           } catch {
             // Ignore if file doesn't exist
           }
         }
 
-        imagePath = `/uploads/services/${fileName}`
+        imagePath = await storageService.save(storagePath, processedImage, {
+          contentType: 'image/webp',
+        })
       }
 
-      // Handle image removal
       const removeImage = request.input('removeImage') === 'true'
       if (removeImage && service.image) {
         try {
-          await unlink(app.publicPath(service.image))
+          await storageService.delete(service.image)
         } catch {
           // Ignore if file doesn't exist
         }
@@ -209,10 +208,9 @@ export default class ServicesController {
       return response.notFound('Service not found')
     }
 
-    // Delete image if exists
     if (service.image) {
       try {
-        await unlink(app.publicPath(service.image))
+        await storageService.delete(service.image)
       } catch {
         // Ignore if file doesn't exist
       }

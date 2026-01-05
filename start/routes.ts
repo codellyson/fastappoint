@@ -1,7 +1,7 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
-const AuthController = () => import('#controllers/auth-controller')
+const AuthController = () => import('#controllers/auth_controller')
 const OnboardingController = () => import('#controllers/onboarding_controller')
 const DashboardController = () => import('#controllers/dashboard_controller')
 const BookingController = () => import('#controllers/booking_controller')
@@ -248,8 +248,12 @@ router
     router.post('/portfolio', [PortfoliosController, 'store']).as('portfolio.store')
     router.get('/portfolio/:id/edit', [PortfoliosController, 'edit']).as('portfolio.edit')
     router.post('/portfolio/:id', [PortfoliosController, 'update']).as('portfolio.update')
-    router.post('/portfolio/:id/toggle', [PortfoliosController, 'toggleActive']).as('portfolio.toggle')
-    router.post('/portfolio/:id/featured', [PortfoliosController, 'toggleFeatured']).as('portfolio.featured')
+    router
+      .post('/portfolio/:id/toggle', [PortfoliosController, 'toggleActive'])
+      .as('portfolio.toggle')
+    router
+      .post('/portfolio/:id/featured', [PortfoliosController, 'toggleFeatured'])
+      .as('portfolio.featured')
     router.post('/portfolio/:id/delete', [PortfoliosController, 'destroy']).as('portfolio.destroy')
     router.post('/portfolio/reorder', [PortfoliosController, 'reorder']).as('portfolio.reorder')
 
@@ -359,7 +363,9 @@ router
     router.get('/dashboard', [CustomerAuthsController, 'dashboard']).as('customer.dashboard')
     router.get('/bookings', [CustomerAuthsController, 'bookings']).as('customer.bookings')
     router.get('/profile', [CustomerAuthsController, 'profile']).as('customer.profile')
-    router.post('/profile', [CustomerAuthsController, 'updateProfile']).as('customer.profile.update')
+    router
+      .post('/profile', [CustomerAuthsController, 'updateProfile'])
+      .as('customer.profile.update')
     router
       .get('/create-password/:token', [CustomerAuthsController, 'showCreatePassword'])
       .as('customer.create-password')

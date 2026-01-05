@@ -4,7 +4,7 @@ import { DateTime } from 'luxon'
 import env from '#start/env'
 import Subscription from '#models/subscription'
 import Business from '#models/business'
-import emailService from '#services/email-service'
+import emailService from '#services/email_service'
 
 export default class MonitorSubscriptions extends BaseCommand {
   static commandName = 'subscriptions:monitor'

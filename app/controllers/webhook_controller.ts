@@ -3,10 +3,10 @@ import { createHmac } from 'node:crypto'
 import env from '#start/env'
 import Booking from '#models/booking'
 import Transaction from '#models/transaction'
-import emailService from '#services/email-service'
+import emailService from '#services/email_service'
 import subscriptionService from '../services/subscription_service.js'
-import receiptService from '#services/receipt-service'
-import withdrawalService from '#services/withdrawal-service'
+import receiptService from '#services/receipt_service'
+import withdrawalService from '#services/withdrawal_service'
 
 export default class WebhookController {
   async paystack({ request, response }: HttpContext) {
@@ -169,7 +169,7 @@ export default class WebhookController {
 
       // Generate receipt asynchronously
       if (transaction) {
-        receiptService.generateReceipt(booking, transaction).catch((error) => {
+        receiptService.generateReceipt(booking, transaction).catch((error: any) => {
           console.error('[WEBHOOK] Failed to generate receipt:', error)
         })
       }

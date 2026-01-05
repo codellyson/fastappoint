@@ -2,7 +2,7 @@ import { BaseCommand } from '@adonisjs/core/ace'
 import { CommandOptions } from '@adonisjs/core/types/ace'
 import { DateTime } from 'luxon'
 import Booking from '#models/booking'
-import emailService from '#services/email-service'
+import emailService from '#services/email_service'
 import env from '#start/env'
 
 export default class ExpirePayments extends BaseCommand {
