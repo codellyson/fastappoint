@@ -36,6 +36,9 @@ export default class Transaction extends BaseModel {
   declare providerReference: string | null
 
   @column()
+  declare currency: string | null
+
+  @column()
   declare metadata: Record<string, unknown> | null
 
   @column.dateTime({ autoCreate: true })

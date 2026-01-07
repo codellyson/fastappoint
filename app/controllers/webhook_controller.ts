@@ -11,6 +11,7 @@ import emailService from '#services/email_service'
 import subscriptionService from '../services/subscription_service.js'
 import receiptService from '../services/receipt_service.js'
 import withdrawalService from '../services/withdrawal_service.js'
+import walletService from '../services/wallet_service.js'
 import stripeService from '../services/stripe_service.js'
 
 export default class WebhookController {
@@ -148,6 +149,8 @@ export default class WebhookController {
         // Create transaction record
         const amount = (data.amount as number) / 100
         const platformFee = Math.round(amount * 0.025)
+        const currency =
+          (data.currency as string)?.toUpperCase() || bookingInTrx.business.currency || 'NGN'
 
         const transaction = new Transaction()
         transaction.businessId = bookingInTrx.businessId
@@ -159,7 +162,15 @@ export default class WebhookController {
         transaction.provider = 'paystack'
         transaction.reference = bookingInTrx.paymentReference || reference
         transaction.providerReference = reference
+        transaction.currency = currency
         await transaction.useTransaction(trx).save()
+
+        // Credit wallet
+        await walletService.credit(bookingInTrx.businessId, currency, transaction.businessAmount, {
+          transactionId: transaction.id,
+          reference: transaction.reference,
+          description: `Payment for booking #${bookingInTrx.id}`,
+        })
 
         // Update booking reference for email
         booking = bookingInTrx
@@ -273,6 +284,7 @@ export default class WebhookController {
         console.error('[WEBHOOK] Failed to send payment failure email:', error)
       })
 
+    const currency = (data.currency as string)?.toUpperCase() || booking.business.currency || 'NGN'
     await Transaction.create({
       businessId: booking.businessId,
       bookingId: booking.id,
@@ -283,6 +295,7 @@ export default class WebhookController {
       provider: 'paystack',
       reference: booking.paymentReference || reference,
       providerReference: reference,
+      currency,
     })
 
     console.log(`[WEBHOOK] Recorded failed charge for booking #${booking.id}`)
@@ -449,6 +462,15 @@ export default class WebhookController {
         bookingInTrx.status = 'confirmed'
         await bookingInTrx.useTransaction(trx).save()
 
+        // Get currency from payment intent
+        let paymentCurrency = bookingInTrx.business.currency || 'NGN'
+        try {
+          const fullPaymentIntent = await stripeService.retrievePaymentIntent(paymentIntent.id)
+          paymentCurrency = fullPaymentIntent.currency.toUpperCase()
+        } catch (error) {
+          console.warn('[WEBHOOK] Could not retrieve payment intent for currency:', error)
+        }
+
         const amount = paymentIntent.amount / 100
         const platformFee = Math.round(amount * 0.025)
 
@@ -462,7 +484,20 @@ export default class WebhookController {
         transaction.provider = 'stripe'
         transaction.reference = bookingInTrx.paymentReference || paymentIntent.id
         transaction.providerReference = paymentIntent.id
+        transaction.currency = paymentCurrency
         await transaction.useTransaction(trx).save()
+
+        // Credit wallet
+        await walletService.credit(
+          bookingInTrx.businessId,
+          paymentCurrency,
+          transaction.businessAmount,
+          {
+            transactionId: transaction.id,
+            reference: transaction.reference,
+            description: `Payment for booking #${bookingInTrx.id}`,
+          }
+        )
 
         booking = bookingInTrx
       })
@@ -565,6 +600,14 @@ export default class WebhookController {
         console.error('[WEBHOOK] Failed to send payment failure email:', error)
       })
 
+    let paymentCurrency = booking.business.currency || 'NGN'
+    try {
+      const fullPaymentIntent = await stripeService.retrievePaymentIntent(paymentIntent.id)
+      paymentCurrency = fullPaymentIntent.currency.toUpperCase()
+    } catch (error) {
+      console.warn('[WEBHOOK] Could not retrieve payment intent for currency:', error)
+    }
+
     await Transaction.create({
       businessId: booking.businessId,
       bookingId: booking.id,
@@ -573,6 +616,7 @@ export default class WebhookController {
       businessAmount: 0,
       status: 'failed',
       provider: 'stripe',
+      currency: paymentCurrency,
       reference: booking.paymentReference || paymentIntent.id,
       providerReference: paymentIntent.id,
     })

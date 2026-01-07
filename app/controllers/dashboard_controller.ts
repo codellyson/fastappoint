@@ -1,7 +1,11 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Business from '#models/business'
 import Booking from '#models/booking'
+import Transaction from '#models/transaction'
+import WalletTransaction from '#models/wallet_transaction'
 import { DateTime } from 'luxon'
+import currencyService from '../services/currency_service.js'
+import walletService from '../services/wallet_service.js'
 
 export default class DashboardController {
   async index({ view, auth, response }: HttpContext) {
@@ -45,16 +49,53 @@ export default class DashboardController {
       .whereIn('status', ['confirmed', 'completed'])
       .count('* as total')
 
-    const monthRevenue = await Booking.query()
+    // Get revenue from wallet transactions (credits) for this month
+    const monthWalletTransactions = await WalletTransaction.query()
       .where('businessId', business.id)
-      .where('date', '>=', monthStart!)
-      .where('paymentStatus', 'paid')
-      .sum('amount as total')
+      .where('type', 'credit')
+      .where('createdAt', '>=', monthStart!)
+      .select('currency', 'amount')
+      .exec()
+
+    const businessCurrency = business.currency || 'NGN'
+    const revenueByCurrency: Record<string, number> = {}
+    let totalRevenueInBaseCurrency = 0
+
+    for (const walletTx of monthWalletTransactions) {
+      const currency = walletTx.currency || businessCurrency
+      const amount = walletTx.amount
+
+      // Sum by currency
+      if (!revenueByCurrency[currency]) {
+        revenueByCurrency[currency] = 0
+      }
+      revenueByCurrency[currency] += amount
+
+      // Convert to base currency and add to total
+      if (currency !== businessCurrency) {
+        const convertedAmount = await currencyService.convertAmount(
+          Math.round(amount * 100),
+          currency,
+          businessCurrency
+        )
+        totalRevenueInBaseCurrency += convertedAmount / 100
+      } else {
+        totalRevenueInBaseCurrency += amount
+      }
+    }
+
+    // Convert to array for easier iteration in Edge template
+    const revenueBreakdown = Object.keys(revenueByCurrency).map((currency) => ({
+      currency,
+      amount: revenueByCurrency[currency],
+    }))
 
     const stats = {
       todayBookings: Number(todayBookings[0].$extras.total) || 0,
       monthBookings: Number(monthBookings[0].$extras.total) || 0,
-      monthRevenue: Number(monthRevenue[0].$extras.total) || 0,
+      monthRevenue: totalRevenueInBaseCurrency,
+      revenueBreakdown,
+      businessCurrency,
       servicesCount: business.services.length,
     }
 

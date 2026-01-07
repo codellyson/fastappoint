@@ -91,10 +91,43 @@
         <div>
           <h2 class="text-sm font-medium text-sand-11 mb-3">Payment</h2>
           <div class="bg-sand-2 rounded-lg p-4 space-y-3">
-            <div class="flex justify-between">
-              <span class="text-sand-11">Amount</span>
-              <span class="font-bold text-lg text-sand-12">₦{{ Number(booking.amount).toLocaleString() }}</span>
-            </div>
+            @if(transaction)
+              @set('paymentCurrency', transaction.currency || booking.business.currency || 'NGN')
+              @set('paymentAmount', transaction.amount)
+              <div class="flex justify-between">
+                <span class="text-sand-11">Amount Paid</span>
+                <span class="font-bold text-lg text-sand-12">
+                  {{ currencyService.getCurrencySymbol(paymentCurrency) }}{{ Number(paymentAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sand-11">Currency</span>
+                <span class="font-medium text-sand-12">{{ paymentCurrency }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sand-11">Platform Fee</span>
+                <span class="font-medium text-sand-12">
+                  {{ currencyService.getCurrencySymbol(paymentCurrency) }}{{ Number(transaction.platformFee).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sand-11">Business Amount</span>
+                <span class="font-medium text-sand-12">
+                  {{ currencyService.getCurrencySymbol(paymentCurrency) }}{{ Number(transaction.businessAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sand-11">Payment Provider</span>
+                <span class="font-medium text-sand-12 capitalize">{{ transaction.provider }}</span>
+              </div>
+            @else
+              <div class="flex justify-between">
+                <span class="text-sand-11">Amount</span>
+                <span class="font-bold text-lg text-sand-12">
+                  {{ currencyService.getCurrencySymbol(booking.business.currency || 'NGN') }}{{ Number(booking.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                </span>
+              </div>
+            @endif
             <div class="flex justify-between">
               <span class="text-sand-11">Status</span>
               @if(booking.paymentStatus === 'paid')
@@ -105,10 +138,28 @@
                 <span class="text-sand-11 font-medium">{{ booking.paymentStatus }}</span>
               @endif
             </div>
-            @if(booking.paymentReference)
+            @if(transaction?.reference)
+              <div class="flex justify-between">
+                <span class="text-sand-11">Transaction Reference</span>
+                <span class="font-mono text-sm text-sand-12">{{ transaction.reference }}</span>
+              </div>
+            @endif
+            @if(transaction?.providerReference)
+              <div class="flex justify-between">
+                <span class="text-sand-11">Provider Reference</span>
+                <span class="font-mono text-sm text-sand-12">{{ transaction.providerReference.substring(0, 20) }}...</span>
+              </div>
+            @endif
+            @if(booking.paymentReference && !transaction)
               <div class="flex justify-between">
                 <span class="text-sand-11">Reference</span>
                 <span class="font-mono text-sm text-sand-12">{{ booking.paymentReference.substring(0, 12) }}</span>
+              </div>
+            @endif
+            @if(transaction?.createdAt)
+              <div class="flex justify-between">
+                <span class="text-sand-11">Paid At</span>
+                <span class="text-sand-12">{{ transaction.createdAt.toFormat('MMM d, yyyy h:mm a') }}</span>
               </div>
             @endif
           </div>

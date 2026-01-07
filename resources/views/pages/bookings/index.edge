@@ -33,12 +33,12 @@
         <div class="flex-1 sm:flex-initial">
           <label class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Date</label>
           <div class="relative">
-            <input 
-              type="date" 
-              name="date" 
-              value="{{ date }}" 
-              onchange="this.form.submit()" 
-              class="w-full px-3 sm:px-4 py-2.5 pl-9 sm:pl-10 border border-sand-7 rounded-lg text-sm text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer min-h-[44px]" 
+            <input
+              type="date"
+              name="date"
+              value="{{ date }}"
+              onchange="this.form.submit()"
+              class="w-full px-3 sm:px-4 py-2.5 pl-9 sm:pl-10 border border-sand-7 rounded-lg text-sm text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer min-h-[44px]"
             />
             <svg class="w-4 h-4 sm:w-5 sm:h-5 text-sand-9 absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -103,7 +103,11 @@
                 </div>
                 <div class="flex justify-between text-sm">
                   <span class="text-sand-11">Amount:</span>
-                  <span class="text-sand-12 font-medium">₦{{ Number(booking.amount).toLocaleString() }}</span>
+                  @set('bookingCurrency', bookingCurrencyMap[booking.id] || business.currency || 'NGN')
+                  @set('bookingAmount', bookingAmountMap[booking.id] || booking.amount)
+                  <span class="text-sand-12 font-medium">
+                    {{ currencyService.getCurrencySymbol(bookingCurrency) }}{{ Number(bookingAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                  </span>
                 </div>
                 <div class="flex justify-between text-xs">
                   <span class="text-sand-11">Payment:</span>
@@ -168,7 +172,11 @@
                     <p class="text-sm text-sand-11">{{ booking.startTime }} - {{ booking.endTime }}</p>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <p class="font-medium text-sand-12">₦{{ Number(booking.amount).toLocaleString() }}</p>
+                    @set('bookingCurrency', bookingCurrencyMap[booking.id] || business.currency || 'NGN')
+                    @set('bookingAmount', bookingAmountMap[booking.id] || booking.amount)
+                    <p class="font-medium text-sand-12">
+                      {{ currencyService.getCurrencySymbol(bookingCurrency) }}{{ Number(bookingAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                    </p>
                     <p class="text-xs text-sand-11">{{ booking.paymentStatus }}</p>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">

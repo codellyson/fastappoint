@@ -110,7 +110,22 @@
         </div>
         <div class="bg-white border border-sand-7 rounded-xl p-3 sm:p-4 md:p-5">
           <p class="text-xs sm:text-sm text-sand-11 mb-1 truncate">Revenue (Month)</p>
-          <p class="text-xl sm:text-2xl md:text-3xl font-bold text-sand-12 truncate">₦{{ stats.monthRevenue.toLocaleString() }}</p>
+          @if(stats.revenueBreakdown && stats.revenueBreakdown.length > 0)
+            <div class="space-y-1">
+              @each(item in stats.revenueBreakdown)
+                <p class="text-xs text-sand-10">
+                  {{ item.currency }}: {{ currencyService.getCurrencySymbol(item.currency) }}{{ Number(item.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                </p>
+              @endeach
+              <p class="text-xl sm:text-2xl md:text-3xl font-bold text-sand-12 truncate pt-1 border-t border-sand-6">
+                Total: {{ currencyService.getCurrencySymbol(stats.businessCurrency || 'NGN') }}{{ Number(stats.monthRevenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+              </p>
+            </div>
+          @else
+            <p class="text-xl sm:text-2xl md:text-3xl font-bold text-sand-12 truncate">
+              {{ currencyService.getCurrencySymbol(stats.businessCurrency || 'NGN') }}{{ Number(stats.monthRevenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            </p>
+          @endif
         </div>
         <div class="bg-white border border-sand-7 rounded-xl p-3 sm:p-4 md:p-5">
           <p class="text-xs sm:text-sm text-sand-11 mb-1 truncate">Services</p>

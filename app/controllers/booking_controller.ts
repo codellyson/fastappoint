@@ -20,6 +20,7 @@ import receiptService from '#services/receipt_service'
 import storageService from '../services/storage_service.js'
 import googleCalendarService from '../services/google_calendar_service.js'
 import currencyService from '../services/currency_service.js'
+import walletService from '../services/wallet_service.js'
 import stripeService from '../services/stripe_service.js'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
@@ -859,6 +860,15 @@ export default class BookingController {
         booking.paymentReference = paymentIntentId
         await booking.save()
 
+        // Get currency from payment intent
+        let paymentCurrency = booking.business.currency || 'NGN'
+        try {
+          const fullPaymentIntent = await stripeService.retrievePaymentIntent(paymentIntentId)
+          paymentCurrency = fullPaymentIntent.currency.toUpperCase()
+        } catch (error) {
+          console.warn('[BOOKING] Could not retrieve payment intent for currency:', error)
+        }
+
         // Create transaction record
         const amount = paymentIntent.amount / 100
         const platformFee = Math.round(amount * 0.025)
@@ -873,7 +883,15 @@ export default class BookingController {
         transaction.provider = 'stripe'
         transaction.reference = paymentIntentId
         transaction.providerReference = paymentIntentId
+        transaction.currency = paymentCurrency
         await transaction.save()
+
+        // Credit wallet
+        await walletService.credit(booking.businessId, paymentCurrency, transaction.businessAmount, {
+          transactionId: transaction.id,
+          reference: transaction.reference,
+          description: `Payment for booking #${booking.id}`,
+        })
 
         // Send confirmation email
         try {
@@ -1024,6 +1042,7 @@ export default class BookingController {
 
                 const amount = data.data.amount / 100
                 const platformFee = Math.round(amount * 0.025)
+                const currency = data.data.currency?.toUpperCase() || booking.business.currency || 'NGN'
 
                 const transaction = new Transaction()
                 transaction.businessId = booking.businessId
@@ -1035,7 +1054,20 @@ export default class BookingController {
                 transaction.provider = 'paystack'
                 transaction.reference = booking.paymentReference || reference
                 transaction.providerReference = data.data.reference
+                transaction.currency = currency
                 await transaction.useTransaction(trx2).save()
+
+                // Credit wallet
+                await walletService.credit(
+                  booking.businessId,
+                  currency,
+                  transaction.businessAmount,
+                  {
+                    transactionId: transaction.id,
+                    reference: transaction.reference,
+                    description: `Payment for booking #${booking.id}`,
+                  }
+                )
 
                 return {
                   amount,

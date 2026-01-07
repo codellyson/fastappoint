@@ -6,6 +6,7 @@ import { mkdirSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import storageService from './storage_service.js'
+import currencyService from './currency_service.js'
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const __filename = fileURLToPath(import.meta.url)
@@ -33,6 +34,8 @@ class ReceiptService {
     }
 
     const business = await Business.findOrFail(booking.businessId)
+    const currency = transaction.currency || business.currency || 'NGN'
+    const currencySymbol = currencyService.getCurrencySymbol(currency)
 
     const receiptNumber = `REC-${transaction.id}-${DateTime.now().toFormat('yyyyMMdd')}`
     const filename = `${receiptNumber}.pdf`
@@ -104,13 +107,23 @@ class ReceiptService {
       // Service item
       const serviceY = tableTop + itemHeight
       doc.text(booking.service.name, 50, serviceY)
-      doc.text(`₦${transaction.amount.toLocaleString()}`, 400, serviceY, { align: 'right' })
+      doc.text(
+        `${currencySymbol}${transaction.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        400,
+        serviceY,
+        { align: 'right' }
+      )
 
       // Platform fee (if applicable)
       if (transaction.platformFee > 0) {
         const feeY = serviceY + itemHeight
         doc.fillColor('#666666').fontSize(9).text('Platform Fee', 50, feeY)
-        doc.text(`₦${transaction.platformFee.toLocaleString()}`, 400, feeY, { align: 'right' })
+        doc.text(
+          `${currencySymbol}${transaction.platformFee.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          400,
+          feeY,
+          { align: 'right' }
+        )
       }
 
       // Total
@@ -122,7 +135,12 @@ class ReceiptService {
         .stroke()
       doc.fontSize(12).fillColor('#000000').font('Helvetica-Bold')
       doc.text('Total Paid', 50, totalY)
-      doc.text(`₦${transaction.amount.toLocaleString()}`, 400, totalY, { align: 'right' })
+      doc.text(
+        `${currencySymbol}${transaction.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        400,
+        totalY,
+        { align: 'right' }
+      )
       doc.font('Helvetica') // Reset font
 
       doc.moveDown(3)

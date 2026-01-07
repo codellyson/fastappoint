@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Booking from '#models/booking'
 import Business from '#models/business'
+import Transaction from '#models/transaction'
 import { DateTime } from 'luxon'
 import refundService from '../services/refund_service.js'
 
@@ -40,7 +41,40 @@ export default class BookingsController {
     const bookings = await query.paginate(page, 20)
     bookings.baseUrl('/bookings')
 
-    return view.render('pages/bookings/index', { bookings, business, status, date, search })
+    // Get transaction currencies and amounts for paid bookings
+    const paidBookingIds = bookings
+      .all()
+      .filter((b) => b.paymentStatus === 'paid')
+      .map((b) => b.id)
+
+    const transactions =
+      paidBookingIds.length > 0
+        ? await Transaction.query()
+            .whereIn('bookingId', paidBookingIds)
+            .where('status', 'success')
+            .select('bookingId', 'currency', 'amount')
+            .exec()
+        : []
+
+    const bookingCurrencyMap: Record<number, string> = {}
+    const bookingAmountMap: Record<number, number> = {}
+    for (const transaction of transactions) {
+      if (transaction.bookingId && !bookingCurrencyMap[transaction.bookingId]) {
+        bookingCurrencyMap[transaction.bookingId] =
+          transaction.currency || business.currency || 'NGN'
+        bookingAmountMap[transaction.bookingId] = transaction.amount
+      }
+    }
+
+    return view.render('pages/bookings/index', {
+      bookings,
+      business,
+      status,
+      date,
+      search,
+      bookingCurrencyMap,
+      bookingAmountMap,
+    })
   }
 
   async show({ params, view, auth, response }: HttpContext) {
@@ -57,7 +91,17 @@ export default class BookingsController {
       return response.notFound('Booking not found')
     }
 
-    return view.render('pages/bookings/show', { booking })
+    // Get transaction for this booking if paid
+    let transaction: Transaction | null = null
+    if (booking.paymentStatus === 'paid') {
+      transaction = await Transaction.query()
+        .where('bookingId', booking.id)
+        .where('status', 'success')
+        .orderBy('createdAt', 'desc')
+        .first()
+    }
+
+    return view.render('pages/bookings/show', { booking, transaction })
   }
 
   async markComplete({ params, response, auth, session }: HttpContext) {
