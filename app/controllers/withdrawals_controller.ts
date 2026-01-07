@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Business from '#models/business'
 import BusinessBankAccount from '#models/business-bank-account'
 import withdrawalService from '#services/withdrawal_service'
+import walletService from '../services/wallet_service.js'
 import {
   addBankAccountValidator,
   withdrawalRequestValidator,
@@ -17,6 +18,7 @@ export default class WithdrawalsController {
     const business = await Business.findOrFail(user.businessId)
 
     const balanceInfo = await withdrawalService.getBalanceInfo(business.id)
+    const wallets = await walletService.getBusinessWallets(business.id)
     const withdrawals = await withdrawalService.getWithdrawalHistory(business.id, 10)
     const bankAccounts = await BusinessBankAccount.query()
       .where('businessId', business.id)
@@ -28,6 +30,7 @@ export default class WithdrawalsController {
     return view.render('pages/settings/withdrawals/index', {
       business,
       balanceInfo,
+      wallets,
       withdrawals,
       bankAccounts,
       primaryAccount,
