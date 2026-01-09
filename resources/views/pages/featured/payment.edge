@@ -8,18 +8,18 @@
   <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --sand-1: #fdfdfc;
-      --sand-2: #f9f9f8;
-      --sand-3: #f1f0ef;
-      --sand-4: #e9e8e6;
-      --sand-5: #e2e1de;
-      --sand-6: #dad9d6;
-      --sand-7: #cfceca;
-      --sand-8: #bcbbb5;
-      --sand-9: #8d8d86;
-      --sand-10: #82827c;
-      --sand-11: #63635e;
-      --sand-12: #21201c;
+      --neutral-1: #fcfcfc;
+      --neutral-2: #f9f9f9;
+      --neutral-3: #f0f0f0;
+      --neutral-4: #e8e8e8;
+      --neutral-5: #e0e0e0;
+      --neutral-6: #d7d7d7;
+      --neutral-7: #c8c8c8;
+      --neutral-8: #b0b0b0;
+      --neutral-9: #898989;
+      --neutral-10: #7e7e7e;
+      --neutral-11: #5f5f5f;
+      --neutral-12: #1c1c1c;
     }
   </style>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -31,19 +31,19 @@
             sans: ["Instrument Sans", "sans-serif"]
           },
           colors: {
-            sand: {
-              1: "var(--sand-1)",
-              2: "var(--sand-2)",
-              3: "var(--sand-3)",
-              4: "var(--sand-4)",
-              5: "var(--sand-5)",
-              6: "var(--sand-6)",
-              7: "var(--sand-7)",
-              8: "var(--sand-8)",
-              9: "var(--sand-9)",
-              10: "var(--sand-10)",
-              11: "var(--sand-11)",
-              12: "var(--sand-12)"
+            neutral: {
+              1: "var(--neutral-1)",
+              2: "var(--neutral-2)",
+              3: "var(--neutral-3)",
+              4: "var(--neutral-4)",
+              5: "var(--neutral-5)",
+              6: "var(--neutral-6)",
+              7: "var(--neutral-7)",
+              8: "var(--neutral-8)",
+              9: "var(--neutral-9)",
+              10: "var(--neutral-10)",
+              11: "var(--neutral-11)",
+              12: "var(--neutral-12)"
             }
           }
         }
@@ -52,33 +52,33 @@
   </script>
   <script src="https://js.paystack.co/v2/inline.js"></script>
 </head>
-<body class="bg-sand-1 min-h-screen flex items-center justify-center px-4">
+<body class="bg-neutral-1 min-h-screen flex items-center justify-center px-4">
   <div class="w-full max-w-md">
     <div class="text-center mb-8">
       <div class="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
         <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
       </div>
-      <h1 class="text-2xl font-bold text-sand-12">Complete Your Payment</h1>
-      <p class="text-sand-11 mt-1">Get your business featured on FastAppoint</p>
+      <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900">Complete Your Payment</h1>
+      <p class="text-sm text-neutral-600 mt-1">Get your business featured on FastAppoint</p>
     </div>
 
-    <div class="bg-white border border-sand-7 rounded-xl p-6 mb-6">
+    <div class="bg-white border border-neutral-200 rounded-xl p-6 mb-6">
       <div class="space-y-4">
         <div class="flex justify-between">
-          <span class="text-sand-11">Plan</span>
-          <span class="font-medium text-sand-12 capitalize">{{ featured.plan }}</span>
+          <span class="text-neutral-600">Plan</span>
+          <span class="font-medium text-neutral-900 capitalize">{{ featured.plan }}</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-sand-11">Duration</span>
-          <span class="font-medium text-sand-12">{{ featured.durationDays }} days</span>
+          <span class="text-neutral-600">Duration</span>
+          <span class="font-medium text-neutral-900">{{ featured.durationDays }} days</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-sand-11">Business</span>
-          <span class="font-medium text-sand-12">{{ featured.displayName || featured.business.name }}</span>
+          <span class="text-neutral-600">Business</span>
+          <span class="font-medium text-neutral-900">{{ featured.displayName || featured.business.name }}</span>
         </div>
-        <div class="border-t border-sand-6 pt-4 flex justify-between">
-          <span class="font-medium text-sand-12">Total</span>
-          <span class="text-xl font-bold text-sand-12">₦{{ Number(featured.amount).toLocaleString() }}</span>
+        <div class="border-t border-neutral-200 pt-4 flex justify-between">
+          <span class="font-medium text-neutral-900">Total</span>
+          <span class="text-xl font-bold text-neutral-900">₦{{ Number(featured.amount).toLocaleString() }}</span>
         </div>
       </div>
     </div>
@@ -91,14 +91,14 @@
       Pay ₦{{ Number(featured.amount).toLocaleString() }}
     </button>
 
-    <a 
+    <a
       href="{{ route('featured.cancel', { id: featured.id }) }}"
-      class="block text-center text-sm text-sand-11 hover:text-sand-12 mt-4"
+      class="block text-center text-sm text-neutral-600 hover:text-neutral-900 mt-4"
     >
       Cancel and go back
     </a>
 
-    <p class="text-center text-sm text-sand-11 mt-6">
+    <p class="text-center text-sm text-neutral-600 mt-6">
       Secure payment powered by Paystack
     </p>
   </div>
