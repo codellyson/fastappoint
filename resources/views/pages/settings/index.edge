@@ -5,18 +5,18 @@
     @section('content')
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div class="mb-6 sm:mb-8">
-          <h1 class="text-xl sm:text-2xl font-bold text-sand-12">
+          <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900">
             Settings
           </h1>
-          <p class="text-sm sm:text-base text-sand-11 mt-1">
-            Manage your business settings
+          <p class="text-sm sm:text-base text-neutral-600 mt-1">
+            Manage your business settings and preferences
           </p>
         </div>
 
         <div class="space-y-3 sm:space-y-4">
           <a
             href="{{ route('settings.profile') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
+            class="card card-hover card-accent-primary block p-4 sm:p-5 min-h-[44px]"
           >
             <div class="flex items-center gap-3 sm:gap-4">
               <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -30,14 +30,14 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
+                <h3 class="font-semibold text-neutral-900 text-sm sm:text-base">
                   Business Profile
                 </h3>
-                <p class="text-xs sm:text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-neutral-600">
                   Update your business name, description, and contact info
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-neutral-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
@@ -45,11 +45,11 @@
 
           <a
             href="{{ route('settings.notifications') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
+            class="card card-hover card-accent-info block p-4 sm:p-5 min-h-[44px]"
           >
             <div class="flex items-center gap-3 sm:gap-4">
-              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-info/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -59,14 +59,14 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
+                <h3 class="font-semibold text-neutral-900 text-sm sm:text-base">
                   Notifications
                 </h3>
-                <p class="text-xs sm:text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-neutral-600">
                   Configure email reminders for customers
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-neutral-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
@@ -74,7 +74,7 @@
 
           <a
             href="{{ route('settings.cancellation') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
+            class="card card-hover card-accent-warning block p-4 sm:p-5 min-h-[44px]"
           >
             <div class="flex items-center gap-3 sm:gap-4">
               <div class="w-10 h-10 sm:w-12 sm:h-12 bg-warning/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -88,14 +88,14 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
+                <h3 class="font-semibold text-neutral-900 text-sm sm:text-base">
                   Cancellation Policy
                 </h3>
-                <p class="text-xs sm:text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-neutral-600">
                   Set your cancellation and rescheduling rules
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-neutral-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
@@ -103,7 +103,7 @@
 
           <a
             href="{{ route('settings.payments') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
+            class="card card-hover card-accent-success block p-4 sm:p-5 min-h-[44px]"
           >
             <div class="flex items-center gap-3 sm:gap-4">
               <div class="w-10 h-10 sm:w-12 sm:h-12 bg-success/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -117,14 +117,14 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
+                <h3 class="font-semibold text-neutral-900 text-sm sm:text-base">
                   Payment Settings
                 </h3>
-                <p class="text-xs sm:text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-neutral-600">
                   Configure Paystack and payment options
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-neutral-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
@@ -132,11 +132,11 @@
 
           <a
             href="{{ route('settings.withdrawals.index') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
+            class="card card-hover card-accent-teal block p-4 sm:p-5 min-h-[44px]"
           >
             <div class="flex items-center gap-3 sm:gap-4">
-              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-teal/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -146,14 +146,14 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
+                <h3 class="font-semibold text-neutral-900 text-sm sm:text-base">
                   Withdrawals
                 </h3>
-                <p class="text-xs sm:text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-neutral-600">
                   Manage earnings and withdraw to your bank
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-neutral-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
@@ -161,7 +161,7 @@
 
           <a
             href="{{ route('settings.booking-page') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
+            class="card card-hover card-accent-primary block p-4 sm:p-5 min-h-[44px]"
           >
             <div class="flex items-center gap-3 sm:gap-4">
               <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -175,14 +175,14 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
+                <h3 class="font-semibold text-neutral-900 text-sm sm:text-base">
                   Booking Page
                 </h3>
-                <p class="text-xs sm:text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-neutral-600">
                   View and share your booking page link
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-neutral-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
@@ -190,11 +190,11 @@
 
           <a
             href="{{ route('settings.theme') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
+            class="card card-hover card-accent-purple block p-4 sm:p-5 min-h-[44px]"
           >
             <div class="flex items-center gap-3 sm:gap-4">
-              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -204,14 +204,14 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
+                <h3 class="font-semibold text-neutral-900 text-sm sm:text-base">
                   Theme & Design
                 </h3>
-                <p class="text-xs sm:text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-neutral-600">
                   Customize your booking page appearance
                 </p>
               </div>
-              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-neutral-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
@@ -219,35 +219,35 @@
 
           <a
             href="{{ route('settings.google-calendar') }}"
-            class="block bg-white border border-sand-7 rounded-xl p-4 sm:p-5 hover:border-primary transition-colors min-h-[44px]"
+            class="card card-hover card-accent-info block p-4 sm:p-5 min-h-[44px]"
           >
             <div class="flex items-center gap-3 sm:gap-4">
-              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-info/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-info" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M19.5 3h-3V1.5h-1.5V3h-6V1.5H7.5V3h-3C3.675 3 3 3.675 3 4.5v15c0 .825.675 1.5 1.5 1.5h15c.825 0 1.5-.675 1.5-1.5v-15c0-.825-.675-1.5-1.5-1.5zm0 16.5h-15V9h15v10.5zm0-12h-15V4.5h15V7.5z"/>
                   <path d="M8 11h3v3H8zm5 0h3v3h-3zm-5 5h3v3H8zm5 0h3v3h-3z"/>
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-sand-12 text-sm sm:text-base">
+                <h3 class="font-semibold text-neutral-900 text-sm sm:text-base">
                   Google Calendar
                 </h3>
-                <p class="text-xs sm:text-sm text-sand-11">
+                <p class="text-xs sm:text-sm text-neutral-600">
                   Sync bookings with your Google Calendar
                 </p>
               </div>
               @if(business.googleCalendarEnabled)
                 <span class="px-2 py-1 text-xs font-medium text-success bg-success/10 rounded-full">Connected</span>
               @endif
-              <svg class="w-5 h-5 text-sand-9 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-neutral-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </div>
           </a>
         </div>
 
-        <div class="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-sand-7">
-          <div class="bg-error/5 border border-error/20 rounded-xl p-4 sm:p-5">
+        <div class="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-neutral-200">
+          <div class="bg-error-bg border-l-4 border-l-error rounded-xl p-4 sm:p-5">
             <div class="flex items-start gap-3 sm:gap-4">
               <div class="w-10 h-10 sm:w-12 sm:h-12 bg-error/10 rounded-lg flex items-center justify-center flex-shrink-0">
                 <svg class="w-5 h-5 sm:w-6 sm:h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,15 +260,15 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-sand-12 mb-1 text-sm sm:text-base">
+                <h3 class="font-semibold text-neutral-900 mb-1 text-sm sm:text-base">
                   Delete Account
                 </h3>
-                <p class="text-xs sm:text-sm text-sand-11 mb-3 sm:mb-4">
+                <p class="text-xs sm:text-sm text-neutral-600 mb-3 sm:mb-4">
                   Permanently delete your account and all associated data. This action cannot be undone.
                 </p>
                 <a
                   href="{{ route('auth.account.delete.show') }}"
-                  class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-error bg-white border border-error/30 rounded-lg hover:bg-error/5 transition-colors min-h-[44px]"
+                  class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-error bg-white border-2 border-error rounded-lg hover:bg-error/5 transition-colors min-h-[44px]"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path

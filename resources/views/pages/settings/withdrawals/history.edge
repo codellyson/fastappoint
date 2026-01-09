@@ -4,60 +4,63 @@
 
 @section('content')
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-    <div class="mb-6 sm:mb-8">
-      <a href="{{ route('settings.withdrawals.index') }}" class="inline-flex items-center text-xs sm:text-sm text-sand-11 hover:text-sand-12 mb-3 sm:mb-4 min-h-[44px]">
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    <div class="mb-6">
+      <a href="{{ route('settings.withdrawals.index') }}" class="text-sm text-primary hover:text-primary-dark font-semibold inline-flex items-center gap-2 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
         Back to Withdrawals
       </a>
-      <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Withdrawal History</h1>
-      <p class="text-sm sm:text-base text-sand-11 mt-1">View all your past withdrawal requests</p>
+    </div>
+
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900">Withdrawal History</h1>
+      <p class="text-sm text-neutral-600 mt-1">View all your past withdrawal requests</p>
     </div>
 
     @if(withdrawals.length === 0)
-      <div class="bg-white border border-sand-7 rounded-xl p-8 text-center">
-        <div class="w-20 h-20 bg-sand-3 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-10 h-10 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="bg-white border border-neutral-200 rounded-xl p-8 text-center">
+        <div class="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
           </svg>
         </div>
-        <h3 class="text-lg font-medium text-sand-12 mb-2">No withdrawal history</h3>
-        <p class="text-sm text-sand-11 mb-6">You haven't made any withdrawal requests yet</p>
+        <h3 class="text-lg font-medium text-neutral-900 mb-2">No withdrawal history</h3>
+        <p class="text-sm text-neutral-600 mb-6">You haven't made any withdrawal requests yet</p>
         <a href="{{ route('settings.withdrawals.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90">
           Request a Withdrawal
         </a>
       </div>
     @else
-      <div class="bg-white border border-sand-7 rounded-xl overflow-hidden">
+      <div class="bg-white border border-neutral-200 rounded-xl overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full">
-            <thead class="bg-sand-2 border-b border-sand-6">
+            <thead class="bg-neutral-50 border-b border-neutral-200">
               <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Date</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Amount</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Bank Account</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Status</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Reference</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-sand-11 uppercase tracking-wider">Actions</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-neutral-600 uppercase tracking-wider">Date</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-neutral-600 uppercase tracking-wider">Amount</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-neutral-600 uppercase tracking-wider">Bank Account</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-neutral-600 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-neutral-600 uppercase tracking-wider">Reference</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-neutral-600 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-sand-6">
               @each(withdrawal in withdrawals)
-                <tr class="hover:bg-sand-2/50">
+                <tr class="hover:bg-neutral-50/50">
                   <td class="px-4 py-4">
-                    <div class="text-sm text-sand-12">{{ withdrawal.createdAt.toFormat('MMM d, yyyy') }}</div>
-                    <div class="text-xs text-sand-11">{{ withdrawal.createdAt.toFormat('h:mm a') }}</div>
+                    <div class="text-sm text-neutral-900">{{ withdrawal.createdAt.toFormat('MMM d, yyyy') }}</div>
+                    <div class="text-xs text-neutral-600">{{ withdrawal.createdAt.toFormat('h:mm a') }}</div>
                   </td>
                   <td class="px-4 py-4">
-                    <div class="text-sm font-semibold text-sand-12">₦{{ withdrawal.amount.toLocaleString() }}</div>
+                    <div class="text-sm font-semibold text-neutral-900">₦{{ withdrawal.amount.toLocaleString() }}</div>
                   </td>
                   <td class="px-4 py-4">
                     @if(withdrawal.bankAccount)
-                      <div class="text-sm text-sand-12">{{ withdrawal.bankAccount.bankName }}</div>
-                      <div class="text-xs text-sand-11">{{ withdrawal.bankAccount.maskedAccountNumber }}</div>
+                      <div class="text-sm text-neutral-900">{{ withdrawal.bankAccount.bankName }}</div>
+                      <div class="text-xs text-neutral-600">{{ withdrawal.bankAccount.maskedAccountNumber }}</div>
                     @else
-                      <span class="text-sm text-sand-11">N/A</span>
+                      <span class="text-sm text-neutral-600">N/A</span>
                     @endif
                   </td>
                   <td class="px-4 py-4">
@@ -89,7 +92,7 @@
                     @endif
                   </td>
                   <td class="px-4 py-4">
-                    <div class="text-xs font-mono text-sand-11">
+                    <div class="text-xs font-mono text-neutral-600">
                       @if(withdrawal.paystackReference)
                         {{ withdrawal.paystackReference }}
                       @else
@@ -104,7 +107,7 @@
                         <button type="submit" class="text-xs text-error hover:underline font-medium">Cancel</button>
                       </form>
                     @elseif(withdrawal.processedAt)
-                      <span class="text-xs text-sand-11">{{ withdrawal.processedAt.toFormat('MMM d') }}</span>
+                      <span class="text-xs text-neutral-600">{{ withdrawal.processedAt.toFormat('MMM d') }}</span>
                     @endif
                   </td>
                 </tr>
@@ -115,13 +118,13 @@
 
         {{-- Pagination could be added here if needed --}}
         @if(currentPage > 1 || withdrawals.length === 20)
-          <div class="px-4 py-3 bg-sand-2 border-t border-sand-6 flex items-center justify-between">
+          <div class="px-4 py-3 bg-neutral-50 border-t border-neutral-200 flex items-center justify-between">
             <div>
               @if(currentPage > 1)
                 <a href="?page={{ currentPage - 1 }}" class="text-sm text-primary hover:underline">← Previous</a>
               @endif
             </div>
-            <div class="text-sm text-sand-11">Page {{ currentPage }}</div>
+            <div class="text-sm text-neutral-600">Page {{ currentPage }}</div>
             <div>
               @if(withdrawals.length === 20)
                 <a href="?page={{ currentPage + 1 }}" class="text-sm text-primary hover:underline">Next →</a>

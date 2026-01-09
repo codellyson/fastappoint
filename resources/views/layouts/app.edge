@@ -15,23 +15,77 @@
 
     <style>
       :root {
-        --sand-1: #fdfdfc;
-        --sand-2: #f9f9f8;
-        --sand-3: #f1f0ef;
-        --sand-4: #e9e8e6;
-        --sand-5: #e2e1de;
-        --sand-6: #dad9d6;
-        --sand-7: #cfceca;
-        --sand-8: #bcbbb5;
-        --sand-9: #8d8d86;
-        --sand-10: #82827c;
-        --sand-11: #63635e;
-        --sand-12: #21201c;
-        --success: #10b981;
-        --error: #ef4444;
-        --warning: #f59e0b;
+        /* New Colorful Minimalism Color System */
+        --primary: #0066ff;
+        --primary-light: #3385ff;
+        --primary-dark: #0052cc;
+
+        --success: #00c853;
+        --success-light: #69f0ae;
+        --success-bg: #e8f5e9;
+
+        --warning: #ff9500;
+        --warning-light: #ffb84d;
+        --warning-bg: #fff3e0;
+
+        --error: #ff3b30;
+        --error-light: #ff6b62;
+        --error-bg: #ffebee;
+
+        --info: #00b8d4;
+        --info-bg: #e0f7fa;
+
+        --purple: #8b5cf6;
+        --pink: #ec4899;
+        --teal: #14b8a6;
+        --amber: #f59e0b;
       }
+
       [x-cloak] { display: none !important; }
+
+      /* Custom hover effect for cards */
+      .card-hover {
+        transition: all 0.2s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Button styles */
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn-primary:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 14px 0 rgba(0, 102, 255, 0.2);
+      }
+      .btn-primary:active {
+        transform: scale(0.98);
+      }
+
+      .btn-ghost {
+        background-color: #f5f5f5;
+        color: #171717;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn-ghost:hover {
+        background-color: #e5e5e5;
+      }
     </style>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -41,30 +95,40 @@
         theme: {
           extend: {
             fontFamily: {
-              sans: [ "Instrument Sans", "sans-serif" ]
+              sans: ["Instrument Sans", "sans-serif"]
             },
             colors: {
               primary: {
-                DEFAULT: "#5A45FF",
-                lighter: "#a599ff"
+                DEFAULT: "#0066ff",
+                light: "#3385ff",
+                dark: "#0052cc",
+                50: "#e6f2ff",
+                100: "#b3d9ff",
               },
-              sand: {
-                1: "var(--sand-1)",
-                2: "var(--sand-2)",
-                3: "var(--sand-3)",
-                4: "var(--sand-4)",
-                5: "var(--sand-5)",
-                6: "var(--sand-6)",
-                7: "var(--sand-7)",
-                8: "var(--sand-8)",
-                9: "var(--sand-9)",
-                10: "var(--sand-10)",
-                11: "var(--sand-11)",
-                12: "var(--sand-12)"
+              success: {
+                DEFAULT: "#00c853",
+                light: "#69f0ae",
+                bg: "#e8f5e9",
               },
-              success: "var(--success)",
-              error: "var(--error)",
-              warning: "var(--warning)"
+              warning: {
+                DEFAULT: "#ff9500",
+                light: "#ffb84d",
+                bg: "#fff3e0",
+              },
+              error: {
+                DEFAULT: "#ff3b30",
+                light: "#ff6b62",
+                bg: "#ffebee",
+              },
+              info: {
+                DEFAULT: "#00b8d4",
+                light: "#4dd0e1",
+                bg: "#e0f7fa",
+              },
+              purple: "#8b5cf6",
+              pink: "#ec4899",
+              teal: "#14b8a6",
+              amber: "#f59e0b",
             }
           }
         }
@@ -74,7 +138,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('dumper')
   </head>
-  <body class="min-h-screen w-screen font-sans bg-sand-1" x-data="appState()" x-init="init()">
+  <body class="min-h-screen w-screen font-sans bg-neutral-50" x-data="appState()" x-init="init()">
     @include('partials/toast')
     
     <div class="min-h-screen flex flex-col">

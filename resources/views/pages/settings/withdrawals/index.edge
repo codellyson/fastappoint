@@ -4,24 +4,27 @@
 
 @section('content')
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-    <div class="mb-6 sm:mb-8">
-      <a href="{{ route('settings.index') }}" class="inline-flex items-center text-xs sm:text-sm text-sand-11 hover:text-sand-12 mb-3 sm:mb-4 min-h-[44px]">
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    <div class="mb-6">
+      <a href="{{ route('settings.index') }}" class="text-sm text-primary hover:text-primary-dark font-semibold inline-flex items-center gap-2 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
         Back to Settings
       </a>
-      <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Withdrawals</h1>
-      <p class="text-sm sm:text-base text-sand-11 mt-1">Manage your earnings and withdraw to your bank account</p>
+    </div>
+
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900">Withdrawals</h1>
+      <p class="text-sm text-neutral-600 mt-1">Manage your earnings and withdraw to your bank account</p>
     </div>
 
     {{-- Wallet Balances by Currency --}}
     @if(wallets && wallets.length > 0)
       <div class="mb-6 sm:mb-8">
-        <h2 class="text-lg font-semibold text-sand-12 mb-4">Wallet Balances</h2>
+        <h2 class="text-lg font-semibold text-neutral-900 mb-4">Wallet Balances</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           @each(wallet in wallets)
-            <div class="bg-white border border-sand-7 rounded-xl p-5">
+            <div class="bg-white border border-neutral-200 rounded-xl p-5">
               <div class="flex items-center gap-3 mb-3">
                 <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
                   <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,22 +32,22 @@
                   </svg>
                 </div>
                 <div class="flex-1">
-                  <p class="text-sand-11 text-xs uppercase">{{ wallet.currency }}</p>
-                  <p class="text-xl font-bold text-sand-12">
+                  <p class="text-neutral-600 text-xs uppercase">{{ wallet.currency }}</p>
+                  <p class="text-xl font-bold text-neutral-900">
                     {{ currencyService.getCurrencySymbol(wallet.currency) }}{{ Number(wallet.availableBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
                   </p>
                 </div>
               </div>
-              <div class="pt-3 border-t border-sand-6 space-y-1">
+              <div class="pt-3 border-t border-neutral-200 space-y-1">
                 <div class="flex justify-between text-xs">
-                  <span class="text-sand-11">Total Balance:</span>
-                  <span class="text-sand-12 font-medium">
+                  <span class="text-neutral-600">Total Balance:</span>
+                  <span class="text-neutral-900 font-medium">
                     {{ currencyService.getCurrencySymbol(wallet.currency) }}{{ Number(wallet.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
                   </span>
                 </div>
                 @if(wallet.heldBalance > 0)
                   <div class="flex justify-between text-xs">
-                    <span class="text-sand-11">Held:</span>
+                    <span class="text-neutral-600">Held:</span>
                     <span class="text-warning font-medium">
                       {{ currencyService.getCurrencySymbol(wallet.currency) }}{{ Number(wallet.heldBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
                     </span>
@@ -76,7 +79,7 @@
         </div>
       </div>
 
-      <div class="bg-white border border-sand-7 rounded-xl p-5">
+      <div class="bg-white border border-neutral-200 rounded-xl p-5">
         <div class="flex items-center gap-3 mb-3">
           <div class="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center">
             <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,15 +87,15 @@
             </svg>
           </div>
           <div>
-            <p class="text-sand-11 text-sm">Total Earnings</p>
-            <p class="text-xl font-bold text-sand-12">
+            <p class="text-neutral-600 text-sm">Total Earnings</p>
+            <p class="text-xl font-bold text-neutral-900">
               {{ currencyService.getCurrencySymbol(business.currency || 'NGN') }}{{ Number(balanceInfo.totalEarnings).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
             </p>
           </div>
         </div>
       </div>
 
-      <div class="bg-white border border-sand-7 rounded-xl p-5">
+      <div class="bg-white border border-neutral-200 rounded-xl p-5">
         <div class="flex items-center gap-3 mb-3">
           <div class="w-10 h-10 bg-warning/10 rounded-lg flex items-center justify-center">
             <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,8 +103,8 @@
             </svg>
           </div>
           <div>
-            <p class="text-sand-11 text-sm">Pending Withdrawals</p>
-            <p class="text-xl font-bold text-sand-12">
+            <p class="text-neutral-600 text-sm">Pending Withdrawals</p>
+            <p class="text-xl font-bold text-neutral-900">
               {{ currencyService.getCurrencySymbol(business.currency || 'NGN') }}{{ Number(balanceInfo.pendingWithdrawals).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
             </p>
           </div>
@@ -111,8 +114,8 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {{-- Request Withdrawal Card --}}
-      <div class="bg-white border border-sand-7 rounded-xl p-4 sm:p-6">
-        <h2 class="text-lg font-semibold text-sand-12 mb-4">Request Withdrawal</h2>
+      <div class="bg-white border border-neutral-200 rounded-xl p-4 sm:p-6">
+        <h2 class="text-lg font-semibold text-neutral-900 mb-4">Request Withdrawal</h2>
 
         @if(!primaryAccount)
           <div class="bg-warning/10 border border-warning/20 rounded-lg p-4 mb-4">
@@ -133,14 +136,14 @@
             </div>
           </div>
         @elseif(balanceInfo.availableBalance < 1000)
-          <div class="bg-sand-3 border border-sand-7 rounded-lg p-4 mb-4">
+          <div class="bg-neutral-50 border border-neutral-200 rounded-lg p-4 mb-4">
             <div class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-sand-11 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-neutral-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
               <div>
-                <p class="text-sm text-sand-12 font-medium">Minimum balance required</p>
-                <p class="text-xs text-sand-11 mt-1">
+                <p class="text-sm text-neutral-900 font-medium">Minimum balance required</p>
+                <p class="text-xs text-neutral-600 mt-1">
                   You need at least {{ currencyService.getCurrencySymbol(business.currency || 'NGN') }}1,000 to make a withdrawal.
                 </p>
               </div>
@@ -151,7 +154,7 @@
             {{ csrfField() }}
 
             <div>
-              <label for="amount" class="block text-sm font-medium text-sand-12 mb-1">
+              <label for="amount" class="block text-sm font-medium text-neutral-900 mb-2">
                 Amount ({{ currencyService.getCurrencySymbol(business.currency || 'NGN') }})
               </label>
               <input
@@ -162,21 +165,21 @@
                 max="{{ balanceInfo.availableBalance }}"
                 step="100"
                 placeholder="Enter amount"
-                class="w-full px-4 py-2.5 border border-sand-7 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="input-field"
                 required
               />
-              <p class="text-xs text-sand-11 mt-1">
-                Minimum: {{ currencyService.getCurrencySymbol(business.currency || 'NGN') }}1,000 • 
+              <p class="text-xs text-neutral-500 mt-1">
+                Minimum: {{ currencyService.getCurrencySymbol(business.currency || 'NGN') }}1,000 •
                 Maximum: {{ currencyService.getCurrencySymbol(business.currency || 'NGN') }}{{ Math.min(balanceInfo.availableBalance, 10000000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
               </p>
             </div>
 
             <div>
-              <label for="bankAccountId" class="block text-sm font-medium text-sand-12 mb-1">Bank Account</label>
+              <label for="bankAccountId" class="block text-sm font-medium text-neutral-900 mb-2">Bank Account</label>
               <select
                 id="bankAccountId"
                 name="bankAccountId"
-                class="w-full px-4 py-2.5 border border-sand-7 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
+                class="input-field"
                 required
               >
                 @each(account in bankAccounts)
@@ -187,7 +190,7 @@
               </select>
             </div>
 
-            <button type="submit" class="w-full px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm min-h-[44px]">
+            <button type="submit" class="w-full btn-primary">
               Request Withdrawal
             </button>
           </form>
@@ -195,20 +198,20 @@
       </div>
 
       {{-- Bank Accounts Card --}}
-      <div class="bg-white border border-sand-7 rounded-xl p-4 sm:p-6">
+      <div class="bg-white border border-neutral-200 rounded-xl p-4 sm:p-6">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-sand-12">Bank Accounts</h2>
+          <h2 class="text-lg font-semibold text-neutral-900">Bank Accounts</h2>
           <a href="{{ route('settings.withdrawals.bank-accounts') }}" class="text-sm text-primary hover:underline">Manage</a>
         </div>
 
         @if(bankAccounts.length === 0)
           <div class="text-center py-8">
-            <div class="w-16 h-16 bg-sand-3 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-16 h-16 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
               </svg>
             </div>
-            <p class="text-sm text-sand-11 mb-4">No bank accounts added yet</p>
+            <p class="text-sm text-neutral-600 mb-4">No bank accounts added yet</p>
             <a href="{{ route('settings.withdrawals.bank-accounts.add') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm hover:bg-primary/90">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -219,7 +222,7 @@
         @else
           <div class="space-y-3">
             @each(account in bankAccounts)
-              <div class="flex items-center gap-3 p-3 bg-sand-2 rounded-lg border border-sand-6">
+              <div class="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-200">
                 <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
                   <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
@@ -227,12 +230,12 @@
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-2">
-                    <p class="text-sm font-medium text-sand-12 truncate">{{ account.bankName }}</p>
+                    <p class="text-sm font-medium text-neutral-900 truncate">{{ account.bankName }}</p>
                     @if(account.isPrimary)
                       <span class="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Primary</span>
                     @endif
                   </div>
-                  <p class="text-xs text-sand-11">{{ account.maskedAccountNumber }} • {{ account.accountName }}</p>
+                  <p class="text-xs text-neutral-600">{{ account.maskedAccountNumber }} • {{ account.accountName }}</p>
                 </div>
                 @if(account.isVerified)
                   <svg class="w-5 h-5 text-success flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -247,9 +250,9 @@
     </div>
 
     {{-- Recent Withdrawals --}}
-    <div class="mt-6 sm:mt-8 bg-white border border-sand-7 rounded-xl p-4 sm:p-6">
+    <div class="mt-6 sm:mt-8 bg-white border border-neutral-200 rounded-xl p-4 sm:p-6">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-semibold text-sand-12">Recent Withdrawals</h2>
+        <h2 class="text-lg font-semibold text-neutral-900">Recent Withdrawals</h2>
         @if(withdrawals.length > 0)
           <a href="{{ route('settings.withdrawals.history') }}" class="text-sm text-primary hover:underline">View All</a>
         @endif
@@ -257,33 +260,33 @@
 
       @if(withdrawals.length === 0)
         <div class="text-center py-8">
-          <div class="w-16 h-16 bg-sand-3 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-16 h-16 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
           </div>
-          <p class="text-sm text-sand-11">No withdrawals yet</p>
+          <p class="text-sm text-neutral-600">No withdrawals yet</p>
         </div>
       @else
         <div class="overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="text-left border-b border-sand-6">
-                <th class="pb-3 text-xs font-medium text-sand-11 uppercase tracking-wider">Date</th>
-                <th class="pb-3 text-xs font-medium text-sand-11 uppercase tracking-wider">Amount</th>
-                <th class="pb-3 text-xs font-medium text-sand-11 uppercase tracking-wider">Bank</th>
-                <th class="pb-3 text-xs font-medium text-sand-11 uppercase tracking-wider">Status</th>
-                <th class="pb-3 text-xs font-medium text-sand-11 uppercase tracking-wider"></th>
+              <tr class="text-left border-b border-neutral-200">
+                <th class="pb-3 text-xs font-medium text-neutral-600 uppercase tracking-wider">Date</th>
+                <th class="pb-3 text-xs font-medium text-neutral-600 uppercase tracking-wider">Amount</th>
+                <th class="pb-3 text-xs font-medium text-neutral-600 uppercase tracking-wider">Bank</th>
+                <th class="pb-3 text-xs font-medium text-neutral-600 uppercase tracking-wider">Status</th>
+                <th class="pb-3 text-xs font-medium text-neutral-600 uppercase tracking-wider"></th>
               </tr>
             </thead>
             <tbody class="divide-y divide-sand-6">
               @each(withdrawal in withdrawals)
                 <tr>
-                  <td class="py-3 text-sm text-sand-12">{{ withdrawal.createdAt.toFormat('MMM d, yyyy') }}</td>
-                  <td class="py-3 text-sm font-medium text-sand-12">
+                  <td class="py-3 text-sm text-neutral-900">{{ withdrawal.createdAt.toFormat('MMM d, yyyy') }}</td>
+                  <td class="py-3 text-sm font-medium text-neutral-900">
                     {{ currencyService.getCurrencySymbol(business.currency || 'NGN') }}{{ Number(withdrawal.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
                   </td>
-                  <td class="py-3 text-sm text-sand-11">
+                  <td class="py-3 text-sm text-neutral-600">
                     @if(withdrawal.bankAccount)
                       {{ withdrawal.bankAccount.bankName }}
                     @else

@@ -5,24 +5,37 @@
 @section('content')
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     @if(flashMessages.has('success'))
-      <div class="mb-6 bg-success/10 border border-success text-success rounded-lg p-4 text-sm">
-        {{ flashMessages.get('success') }}
+      <div class="mb-6 bg-success-bg border-l-4 border-l-success text-success rounded-xl p-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="font-semibold">{{ flashMessages.get('success') }}</span>
+        </div>
       </div>
     @endif
 
-    <div class="mb-6 sm:mb-8">
+    <div class="mb-8">
       <div>
-        <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Bookings</h1>
-        <p class="text-sm sm:text-base text-sand-11 mt-1">Manage all your appointments</p>
+        <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900">Bookings</h1>
+        <p class="text-base sm:text-lg text-neutral-600 mt-2">Manage all your appointments</p>
       </div>
     </div>
 
     {{-- Filters --}}
-    <div class="bg-white border border-sand-7 rounded-xl p-4 sm:p-5 mb-4 sm:mb-6">
-      <form method="GET" class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4">
+    <div class="bg-white border-l-4 border-l-purple border border-neutral-200 rounded-2xl p-6 shadow-lg mb-6 bg-gradient-to-r from-purple/5 to-transparent">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-purple/10 rounded-xl flex items-center justify-center">
+          <svg class="w-5 h-5 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-neutral-900">Filter Bookings</h3>
+      </div>
+      <form method="GET" class="flex flex-col sm:flex-row sm:flex-wrap gap-4">
         <div class="flex-1 sm:flex-initial">
-          <label class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Status</label>
-          <select name="status" onchange="this.form.submit()" class="w-full sm:w-auto px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg text-sm text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]">
+          <label class="block text-sm font-semibold text-neutral-900 mb-2">Status</label>
+          <select name="status" onchange="this.form.submit()" class="input-field min-h-[44px]">
             <option value="all" {{ status === 'all' ? 'selected' : '' }}>All Bookings</option>
             <option value="confirmed" {{ status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
             <option value="completed" {{ status === 'completed' ? 'selected' : '' }}>Completed</option>
@@ -31,33 +44,33 @@
           </select>
         </div>
         <div class="flex-1 sm:flex-initial">
-          <label class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Date</label>
+          <label class="block text-sm font-semibold text-neutral-900 mb-2">Date</label>
           <div class="relative">
             <input
               type="date"
               name="date"
               value="{{ date }}"
               onchange="this.form.submit()"
-              class="w-full px-3 sm:px-4 py-2.5 pl-9 sm:pl-10 border border-sand-7 rounded-lg text-sm text-sand-12 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer min-h-[44px]"
+              class="input-field pl-10 cursor-pointer min-h-[44px]"
             />
-            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-sand-9 absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
           </div>
         </div>
         @if(status !== 'all' || date)
           <div class="flex items-end">
-            <a href="{{ route('bookings.index') }}" class="px-4 py-2.5 text-sm text-sand-11 hover:text-sand-12 min-h-[44px] flex items-center">Clear filters</a>
+            <a href="{{ route('bookings.index') }}" class="px-4 py-3 text-sm text-neutral-600 hover:text-primary font-semibold min-h-[44px] flex items-center transition-colors">Clear filters</a>
           </div>
         @endif
       </form>
     </div>
 
     {{-- Bookings List --}}
-    <div class="bg-white border border-sand-7 rounded-xl">
+    <div class="bg-white border-l-4 border-l-info border border-neutral-200 rounded-2xl shadow-lg">
       @if(bookings.length > 0)
         {{-- Mobile Card View --}}
-        <div class="md:hidden divide-y divide-sand-6">
+        <div class="md:hidden divide-y divide-neutral-100">
           @each(booking in bookings)
             <div class="p-4">
               <div class="flex items-start gap-3 mb-3">
@@ -70,23 +83,23 @@
                 </div>
                 <div>
                   @if(booking.status === 'confirmed')
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+                    <span class="badge-success text-xs py-1 px-3">
                       Confirmed
                     </span>
                   @elseif(booking.status === 'completed')
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                    <span class="badge-primary text-xs py-1 px-3">
                       Completed
                     </span>
                   @elseif(booking.status === 'cancelled')
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-error/10 text-error">
+                    <span class="badge-error text-xs py-1 px-3">
                       Cancelled
                     </span>
                   @elseif(booking.status === 'pending_payment')
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-warning/10 text-warning">
+                    <span class="badge-warning text-xs py-1 px-3">
                       Pending
                     </span>
                   @else
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sand-4 text-sand-11">
+                    <span class="badge-neutral text-xs py-1 px-3">
                       {{ booking.status }}
                     </span>
                   @endif
@@ -114,8 +127,8 @@
                   <span class="text-sand-11">{{ booking.paymentStatus }}</span>
                 </div>
               </div>
-              <div class="flex items-center gap-2 pt-2 border-t border-sand-6">
-                <a href="{{ route('bookings.show', { id: booking.id }) }}" class="flex-1 px-3 py-2 text-sm text-center bg-sand-2 text-sand-12 rounded-lg hover:bg-sand-3 min-h-[44px] flex items-center justify-center">
+              <div class="flex items-center gap-2 pt-2 border-t border-neutral-100">
+                <a href="{{ route('bookings.show', { id: booking.id }) }}" class="flex-1 px-3 py-2 text-sm text-center bg-neutral-100 text-neutral-900 rounded-xl hover:bg-neutral-200 min-h-[44px] flex items-center justify-center font-semibold transition-colors">
                   View
                 </a>
                 @if(booking.status === 'confirmed')
@@ -140,44 +153,44 @@
         {{-- Desktop Table View --}}
         <div class="hidden md:block overflow-x-auto overflow-y-visible">
           <table class="w-full">
-            <thead class="bg-sand-2 border-b border-sand-7">
+            <thead class="bg-neutral-50 border-b border-neutral-200">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Customer</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Service</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Date & Time</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Amount</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-sand-11 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-sand-11 uppercase tracking-wider">Actions</th>
+                <th class="px-6 py-4 text-left text-xs font-bold text-neutral-700 uppercase tracking-wider">Customer</th>
+                <th class="px-6 py-4 text-left text-xs font-bold text-neutral-700 uppercase tracking-wider">Service</th>
+                <th class="px-6 py-4 text-left text-xs font-bold text-neutral-700 uppercase tracking-wider">Date & Time</th>
+                <th class="px-6 py-4 text-left text-xs font-bold text-neutral-700 uppercase tracking-wider">Amount</th>
+                <th class="px-6 py-4 text-left text-xs font-bold text-neutral-700 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-4 text-right text-xs font-bold text-neutral-700 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-sand-6">
+            <tbody class="divide-y divide-neutral-100">
               @each(booking in bookings)
-                <tr class="hover:bg-sand-2">
+                <tr class="hover:bg-neutral-50 transition-colors">
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center gap-3">
                       <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                         <span class="text-sm font-medium text-primary">{{ booking.customerName.charAt(0).toUpperCase() }}</span>
                       </div>
                       <div>
-                        <p class="font-medium text-sand-12">{{ booking.customerName }}</p>
-                        <p class="text-sm text-sand-11">{{ booking.customerEmail }}</p>
+                        <p class="font-semibold text-neutral-900">{{ booking.customerName }}</p>
+                        <p class="text-sm text-neutral-600">{{ booking.customerEmail }}</p>
                       </div>
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <p class="text-sand-12">{{ booking.service ? booking.service.name : '-' }}</p>
+                    <p class="text-neutral-900 font-medium">{{ booking.service ? booking.service.name : '-' }}</p>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <p class="text-sand-12">{{ booking.date.toFormat('MMM d, yyyy') }}</p>
-                    <p class="text-sm text-sand-11">{{ booking.startTime }} - {{ booking.endTime }}</p>
+                    <p class="text-neutral-900 font-medium">{{ booking.date.toFormat('MMM d, yyyy') }}</p>
+                    <p class="text-sm text-neutral-600">{{ booking.startTime }} - {{ booking.endTime }}</p>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     @set('bookingCurrency', bookingCurrencyMap[booking.id] || business.currency || 'NGN')
                     @set('bookingAmount', bookingAmountMap[booking.id] || booking.amount)
-                    <p class="font-medium text-sand-12">
+                    <p class="font-bold text-neutral-900">
                       {{ currencyService.getCurrencySymbol(bookingCurrency) }}{{ Number(bookingAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
                     </p>
-                    <p class="text-xs text-sand-11">{{ booking.paymentStatus }}</p>
+                    <p class="text-xs text-neutral-500 font-medium">{{ booking.paymentStatus }}</p>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     @if(booking.status === 'confirmed')
@@ -204,8 +217,8 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right">
                     <div class="flex items-center justify-end gap-2">
-                      <a href="{{ route('bookings.show', { id: booking.id }) }}" class="p-2 hover:bg-sand-3 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="View">
-                        <svg class="w-5 h-5 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <a href="{{ route('bookings.show', { id: booking.id }) }}" class="p-2 hover:bg-neutral-100 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors" title="View">
+                        <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                         </svg>
@@ -213,7 +226,7 @@
                       @if(booking.status === 'confirmed')
                         <form method="POST" action="{{ route('bookings.complete', { id: booking.id }) }}">
                           {{ csrfField() }}
-                          <button type="submit" class="p-2 hover:bg-success/10 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="Mark Complete">
+                          <button type="submit" class="p-2 hover:bg-success-bg rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors" title="Mark Complete">
                             <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
@@ -221,7 +234,7 @@
                         </form>
                         <form method="POST" action="{{ route('bookings.cancel', { id: booking.id }) }}" onsubmit="return confirm('Cancel this booking?')">
                           {{ csrfField() }}
-                          <button type="submit" class="p-2 hover:bg-error/10 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="Cancel">
+                          <button type="submit" class="p-2 hover:bg-error-bg rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors" title="Cancel">
                             <svg class="w-5 h-5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
@@ -238,33 +251,43 @@
 
         {{-- Pagination --}}
         @if(bookings.hasPages)
-          <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-sand-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p class="text-xs sm:text-sm text-sand-11 text-center sm:text-left">
+          <div class="px-6 py-4 border-t border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p class="text-sm text-neutral-600 text-center sm:text-left font-medium">
               Showing {{ bookings.firstPage }} to {{ bookings.lastPage }} of {{ bookings.total }} bookings
             </p>
             <div class="flex gap-2 w-full sm:w-auto justify-center sm:justify-end">
               @if(bookings.hasPreviousPage)
-                <a href="?page={{ bookings.currentPage - 1 }}&status={{ status }}&date={{ date }}" class="px-4 py-2 border border-sand-7 rounded-lg text-sm hover:bg-sand-2 min-h-[44px] flex items-center justify-center">Previous</a>
+                <a href="?page={{ bookings.currentPage - 1 }}&status={{ status }}&date={{ date }}" class="px-5 py-2.5 border-2 border-neutral-200 rounded-xl text-sm font-semibold text-neutral-700 hover:bg-neutral-50 hover:border-primary hover:text-primary min-h-[44px] flex items-center justify-center transition-colors">Previous</a>
               @endif
               @if(bookings.hasNextPage)
-                <a href="?page={{ bookings.currentPage + 1 }}&status={{ status }}&date={{ date }}" class="px-4 py-2 border border-sand-7 rounded-lg text-sm hover:bg-sand-2 min-h-[44px] flex items-center justify-center">Next</a>
+                <a href="?page={{ bookings.currentPage + 1 }}&status={{ status }}&date={{ date }}" class="px-5 py-2.5 border-2 border-neutral-200 rounded-xl text-sm font-semibold text-neutral-700 hover:bg-neutral-50 hover:border-primary hover:text-primary min-h-[44px] flex items-center justify-center transition-colors">Next</a>
               @endif
             </div>
           </div>
         @endif
       @else
-        <div class="text-center py-12">
-          <svg class="w-16 h-16 mx-auto mb-4 text-sand-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-          </svg>
-          <h3 class="text-lg font-medium text-sand-12 mb-1">No bookings found</h3>
-          <p class="text-sand-11">
+        <div class="text-center py-16">
+          <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-neutral-900 mb-2">No bookings found</h3>
+          <p class="text-neutral-600 mb-6">
             @if(status !== 'all' || date)
-              Try adjusting your filters
+              Try adjusting your filters to see more results
             @else
               Share your booking link to start receiving appointments!
             @endif
           </p>
+          @if(status === 'all' && !date)
+            <a href="#" class="btn-primary inline-flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+              </svg>
+              Share Booking Link
+            </a>
+          @endif
         </div>
       @endif
     </div>

@@ -5,77 +5,95 @@
 @section('content')
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     @if(flashMessages.has('success'))
-      <div class="mb-6 bg-success/10 border border-success text-success rounded-lg p-4 text-sm">
-        {{ flashMessages.get('success') }}
+      <div class="mb-6 bg-success-bg border-l-4 border-l-success text-success rounded-xl p-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="font-semibold">{{ flashMessages.get('success') }}</span>
+        </div>
       </div>
     @endif
 
-    <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Services</h1>
-        <p class="text-sm sm:text-base text-sand-11 mt-1">Manage the services you offer</p>
+        <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900">Services</h1>
+        <p class="text-base sm:text-lg text-neutral-600 mt-2">Manage the services you offer</p>
       </div>
-      <a href="{{ route('services.create') }}" class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm sm:text-base min-h-[44px] flex items-center justify-center sm:inline-flex">
-        + Add Service
+      <a href="{{ route('services.create') }}" class="btn-primary inline-flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Add Service
       </a>
     </div>
 
     @if(services.length > 0)
-      <div class="space-y-3 sm:space-y-4">
+      <div class="space-y-4">
         @each(service in services)
-          <div class="bg-white border border-sand-7 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 {{ !service.isActive ? 'opacity-60' : '' }}">
+          <div class="card card-hover card-accent-primary p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-lg {{ !service.isActive ? 'opacity-60' : 'bg-gradient-to-r from-primary/[0.02] to-transparent' }}">
             <div class="flex items-start gap-4 flex-1 min-w-0">
               @if(service.image)
-                <img src="{{ service.image }}" alt="{{ service.name }}" class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0" />
+                <img src="{{ service.image }}" alt="{{ service.name }}" class="w-20 h-20 object-cover rounded-2xl flex-shrink-0 shadow-md" />
               @else
-                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-sand-3 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg class="w-8 h-8 text-sand-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-20 h-20 bg-gradient-to-br from-primary/10 to-purple/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+                  <svg class="w-9 h-9 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                   </svg>
                 </div>
               @endif
               <div class="flex-1 min-w-0">
-              <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-                <h3 class="font-medium text-sand-12 text-sm sm:text-base">{{ service.name }}</h3>
-                @if(!service.isActive)
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sand-4 text-sand-11">
-                    Disabled
-                  </span>
+                <div class="flex flex-wrap items-center gap-3 mb-2">
+                  <h3 class="font-bold text-neutral-900 text-lg">{{ service.name }}</h3>
+                  @if(!service.isActive)
+                    <span class="badge-neutral text-xs">
+                      Disabled
+                    </span>
+                  @endif
+                </div>
+                @if(service.description)
+                  <p class="text-sm text-neutral-600 mb-3 line-clamp-2">{{ service.description }}</p>
                 @endif
-              </div>
-              @if(service.description)
-                <p class="text-xs sm:text-sm text-sand-11 mt-1">{{ service.description }}</p>
-              @endif
-              <div class="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-sand-11">
-                <span>{{ service.formattedDuration }}</span>
-                <span>•</span>
-                <span class="font-medium text-sand-12">
-                  {{ currencyService.getCurrencySymbol(business.currency || 'NGN') }}{{ Number(service.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-                </span>
-                @if(service.hasDeposit)
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                    {{ service.depositType === 'percentage' ? service.depositAmount + '%' : currencyService.getCurrencySymbol(business.currency || 'NGN') + Number(service.depositAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} deposit
-                  </span>
-                @endif
-              </div>
+                <div class="flex flex-wrap items-center gap-3 text-sm">
+                  <div class="flex items-center gap-2 text-neutral-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-medium">{{ service.formattedDuration }}</span>
+                  </div>
+                  <span class="text-neutral-300">•</span>
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-bold text-neutral-900 text-base">
+                      {{ currencyService.getCurrencySymbol(business.currency || 'NGN') }}{{ Number(service.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                    </span>
+                  </div>
+                  @if(service.hasDeposit)
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+                      {{ service.depositType === 'percentage' ? service.depositAmount + '%' : currencyService.getCurrencySymbol(business.currency || 'NGN') + Number(service.depositAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} deposit
+                    </span>
+                  @endif
+                </div>
               </div>
             </div>
-            <div class="flex items-center gap-2 self-start sm:self-auto">
-              <a href="{{ route('services.edit', { id: service.id }) }}" class="p-2 hover:bg-sand-3 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="Edit">
-                <svg class="w-5 h-5 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-2 self-start sm:self-auto flex-shrink-0">
+              <a href="{{ route('services.edit', { id: service.id }) }}" class="p-2.5 hover:bg-neutral-100 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors" title="Edit">
+                <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
               </a>
               <form method="POST" action="{{ route('services.toggle', { id: service.id }) }}">
                 {{ csrfField() }}
-                <button type="submit" class="p-2 hover:bg-sand-3 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ service.isActive ? 'Disable' : 'Enable' }}">
+                <button type="submit" class="p-2.5 hover:bg-{{ service.isActive ? 'success' : 'neutral' }}/10 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors" title="{{ service.isActive ? 'Disable' : 'Enable' }}">
                   @if(service.isActive)
                     <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                     </svg>
                   @else
-                    <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
                     </svg>
                   @endif
@@ -83,7 +101,7 @@
               </form>
               <form method="POST" action="{{ route('services.destroy', { id: service.id }) }}" onsubmit="return confirm('Delete this service?')">
                 {{ csrfField() }}
-                <button type="submit" class="p-2 hover:bg-error/10 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="Delete">
+                <button type="submit" class="p-2.5 hover:bg-error/10 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors" title="Delete">
                   <svg class="w-5 h-5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                   </svg>
@@ -94,14 +112,19 @@
         @endeach
       </div>
     @else
-      <div class="bg-white border border-sand-7 rounded-xl p-12 text-center">
-        <svg class="w-16 h-16 mx-auto mb-4 text-sand-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-        </svg>
-        <h3 class="text-lg font-medium text-sand-12 mb-1">No services yet</h3>
-        <p class="text-sand-11 mb-6">Add your first service to start accepting bookings</p>
-        <a href="{{ route('services.create') }}" class="inline-flex px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
-          + Add Your First Service
+      <div class="card text-center py-16 px-6">
+        <div class="w-24 h-24 bg-gradient-to-br from-primary/10 to-purple/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-neutral-900 mb-2">No services yet</h3>
+        <p class="text-neutral-600 mb-8 text-lg">Add your first service to start accepting bookings</p>
+        <a href="{{ route('services.create') }}" class="btn-primary inline-flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          Add Your First Service
         </a>
       </div>
     @endif

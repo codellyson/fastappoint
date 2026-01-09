@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colorful Minimalism Design System - Mockup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Instrument Sans', 'sans-serif']
+          },
+          colors: {
+            primary: {
+              DEFAULT: '#0066ff',
+              light: '#3385ff',
+              dark: '#0052cc',
+              50: '#e6f2ff',
+              100: '#b3d9ff',
+            },
+            success: {
+              DEFAULT: '#00c853',
+              light: '#69f0ae',
+              bg: '#e8f5e9',
+            },
+            warning: {
+              DEFAULT: '#ff9500',
+              light: '#ffb84d',
+              bg: '#fff3e0',
+            },
+            error: {
+              DEFAULT: '#ff3b30',
+              light: '#ff6b62',
+              bg: '#ffebee',
+            },
+            info: {
+              DEFAULT: '#00b8d4',
+              light: '#4dd0e1',
+              bg: '#e0f7fa',
+            },
+            purple: '#8b5cf6',
+            pink: '#ec4899',
+            indigo: '#6366f1',
+            teal: '#14b8a6',
+            amber: '#f59e0b',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+    }
+
+    .card-hover {
+      transition: all 0.2s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-primary {
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 14px 0 rgba(0, 102, 255, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .accent-border-primary {
+      border-left: 4px solid #0066ff;
+    }
+
+    .accent-border-success {
+      border-left: 4px solid #00c853;
+    }
+
+    .accent-border-warning {
+      border-left: 4px solid #ff9500;
+    }
+
+    .accent-border-purple {
+      border-left: 4px solid #8b5cf6;
+    }
+
+    .gradient-bg-1 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .gradient-bg-2 {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .gradient-bg-3 {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .nav-link {
+      position: relative;
+      transition: color 0.2s ease;
+    }
+
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #0066ff;
+      border-radius: 3px 3px 0 0;
+    }
+  </style>
+</head>
+<body class="bg-neutral-50 min-h-screen">
+
+  <!-- Navigation -->
+  <header class="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <span class="text-xl font-bold text-neutral-900">FastAppoint</span>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-8">
+          <a href="#" class="nav-link active text-primary text-sm font-semibold">Dashboard</a>
+          <a href="#" class="nav-link text-neutral-600 hover:text-neutral-900 text-sm font-medium">Bookings</a>
+          <a href="#" class="nav-link text-neutral-600 hover:text-neutral-900 text-sm font-medium">Services</a>
+          <a href="#" class="nav-link text-neutral-600 hover:text-neutral-900 text-sm font-medium">Staff</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <button class="p-2 hover:bg-neutral-100 rounded-xl transition-colors">
+            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+          </button>
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+            <span class="text-sm font-semibold text-primary">JD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-neutral-900 mb-2">Design System Mockup</h1>
+      <p class="text-lg text-neutral-600">Colorful Minimalism style for your booking platform</p>
+    </div>
+
+    <!-- Section: Color Palette -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-neutral-900 mb-6">Color Palette</h2>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="space-y-2">
+          <div class="h-20 bg-primary rounded-xl shadow-md"></div>
+          <p class="text-sm font-semibold text-neutral-900">Primary Blue</p>
+          <p class="text-xs text-neutral-600">#0066ff</p>
+        </div>
+        <div class="space-y-2">
+          <div class="h-20 bg-success rounded-xl shadow-md"></div>
+          <p class="text-sm font-semibold text-neutral-900">Success Green</p>
+          <p class="text-xs text-neutral-600">#00c853</p>
+        </div>
+        <div class="space-y-2">
+          <div class="h-20 bg-warning rounded-xl shadow-md"></div>
+          <p class="text-sm font-semibold text-neutral-900">Warning Orange</p>
+          <p class="text-xs text-neutral-600">#ff9500</p>
+        </div>
+        <div class="space-y-2">
+          <div class="h-20 bg-error rounded-xl shadow-md"></div>
+          <p class="text-sm font-semibold text-neutral-900">Error Red</p>
+          <p class="text-xs text-neutral-600">#ff3b30</p>
+        </div>
+        <div class="space-y-2">
+          <div class="h-20 bg-purple rounded-xl shadow-md"></div>
+          <p class="text-sm font-semibold text-neutral-900">Accent Purple</p>
+          <p class="text-xs text-neutral-600">#8b5cf6</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Buttons -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-neutral-900 mb-6">Buttons</h2>
+      <div class="flex flex-wrap gap-4">
+        <button class="btn-primary bg-primary text-white px-6 py-3 rounded-xl font-semibold">
+          Primary Button
+        </button>
+        <button class="border-2 border-primary text-primary px-6 py-3 rounded-xl font-semibold hover:bg-primary/5 transition-colors">
+          Secondary Button
+        </button>
+        <button class="bg-success text-white px-6 py-3 rounded-xl font-semibold hover:bg-success-light transition-colors">
+          Success Button
+        </button>
+        <button class="bg-neutral-100 text-neutral-900 px-6 py-3 rounded-xl font-semibold hover:bg-neutral-200 transition-colors">
+          Ghost Button
+        </button>
+        <button class="bg-error text-white px-6 py-3 rounded-xl font-semibold hover:bg-error-light transition-colors">
+          Danger Button
+        </button>
+      </div>
+    </div>
+
+    <!-- Section: Stat Cards -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-neutral-900 mb-6">Dashboard Stats Cards</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-6 shadow-md card-hover accent-border-primary">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-neutral-600 text-sm font-medium mb-1">Total Bookings</p>
+          <p class="text-3xl font-bold text-neutral-900">142</p>
+          <div class="flex items-center gap-1 mt-3">
+            <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+            </svg>
+            <span class="text-success text-sm font-semibold">12%</span>
+            <span class="text-neutral-500 text-sm">vs last month</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-md card-hover accent-border-success">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-success/10 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-neutral-600 text-sm font-medium mb-1">Revenue</p>
+          <p class="text-3xl font-bold text-neutral-900">₦487k</p>
+          <div class="flex items-center gap-1 mt-3">
+            <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+            </svg>
+            <span class="text-success text-sm font-semibold">23%</span>
+            <span class="text-neutral-500 text-sm">vs last month</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-md card-hover accent-border-warning">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-warning/10 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-neutral-600 text-sm font-medium mb-1">Pending</p>
+          <p class="text-3xl font-bold text-neutral-900">8</p>
+          <div class="flex items-center gap-1 mt-3">
+            <span class="text-warning text-sm font-semibold">Needs attention</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-md card-hover accent-border-purple">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-purple/10 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-neutral-600 text-sm font-medium mb-1">New Clients</p>
+          <p class="text-3xl font-bold text-neutral-900">24</p>
+          <div class="flex items-center gap-1 mt-3">
+            <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+            </svg>
+            <span class="text-success text-sm font-semibold">8%</span>
+            <span class="text-neutral-500 text-sm">vs last month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Status Badges -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-neutral-900 mb-6">Status Badges</h2>
+      <div class="flex flex-wrap gap-3">
+        <span class="px-4 py-2 bg-success-bg text-success rounded-full text-sm font-semibold">
+          Confirmed
+        </span>
+        <span class="px-4 py-2 bg-primary-100 text-primary rounded-full text-sm font-semibold">
+          Completed
+        </span>
+        <span class="px-4 py-2 bg-warning-bg text-warning rounded-full text-sm font-semibold">
+          Pending Payment
+        </span>
+        <span class="px-4 py-2 bg-error-bg text-error rounded-full text-sm font-semibold">
+          Cancelled
+        </span>
+        <span class="px-4 py-2 bg-neutral-100 text-neutral-700 rounded-full text-sm font-semibold">
+          No Show
+        </span>
+      </div>
+    </div>
+
+    <!-- Section: Cards with Content -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-neutral-900 mb-6">Content Cards</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Regular Card -->
+        <div class="bg-white rounded-2xl p-6 shadow-md card-hover border border-neutral-200">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-neutral-900">Recent Bookings</h3>
+            <button class="text-primary text-sm font-semibold hover:text-primary-dark">View all</button>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center gap-4 pb-4 border-b border-neutral-100">
+              <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-semibold text-primary">JD</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-neutral-900 truncate">John Doe</p>
+                <p class="text-sm text-neutral-600">Haircut • Today, 2:00 PM</p>
+              </div>
+              <span class="px-3 py-1 bg-success-bg text-success rounded-full text-xs font-semibold whitespace-nowrap">
+                Confirmed
+              </span>
+            </div>
+            <div class="flex items-center gap-4 pb-4 border-b border-neutral-100">
+              <div class="w-12 h-12 bg-purple/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-semibold text-purple">SA</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-neutral-900 truncate">Sarah Adams</p>
+                <p class="text-sm text-neutral-600">Photoshoot • Tomorrow, 10:00 AM</p>
+              </div>
+              <span class="px-3 py-1 bg-warning-bg text-warning rounded-full text-xs font-semibold whitespace-nowrap">
+                Pending
+              </span>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-teal/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-semibold text-teal">MJ</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-neutral-900 truncate">Michael Johnson</p>
+                <p class="text-sm text-neutral-600">Consultation • Dec 15, 3:00 PM</p>
+              </div>
+              <span class="px-3 py-1 bg-primary-100 text-primary rounded-full text-xs font-semibold whitespace-nowrap">
+                Completed
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accent Border Card -->
+        <div class="bg-white rounded-2xl p-6 shadow-md card-hover accent-border-primary">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-neutral-900">Performance</h3>
+              <p class="text-sm text-neutral-600">Last 30 days</p>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-neutral-700">Booking Rate</span>
+                <span class="text-sm font-bold text-neutral-900">87%</span>
+              </div>
+              <div class="w-full bg-neutral-100 rounded-full h-2">
+                <div class="bg-primary h-2 rounded-full" style="width: 87%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-neutral-700">Customer Satisfaction</span>
+                <span class="text-sm font-bold text-neutral-900">94%</span>
+              </div>
+              <div class="w-full bg-neutral-100 rounded-full h-2">
+                <div class="bg-success h-2 rounded-full" style="width: 94%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-neutral-700">Repeat Customers</span>
+                <span class="text-sm font-bold text-neutral-900">72%</span>
+              </div>
+              <div class="w-full bg-neutral-100 rounded-full h-2">
+                <div class="bg-purple h-2 rounded-full" style="width: 72%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Form Elements -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-neutral-900 mb-6">Form Elements</h2>
+      <div class="bg-white rounded-2xl p-8 shadow-md border border-neutral-200 max-w-2xl">
+        <h3 class="text-xl font-bold text-neutral-900 mb-6">Create New Booking</h3>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-semibold text-neutral-900 mb-2">Client Name</label>
+            <input
+              type="text"
+              placeholder="Enter client name"
+              class="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-neutral-900 mb-2">Email Address</label>
+            <input
+              type="email"
+              placeholder="client@example.com"
+              class="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-neutral-900 mb-2">Service</label>
+            <select class="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all">
+              <option>Select a service</option>
+              <option>Haircut - ₦5,000</option>
+              <option>Photoshoot - ₦25,000</option>
+              <option>Consultation - ₦10,000</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-neutral-900 mb-2">Date</label>
+              <input
+                type="date"
+                class="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-neutral-900 mb-2">Time</label>
+              <input
+                type="time"
+                class="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-neutral-900 mb-2">Notes (Optional)</label>
+            <textarea
+              rows="3"
+              placeholder="Add any special instructions..."
+              class="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all resize-none"
+            ></textarea>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="send-reminder"
+              class="w-5 h-5 text-primary border-2 border-neutral-300 rounded-md focus:ring-4 focus:ring-primary/10"
+            />
+            <label for="send-reminder" class="text-sm font-medium text-neutral-700">Send reminder email</label>
+          </div>
+
+          <div class="flex gap-3 pt-4">
+            <button class="btn-primary flex-1 bg-primary text-white px-6 py-3 rounded-xl font-semibold">
+              Create Booking
+            </button>
+            <button class="flex-1 bg-neutral-100 text-neutral-900 px-6 py-3 rounded-xl font-semibold hover:bg-neutral-200 transition-colors">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Service Cards -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-neutral-900 mb-6">Service Cards</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl overflow-hidden shadow-md card-hover border border-neutral-200">
+          <div class="h-40 bg-gradient-to-br from-blue-400 to-blue-600"></div>
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-neutral-900">Haircut & Styling</h3>
+              <span class="px-3 py-1 bg-primary-50 text-primary rounded-full text-xs font-semibold">Active</span>
+            </div>
+            <p class="text-neutral-600 text-sm mb-4">Professional haircut with styling consultation</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-2xl font-bold text-neutral-900">₦5,000</p>
+                <p class="text-xs text-neutral-500">60 minutes</p>
+              </div>
+              <button class="px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition-colors">
+                Book Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl overflow-hidden shadow-md card-hover border border-neutral-200">
+          <div class="h-40 bg-gradient-to-br from-purple-400 to-pink-600"></div>
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-neutral-900">Portrait Photoshoot</h3>
+              <span class="px-3 py-1 bg-primary-50 text-primary rounded-full text-xs font-semibold">Active</span>
+            </div>
+            <p class="text-neutral-600 text-sm mb-4">Professional portrait photography session</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-2xl font-bold text-neutral-900">₦25,000</p>
+                <p class="text-xs text-neutral-500">2 hours</p>
+              </div>
+              <button class="px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition-colors">
+                Book Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl overflow-hidden shadow-md card-hover border border-neutral-200">
+          <div class="h-40 bg-gradient-to-br from-teal-400 to-green-600"></div>
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-neutral-900">Business Consultation</h3>
+              <span class="px-3 py-1 bg-primary-50 text-primary rounded-full text-xs font-semibold">Active</span>
+            </div>
+            <p class="text-neutral-600 text-sm mb-4">Strategic business planning session</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-2xl font-bold text-neutral-900">₦10,000</p>
+                <p class="text-xs text-neutral-500">45 minutes</p>
+              </div>
+              <button class="px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition-colors">
+                Book Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Empty States -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-neutral-900 mb-6">Empty State</h2>
+      <div class="bg-white rounded-2xl p-12 shadow-md border border-neutral-200 text-center">
+        <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-neutral-900 mb-2">No bookings yet</h3>
+        <p class="text-neutral-600 mb-6 max-w-md mx-auto">
+          Share your booking link to start receiving appointments from your clients
+        </p>
+        <button class="btn-primary bg-primary text-white px-6 py-3 rounded-xl font-semibold">
+          Share Booking Link
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="bg-white border-t border-neutral-200 mt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <p class="text-center text-neutral-600 text-sm">
+        Colorful Minimalism Design System Preview • Created for FastAppoint
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

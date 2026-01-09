@@ -4,41 +4,44 @@
 
 @section('content')
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Staff</h1>
-        <p class="text-sm sm:text-base text-sand-11 mt-1">Manage your team members</p>
+        <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900">Staff</h1>
+        <p class="text-base sm:text-lg text-neutral-600 mt-2">Manage your team members</p>
       </div>
-      <a href="{{ route('staff.create') }}" class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm sm:text-base min-h-[44px] flex items-center justify-center sm:inline-flex">
-        + Add Staff
+      <a href="{{ route('staff.create') }}" class="btn-primary inline-flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Add Staff
       </a>
     </div>
 
     @if(staff.length > 0)
-      <div class="space-y-3 sm:space-y-4">
+      <div class="space-y-4">
         @each(member in staff)
-          <div class="bg-white border border-sand-7 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 {{ !member.isActive ? 'opacity-60' : '' }}">
-            <div class="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
-              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-base sm:text-lg flex-shrink-0">
+          <div class="card card-hover card-accent-teal shadow-lg p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 {{ !member.isActive ? 'opacity-60' : '' }}">
+            <div class="flex items-start sm:items-center gap-4 flex-1 min-w-0">
+              <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-teal/20 to-teal/30 flex items-center justify-center text-teal font-bold text-lg sm:text-xl flex-shrink-0 shadow-md">
                 {{ member.fullName.charAt(0).toUpperCase() }}
               </div>
               <div class="flex-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h3 class="font-medium text-sand-12 text-sm sm:text-base">{{ member.fullName }}</h3>
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ member.role === 'owner' ? 'bg-primary/10 text-primary' : member.role === 'admin' ? 'bg-warning/10 text-warning' : 'bg-sand-4 text-sand-11' }}">
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                  <h3 class="font-bold text-neutral-900 text-base sm:text-lg">{{ member.fullName }}</h3>
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ member.role === 'owner' ? 'bg-primary/10 text-primary border border-primary/20' : member.role === 'admin' ? 'bg-warning/10 text-warning border border-warning/20' : 'bg-neutral-100 text-neutral-700 border border-neutral-200' }}">
                     {{ member.role.charAt(0).toUpperCase() + member.role.slice(1) }}
                   </span>
                   @if(!member.isActive)
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-error/10 text-error">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-error/10 text-error border border-error/20">
                       Inactive
                     </span>
                   @endif
                 </div>
-                <p class="text-xs sm:text-sm text-sand-11 mt-0.5 truncate">{{ member.email }}</p>
+                <p class="text-sm text-neutral-600 mb-2 truncate">{{ member.email }}</p>
                 @if(member.services && member.services.length > 0)
-                  <div class="flex flex-wrap gap-1 mt-2">
+                  <div class="flex flex-wrap gap-2 mt-2">
                     @each(service in member.services)
-                      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-sand-3 text-sand-11">
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-teal/10 text-teal border border-teal/20">
                         {{ service.name }}
                       </span>
                     @endeach
@@ -46,23 +49,23 @@
                 @endif
               </div>
             </div>
-            <div class="flex items-center gap-2 self-start sm:self-auto">
-              <a href="{{ route('staff.edit', { id: member.id }) }}" class="p-2 hover:bg-sand-3 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="Edit">
-                <svg class="w-5 h-5 text-sand-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-2 self-start sm:self-auto flex-shrink-0">
+              <a href="{{ route('staff.edit', { id: member.id }) }}" class="p-2.5 hover:bg-neutral-100 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors" title="Edit">
+                <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
               </a>
               @if(member.role !== 'owner')
                 <form method="POST" action="{{ route('staff.toggle', { id: member.id }) }}">
                   {{ csrfField() }}
-                  <button type="submit" class="p-2 hover:bg-sand-3 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ member.isActive ? 'Deactivate' : 'Activate' }}">
+                  <button type="submit" class="p-2.5 hover:bg-{{ member.isActive ? 'success' : 'neutral' }}/10 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors" title="{{ member.isActive ? 'Deactivate' : 'Activate' }}">
                     @if(member.isActive)
                       <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                       </svg>
                     @else
-                      <svg class="w-5 h-5 text-sand-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
                       </svg>
                     @endif
@@ -70,7 +73,7 @@
                 </form>
                 <form method="POST" action="{{ route('staff.destroy', { id: member.id }) }}" onsubmit="return confirm('Remove this staff member?')">
                   {{ csrfField() }}
-                  <button type="submit" class="p-2 hover:bg-error/10 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="Remove">
+                  <button type="submit" class="p-2.5 hover:bg-error/10 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors" title="Remove">
                     <svg class="w-5 h-5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
@@ -82,14 +85,19 @@
         @endeach
       </div>
     @else
-      <div class="bg-white border border-sand-7 rounded-xl p-12 text-center">
-        <svg class="w-16 h-16 mx-auto mb-4 text-sand-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-        </svg>
-        <h3 class="text-lg font-medium text-sand-12 mb-1">No staff members yet</h3>
-        <p class="text-sand-11 mb-6">Add team members to assign services and manage schedules</p>
-        <a href="{{ route('staff.create') }}" class="inline-flex px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
-          + Add Your First Staff Member
+      <div class="card text-center py-16 px-6">
+        <div class="w-24 h-24 bg-gradient-to-br from-teal/10 to-teal/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-neutral-900 mb-2">No staff members yet</h3>
+        <p class="text-neutral-600 mb-8 text-lg">Add team members to assign services and manage schedules</p>
+        <a href="{{ route('staff.create') }}" class="btn-primary inline-flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          Add Your First Staff Member
         </a>
       </div>
     @endif

@@ -4,75 +4,79 @@
 
 @section('content')
   <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-      <a href="{{ route('staff.index') }}" class="inline-flex items-center text-sm text-sand-11 hover:text-sand-12 mb-4">
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    <div class="mb-6">
+      <a href="{{ route('staff.index') }}" class="text-sm text-primary hover:text-primary-dark font-semibold inline-flex items-center gap-2 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
         Back to Staff
       </a>
-      <h1 class="text-2xl font-bold text-sand-12">Edit Staff Member</h1>
-      <p class="text-sand-11 mt-1">Update {{ staffMember.fullName }}'s details</p>
     </div>
 
-    <form method="POST" action="{{ route('staff.update', { id: staffMember.id }) }}" class="bg-white border border-sand-7 rounded-xl p-6 space-y-6">
+    <div class="card shadow-lg">
+      <div class="p-6 border-b border-neutral-200">
+        <h1 class="text-2xl font-bold text-neutral-900">Edit Staff Member</h1>
+        <p class="text-sm text-neutral-600 mt-1">Update {{ staffMember.fullName }}'s details</p>
+      </div>
+
+      <form method="POST" action="{{ route('staff.update', { id: staffMember.id }) }}" class="p-6 space-y-6">
       {{ csrfField() }}
 
       <div>
-        <label for="fullName" class="block text-sm font-medium text-sand-12 mb-1">Full Name *</label>
+        <label for="fullName" class="block text-sm font-medium text-neutral-900 mb-2">Full Name *</label>
         <input
           type="text"
           id="fullName"
           name="fullName"
           value="{{ old('fullName') || staffMember.fullName }}"
           required
-          class="w-full px-4 py-2.5 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="w-full px-4 py-3 input-field"
         />
       </div>
 
       <div>
-        <label for="email" class="block text-sm font-medium text-sand-12 mb-1">Email *</label>
+        <label for="email" class="block text-sm font-medium text-neutral-900 mb-2">Email *</label>
         <input
           type="email"
           id="email"
           name="email"
           value="{{ old('email') || staffMember.email }}"
           required
-          class="w-full px-4 py-2.5 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="w-full px-4 py-3 input-field"
         />
       </div>
 
       <div>
-        <label for="phone" class="block text-sm font-medium text-sand-12 mb-1">Phone</label>
+        <label for="phone" class="block text-sm font-medium text-neutral-900 mb-2">Phone</label>
         <input
           type="tel"
           id="phone"
           name="phone"
           value="{{ old('phone') || staffMember.phone || '' }}"
-          class="w-full px-4 py-2.5 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="w-full px-4 py-3 input-field"
         />
       </div>
 
       <div>
-        <label for="password" class="block text-sm font-medium text-sand-12 mb-1">New Password</label>
+        <label for="password" class="block text-sm font-medium text-neutral-900 mb-2">New Password</label>
         <input
           type="password"
           id="password"
           name="password"
           minlength="8"
-          class="w-full px-4 py-2.5 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="w-full px-4 py-3 input-field"
           placeholder="Leave blank to keep current password"
         />
       </div>
 
       @if(staffMember.role !== 'owner')
         <div>
-          <label for="role" class="block text-sm font-medium text-sand-12 mb-1">Role *</label>
+          <label for="role" class="block text-sm font-medium text-neutral-900 mb-2">Role *</label>
           <select
             id="role"
             name="role"
             required
-            class="w-full px-4 py-2.5 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
+            class="w-full px-4 py-3 input-field"
           >
             <option value="staff" {{ staffMember.role === 'staff' ? 'selected' : '' }}>Staff</option>
             <option value="admin" {{ staffMember.role === 'admin' ? 'selected' : '' }}>Admin</option>
@@ -81,8 +85,8 @@
       @else
         <input type="hidden" name="role" value="owner" />
         <div>
-          <label class="block text-sm font-medium text-sand-12 mb-1">Role</label>
-          <div class="px-4 py-2.5 bg-sand-2 border border-sand-6 rounded-lg text-sand-11">
+          <label class="block text-sm font-medium text-neutral-900 mb-2">Role</label>
+          <div class="px-4 py-2.5 bg-neutral-100 border border-neutral-200 rounded-lg text-neutral-600">
             Owner (cannot be changed)
           </div>
         </div>
@@ -90,20 +94,20 @@
 
       @if(services.length > 0)
         <div>
-          <label class="block text-sm font-medium text-sand-12 mb-2">Assigned Services</label>
-          <div class="space-y-2 max-h-48 overflow-y-auto border border-sand-6 rounded-lg p-3">
+          <label class="block text-sm font-medium text-neutral-900 mb-2">Assigned Services</label>
+          <div class="space-y-2 max-h-48 overflow-y-auto border border-neutral-200 rounded-lg p-3">
             @each(service in services)
-              <label class="flex items-center gap-3 p-2 rounded hover:bg-sand-2 cursor-pointer">
+              <label class="flex items-center gap-3 p-2 rounded hover:bg-neutral-100 cursor-pointer">
                 <input
                   type="checkbox"
                   name="serviceIds[]"
                   value="{{ service.id }}"
                   {{ selectedServiceIds.includes(service.id) ? 'checked' : '' }}
-                  class="w-4 h-4 text-primary border-sand-7 rounded focus:ring-primary"
+                  class="w-4 h-4 text-primary border-neutral-200 rounded focus:ring-primary"
                 />
                 <div>
-                  <span class="text-sm font-medium text-sand-12">{{ service.name }}</span>
-                  <span class="text-xs text-sand-11 ml-2">{{ service.formattedDuration }}</span>
+                  <span class="text-sm font-medium text-neutral-900">{{ service.name }}</span>
+                  <span class="text-xs text-neutral-600 ml-2">{{ service.formattedDuration }}</span>
                 </div>
               </label>
             @endeach
@@ -111,20 +115,22 @@
         </div>
       @endif
 
-      <div class="flex items-center gap-3 pt-4">
-        <button type="submit" class="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90">
+      <div class="pt-4 flex gap-3">
+        <button type="submit" class="btn-primary">
           Save Changes
         </button>
-        <a href="{{ route('staff.index') }}" class="px-6 py-2.5 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2">
+        <a href="{{ route('staff.index') }}" class="btn-ghost">
           Cancel
         </a>
       </div>
-    </form>
+      </form>
+    </div>
 
-    <div class="mt-8 bg-white border border-sand-7 rounded-xl p-6">
-      <h2 class="text-lg font-semibold text-sand-12 mb-2">Staff Availability</h2>
-      <p class="text-sm text-sand-11 mb-4">Set specific working hours for this staff member</p>
-      <a href="{{ route('staff.availability', { id: staffMember.id }) }}" class="inline-flex items-center px-4 py-2 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2">
+    <div class="mt-8 card shadow-lg">
+      <div class="p-6">
+        <h2 class="text-lg font-semibold text-neutral-900 mb-2">Staff Availability</h2>
+        <p class="text-sm text-neutral-600 mb-4">Set specific working hours for this staff member</p>
+        <a href="{{ route('staff.availability', { id: staffMember.id }) }}" class="inline-flex items-center px-4 py-2 border border-neutral-200 text-neutral-900 font-medium rounded-lg hover:bg-neutral-100 transition-colors">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
         </svg>

@@ -4,73 +4,82 @@
 
 @section('content')
   <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-    <div class="mb-6 sm:mb-8">
-      <a href="{{ route('settings.index') }}" class="inline-flex items-center text-xs sm:text-sm text-sand-11 hover:text-sand-12 mb-3 sm:mb-4 min-h-[44px]">
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    <div class="mb-6">
+      <a href="{{ route('settings.index') }}" class="text-sm text-primary hover:text-primary-dark font-semibold inline-flex items-center gap-2 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
         Back to Settings
       </a>
-      <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Cancellation Policy</h1>
-      <p class="text-sm sm:text-base text-sand-11 mt-1">Set rules for cancellations and rescheduling</p>
     </div>
 
-    <form method="POST" action="{{ route('settings.cancellation.update') }}" class="bg-white border border-sand-7 rounded-xl p-4 sm:p-6 space-y-4 sm:space-y-6">
-      {{ csrfField() }}
+    <div class="card shadow-lg">
+      <div class="p-6 border-b border-neutral-200">
+        <h1 class="text-2xl font-bold text-neutral-900">Cancellation Policy</h1>
+        <p class="text-sm text-neutral-600 mt-1">Set rules for cancellations and rescheduling</p>
+      </div>
 
-      <div>
-        <label for="cancellationHours" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Cancellation Notice Period *</label>
-        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-          <input
-            type="number"
-            id="cancellationHours"
-            name="cancellationHours"
-            value="{{ business.cancellationHours }}"
-            min="0"
-            max="168"
-            required
-            class="w-full sm:w-24 px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[44px]"
-          />
-          <span class="text-xs sm:text-sm text-sand-11">hours before appointment</span>
+      <form method="POST" action="{{ route('settings.cancellation.update') }}" class="p-6 space-y-6">
+        {{ csrfField() }}
+
+        <div>
+          <label for="cancellationHours" class="block text-sm font-medium text-neutral-900 mb-2">
+            Cancellation Notice Period <span class="text-error">*</span>
+          </label>
+          <div class="flex items-center gap-3">
+            <input
+              type="number"
+              id="cancellationHours"
+              name="cancellationHours"
+              value="{{ business.cancellationHours }}"
+              min="0"
+              max="168"
+              required
+              class="w-24 px-4 py-3 input-field"
+            />
+            <span class="text-sm text-neutral-600">hours before appointment</span>
+          </div>
+          <p class="text-xs text-neutral-500 mt-1">Customers must cancel at least this many hours in advance. Set to 0 for no restriction.</p>
         </div>
-        <p class="text-xs text-sand-11 mt-1">Customers must cancel at least this many hours in advance. Set to 0 for no restriction.</p>
-      </div>
 
-      <div>
-        <label for="cancellationPolicy" class="block text-xs sm:text-sm font-medium text-sand-12 mb-1">Policy Description</label>
-        <textarea
-          id="cancellationPolicy"
-          name="cancellationPolicy"
-          rows="4"
-          class="w-full px-3 sm:px-4 py-2.5 border border-sand-7 rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
-          placeholder="Describe your cancellation and refund policy..."
-        >{{ business.cancellationPolicy || '' }}</textarea>
-        <p class="text-xs text-sand-11 mt-1">This will be shown to customers when they book</p>
-      </div>
-
-      <div class="bg-sand-2 rounded-lg p-3 sm:p-4">
-        <h4 class="font-medium text-sand-12 mb-2 text-sm sm:text-base">Policy Preview</h4>
-        <div class="text-xs sm:text-sm text-sand-11">
-          @if(business.cancellationHours > 0)
-            <p>• Cancellations must be made at least <strong>{{ business.cancellationHours }} hours</strong> before the appointment</p>
-          @else
-            <p>• Cancellations can be made at any time before the appointment</p>
-          @endif
-          @if(business.cancellationPolicy)
-            <p class="mt-2">{{ business.cancellationPolicy }}</p>
-          @endif
+        <div>
+          <label for="cancellationPolicy" class="block text-sm font-medium text-neutral-900 mb-2">
+            Policy Description <span class="text-neutral-500">(optional)</span>
+          </label>
+          <textarea
+            id="cancellationPolicy"
+            name="cancellationPolicy"
+            rows="4"
+            class="w-full px-4 py-3 input-field resize-none"
+            placeholder="Describe your cancellation and refund policy..."
+          >{{ business.cancellationPolicy || '' }}</textarea>
+          <p class="text-xs text-neutral-500 mt-1">This will be shown to customers when they book</p>
         </div>
-      </div>
 
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4">
-        <button type="submit" class="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm sm:text-base min-h-[44px]">
-          Save Changes
-        </button>
-        <a href="{{ route('settings.index') }}" class="px-6 py-2.5 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2 text-sm sm:text-base text-center min-h-[44px] flex items-center justify-center">
-          Cancel
-        </a>
-      </div>
-    </form>
+        <div class="bg-warning-bg border-l-4 border-l-warning rounded-lg p-4">
+          <h4 class="font-semibold text-neutral-900 mb-2">Policy Preview</h4>
+          <div class="text-sm text-neutral-600">
+            @if(business.cancellationHours > 0)
+              <p>• Cancellations must be made at least <strong>{{ business.cancellationHours }} hours</strong> before the appointment</p>
+            @else
+              <p>• Cancellations can be made at any time before the appointment</p>
+            @endif
+            @if(business.cancellationPolicy)
+              <p class="mt-2">{{ business.cancellationPolicy }}</p>
+            @endif
+          </div>
+        </div>
+
+        <div class="pt-4 flex gap-3">
+          <button type="submit" class="btn-primary">
+            Save Changes
+          </button>
+          <a href="{{ route('settings.index') }}" class="btn-ghost">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
   </div>
 @endsection
 

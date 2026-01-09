@@ -1,23 +1,27 @@
-<header class="bg-white border-b border-sand-4 sticky top-0 z-50">
+<header class="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
-      <a href="{{ auth.isAuthenticated ? route('dashboard') : route('home') }}" class="flex items-center gap-2">
-        <img src="/logo/svg/favicon.svg" alt="FastAppoint" class="h-8 w-8" />
-        <span class="text-xl font-semibold text-sand-12">FastAppoint</span>
+      <a href="{{ auth.isAuthenticated ? route('dashboard') : route('home') }}" class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-sm">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <span class="text-xl font-bold text-neutral-900">FastAppoint</span>
       </a>
 
       <nav class="hidden md:flex items-center gap-6">
         @if(auth.isAuthenticated)
-          <a href="{{ route('dashboard') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">Dashboard</a>
-          <a href="{{ route('bookings.index') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">Bookings</a>
-          <a href="{{ route('services.index') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">Services</a>
-          <a href="{{ route('packages.index') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">Packages</a>
-          <a href="{{ route('portfolio.index') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">Portfolio</a>
-          <a href="{{ route('staff.index') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">Staff</a>
+          <a href="{{ route('dashboard') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Dashboard</a>
+          <a href="{{ route('bookings.index') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Bookings</a>
+          <a href="{{ route('services.index') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Services</a>
+          <a href="{{ route('packages.index') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Packages</a>
+          <a href="{{ route('portfolio.index') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Portfolio</a>
+          <a href="{{ route('staff.index') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Staff</a>
         @else
-          <a href="/" class="text-sand-11 hover:text-sand-12 text-sm font-medium">Home</a>
+          <a href="/" class="text-neutral-600 hover:text-primary text-sm font-medium">Home</a>
           <a href="{{ route('blog.index') }}" class="text-primary text-sm font-medium">Blog</a>
-          <a href="{{ route('pricing') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">Pricing</a>
+          <a href="{{ route('pricing') }}" class="text-neutral-600 hover:text-primary text-sm font-medium">Pricing</a>
         @endif
       </nav>
 
@@ -26,13 +30,13 @@
           {{-- Mobile Menu Button --}}
           <button
             @click="menuOpen = !menuOpen"
-            class="md:hidden p-2.5 rounded-lg hover:bg-sand-2 transition-colors"
+            class="md:hidden p-2.5 rounded-lg hover:bg-neutral-100 transition-colors"
             aria-label="Toggle menu"
           >
-            <svg x-show="!menuOpen" class="w-6 h-6 text-sand-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg x-show="!menuOpen" class="w-6 h-6 text-neutral-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
-            <svg x-show="menuOpen" x-cloak class="w-6 h-6 text-sand-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg x-show="menuOpen" x-cloak class="w-6 h-6 text-neutral-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
           </button>
@@ -48,16 +52,16 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 -translate-y-1"
-            class="absolute top-16 left-0 right-0 md:hidden bg-white border-b border-sand-4 shadow-lg"
+            class="absolute top-16 left-0 right-0 md:hidden bg-white border-b border-neutral-200 shadow-lg"
           >
             <div class="px-4 py-2 space-y-1">
-              <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-sm font-medium text-sand-12 hover:bg-sand-2 rounded-lg">Dashboard</a>
-              <a href="{{ route('bookings.index') }}" class="block px-4 py-3 text-sm font-medium text-sand-12 hover:bg-sand-2 rounded-lg">Bookings</a>
-              <a href="{{ route('services.index') }}" class="block px-4 py-3 text-sm font-medium text-sand-12 hover:bg-sand-2 rounded-lg">Services</a>
-              <a href="{{ route('packages.index') }}" class="block px-4 py-3 text-sm font-medium text-sand-12 hover:bg-sand-2 rounded-lg">Packages</a>
-              <a href="{{ route('portfolio.index') }}" class="block px-4 py-3 text-sm font-medium text-sand-12 hover:bg-sand-2 rounded-lg">Portfolio</a>
-              <a href="{{ route('staff.index') }}" class="block px-4 py-3 text-sm font-medium text-sand-12 hover:bg-sand-2 rounded-lg">Staff</a>
-              <a href="{{ route('time-off.index') }}" class="block px-4 py-3 text-sm font-medium text-sand-12 hover:bg-sand-2 rounded-lg">Time Off</a>
+              <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Dashboard</a>
+              <a href="{{ route('bookings.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Bookings</a>
+              <a href="{{ route('services.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Services</a>
+              <a href="{{ route('packages.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Packages</a>
+              <a href="{{ route('portfolio.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Portfolio</a>
+              <a href="{{ route('staff.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Staff</a>
+              <a href="{{ route('time-off.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Time Off</a>
             </div>
           </div>
 
@@ -65,13 +69,13 @@
           <div class="relative">
             <button
               @click="userMenuOpen = !userMenuOpen"
-              class="flex items-center gap-2 p-2 hover:bg-sand-2 rounded-lg transition-colors min-w-[44px] min-h-[44px]"
+              class="flex items-center gap-2 p-2 hover:bg-neutral-100 rounded-lg transition-colors min-w-[44px] min-h-[44px]"
               aria-label="User menu"
             >
               <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
                 <span class="text-sm font-medium text-primary">{{ auth.user.fullName.charAt(0).toUpperCase() }}</span>
               </div>
-              <svg class="w-4 h-4 text-sand-11 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 text-neutral-600 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
             </button>
@@ -85,13 +89,13 @@
               x-transition:leave="transition ease-in duration-150"
               x-transition:leave-start="opacity-100 translate-y-0"
               x-transition:leave-end="opacity-0 -translate-y-1"
-              class="absolute right-0 mt-2 w-56 sm:w-48 bg-white border border-sand-4 rounded-lg shadow-lg py-1 z-50"
+              class="absolute right-0 mt-2 w-56 sm:w-48 bg-white border border-neutral-200 rounded-lg shadow-lg py-1 z-50"
             >
-              <div class="px-4 py-3 border-b border-sand-6">
-                <p class="text-sm font-medium text-sand-12 truncate">{{ auth.user.fullName }}</p>
-                <p class="text-xs text-sand-11 truncate">{{ auth.user.email }}</p>
+              <div class="px-4 py-3 border-b border-neutral-200">
+                <p class="text-sm font-medium text-neutral-900 truncate">{{ auth.user.fullName }}</p>
+                <p class="text-xs text-neutral-600 truncate">{{ auth.user.email }}</p>
               </div>
-              <a href="{{ route('subscriptions.manage') }}" class="block px-4 py-2.5 text-sm text-sand-12 hover:bg-sand-2 min-h-[44px] flex items-center">
+              <a href="{{ route('subscriptions.manage') }}" class="block px-4 py-2.5 text-sm text-neutral-900 hover:bg-neutral-100 min-h-[44px] flex items-center">
                 <span class="inline-flex items-center gap-1.5">
                   <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
@@ -99,13 +103,13 @@
                   Subscription
                 </span>
               </a>
-              <a href="{{ route('featured.index') }}" class="block px-4 py-2.5 text-sm text-sand-12 hover:bg-sand-2 min-h-[44px] flex items-center">
+              <a href="{{ route('featured.index') }}" class="block px-4 py-2.5 text-sm text-neutral-900 hover:bg-neutral-100 min-h-[44px] flex items-center">
                 <span class="inline-flex items-center gap-1.5">
                   <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                   Get Featured
                 </span>
               </a>
-              <a href="{{ route('settings.index') }}" class="block px-4 py-2.5 text-sm text-sand-12 hover:bg-sand-2 min-h-[44px] flex items-center">Settings</a>
+              <a href="{{ route('settings.index') }}" class="block px-4 py-2.5 text-sm text-neutral-900 hover:bg-neutral-100 min-h-[44px] flex items-center">Settings</a>
               <form method="POST" action="{{ route('auth.logout') }}">
                 {{ csrfField() }}
                 <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-error hover:bg-error/5 min-h-[44px]">Logout</button>
@@ -116,13 +120,13 @@
           {{-- Mobile Menu Button --}}
           <button
             @click="menuOpen = !menuOpen"
-            class="md:hidden p-2.5 rounded-lg hover:bg-sand-2 transition-colors"
+            class="md:hidden p-2.5 rounded-lg hover:bg-neutral-100 transition-colors"
             aria-label="Toggle menu"
           >
-            <svg x-show="!menuOpen" class="w-6 h-6 text-sand-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg x-show="!menuOpen" class="w-6 h-6 text-neutral-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
-            <svg x-show="menuOpen" x-cloak class="w-6 h-6 text-sand-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg x-show="menuOpen" x-cloak class="w-6 h-6 text-neutral-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
           </button>
@@ -138,16 +142,16 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 -translate-y-1"
-            class="absolute top-16 left-0 right-0 md:hidden bg-white border-b border-sand-4 shadow-lg"
+            class="absolute top-16 left-0 right-0 md:hidden bg-white border-b border-neutral-200 shadow-lg"
           >
             <div class="px-4 py-2 space-y-1">
-              <a href="/" class="block px-4 py-3 text-sm font-medium text-sand-12 hover:bg-sand-2 rounded-lg">Home</a>
-              <a href="{{ route('blog.index') }}" class="block px-4 py-3 text-sm font-medium text-primary hover:bg-sand-2 rounded-lg">Blog</a>
-              <a href="{{ route('pricing') }}" class="block px-4 py-3 text-sm font-medium text-sand-12 hover:bg-sand-2 rounded-lg">Pricing</a>
+              <a href="/" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Home</a>
+              <a href="{{ route('blog.index') }}" class="block px-4 py-3 text-sm font-medium text-primary hover:bg-neutral-100 rounded-lg">Blog</a>
+              <a href="{{ route('pricing') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Pricing</a>
             </div>
           </div>
 
-          <a href="{{ route('auth.login.show') }}" class="text-sand-11 hover:text-sand-12 text-sm font-medium">
+          <a href="{{ route('auth.login.show') }}" class="text-neutral-600 hover:text-primary text-sm font-medium">
             Login
           </a>
           <a href="{{ route('auth.signup.show') }}" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90">

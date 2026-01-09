@@ -4,74 +4,84 @@
 
 @section('content')
   <div class="py-8 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-    <div class="mb-8">
-      <a href="{{ route('settings.theme') }}" class="inline-flex items-center gap-2 text-sand-11 hover:text-sand-12 mb-4">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div class="mb-6">
+      <a href="{{ route('settings.theme') }}" class="text-sm text-primary hover:text-primary-dark font-semibold inline-flex items-center gap-2 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
         Back to Theme Settings
       </a>
-      <h1 class="text-2xl font-bold text-sand-12">Content & Gallery</h1>
-      <p class="text-sand-11 mt-1">Add custom content to your booking page</p>
+    </div>
+
+    <div class="mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900">Content & Gallery</h1>
+      <p class="text-sm text-neutral-600 mt-1">Add custom content to your booking page</p>
     </div>
 
     @if(flashMessages.has('success'))
-      <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-green-800">
-        {{ flashMessages.get('success') }}
+      <div class="mb-6 bg-success-bg border-l-4 border-l-success text-success rounded-xl p-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="font-semibold">{{ flashMessages.get('success') }}</span>
+        </div>
       </div>
     @endif
 
     <form action="{{ route('settings.theme.content.update') }}" method="POST" class="space-y-6">
       {{ csrfField() }}
 
-      <div class="bg-white border border-sand-7 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-sand-12 mb-6">Tagline</h2>
+      <div class="bg-white border border-neutral-200 rounded-xl p-6">
+        <h2 class="text-lg font-semibold text-neutral-900 mb-6">Tagline</h2>
         <div>
-          <label class="block text-sm font-medium text-sand-12 mb-2">Business Tagline</label>
+          <label class="block text-sm font-medium text-neutral-900 mb-2">Business Tagline</label>
           <input
             type="text"
             name="tagline"
             value="{{ theme?.tagline || '' }}"
             maxlength="150"
             placeholder="Your perfect look, just a click away"
-            class="w-full px-4 py-2.5 border border-sand-6 rounded-lg"
+            class="input-field"
           />
-          <p class="text-xs text-sand-11 mt-1">A short, catchy phrase that appears below your business name (max 150 characters)</p>
+          <p class="text-xs text-neutral-500 mt-1">A short, catchy phrase that appears below your business name (max 150 characters)</p>
         </div>
       </div>
 
-      <div class="bg-white border border-sand-7 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-sand-12 mb-6">About Section</h2>
+      <div class="bg-white border border-neutral-200 rounded-xl p-6">
+        <h2 class="text-lg font-semibold text-neutral-900 mb-6">About Section</h2>
         <div>
-          <label class="block text-sm font-medium text-sand-12 mb-2">About Your Business</label>
+          <label class="block text-sm font-medium text-neutral-900 mb-2">About Your Business</label>
           <textarea
             name="aboutText"
             rows="6"
             maxlength="1000"
             placeholder="Tell your customers about your business, your story, and what makes you special..."
-            class="w-full px-4 py-3 border border-sand-6 rounded-lg resize-none"
+            class="input-field resize-none"
           >{{ theme?.aboutText || '' }}</textarea>
-          <p class="text-xs text-sand-11 mt-1">This appears in the "About" section on your booking page (max 1000 characters)</p>
+          <p class="text-xs text-neutral-500 mt-1">This appears in the "About" section on your booking page (max 1000 characters)</p>
         </div>
       </div>
 
-      <div class="bg-white border border-sand-7 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-sand-12 mb-6">Gallery Images</h2>
+      <div class="bg-white border border-neutral-200 rounded-xl p-6">
+        <h2 class="text-lg font-semibold text-neutral-900 mb-6">Gallery Images</h2>
         <div>
-          <label class="block text-sm font-medium text-sand-12 mb-2">Image URLs</label>
+          <label class="block text-sm font-medium text-neutral-900 mb-2">Image URLs</label>
           <textarea
             name="galleryImages"
             rows="5"
             placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
-            class="w-full px-4 py-3 border border-sand-6 rounded-lg resize-none font-mono text-sm"
+            class="input-field resize-none font-mono text-sm"
           >{{ theme?.galleryImages ? theme.galleryImages.join(',') : '' }}</textarea>
-          <p class="text-xs text-sand-11 mt-1">Enter image URLs separated by commas or new lines. These will appear in a gallery on your booking page.</p>
+          <p class="text-xs text-neutral-500 mt-1">Enter image URLs separated by commas or new lines. These will appear in a gallery on your booking page.</p>
         </div>
 
         @if(theme?.galleryImages && theme.galleryImages.length > 0)
           <div class="mt-6">
-            <h3 class="text-sm font-medium text-sand-12 mb-3">Current Gallery</h3>
+            <h3 class="text-sm font-medium text-neutral-900 mb-3">Current Gallery</h3>
             <div class="grid grid-cols-3 gap-3">
               @each(image in theme.galleryImages)
-                <div class="aspect-square rounded-lg overflow-hidden bg-sand-2">
+                <div class="aspect-square rounded-lg overflow-hidden bg-neutral-50">
                   <img src="{{ image }}" alt="Gallery image" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/200?text=Invalid+URL'" />
                 </div>
               @end
@@ -80,20 +90,20 @@
         @endif
       </div>
 
-      <div class="bg-white border border-sand-7 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-sand-12 mb-6">Section Visibility</h2>
+      <div class="bg-white border border-neutral-200 rounded-xl p-6">
+        <h2 class="text-lg font-semibold text-neutral-900 mb-6">Section Visibility</h2>
         <div class="space-y-4">
           <label class="flex items-center gap-3 cursor-pointer">
             <input
               type="checkbox"
               name="showAboutToggle"
               {{ theme?.showAbout !== false ? 'checked' : '' }}
-              class="w-5 h-5 rounded border-sand-6 text-primary focus:ring-primary"
+              class="w-5 h-5 rounded border-neutral-200 text-primary focus:ring-primary"
               onchange="document.querySelector('input[name=showAbout]').value = this.checked"
             />
             <div>
-              <p class="font-medium text-sand-12">Show About Section</p>
-              <p class="text-sm text-sand-11">Display the about section on your booking page</p>
+              <p class="font-medium text-neutral-900">Show About Section</p>
+              <p class="text-sm text-neutral-600">Display the about section on your booking page</p>
             </div>
           </label>
 
@@ -102,12 +112,12 @@
               type="checkbox"
               name="showGalleryToggle"
               {{ theme?.showGallery !== false ? 'checked' : '' }}
-              class="w-5 h-5 rounded border-sand-6 text-primary focus:ring-primary"
+              class="w-5 h-5 rounded border-neutral-200 text-primary focus:ring-primary"
               onchange="document.querySelector('input[name=showGallery]').value = this.checked"
             />
             <div>
-              <p class="font-medium text-sand-12">Show Gallery Section</p>
-              <p class="text-sm text-sand-11">Display the image gallery on your booking page</p>
+              <p class="font-medium text-neutral-900">Show Gallery Section</p>
+              <p class="text-sm text-neutral-600">Display the image gallery on your booking page</p>
             </div>
           </label>
 
@@ -116,22 +126,22 @@
               type="checkbox"
               name="showTestimonialsToggle"
               {{ theme?.showTestimonials ? 'checked' : '' }}
-              class="w-5 h-5 rounded border-sand-6 text-primary focus:ring-primary"
+              class="w-5 h-5 rounded border-neutral-200 text-primary focus:ring-primary"
               onchange="document.querySelector('input[name=showTestimonials]').value = this.checked"
             />
             <div>
-              <p class="font-medium text-sand-12">Show Testimonials Section</p>
-              <p class="text-sm text-sand-11">Display customer testimonials (coming soon)</p>
+              <p class="font-medium text-neutral-900">Show Testimonials Section</p>
+              <p class="text-sm text-neutral-600">Display customer testimonials (coming soon)</p>
             </div>
           </label>
         </div>
       </div>
 
-      <div class="flex gap-4">
-        <button type="submit" class="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors">
+      <div class="flex gap-3">
+        <button type="submit" class="btn-primary">
           Save Content
         </button>
-        <a href="{{ route('settings.theme') }}" class="px-6 py-3 bg-sand-3 text-sand-12 font-medium rounded-lg hover:bg-sand-4 transition-colors">
+        <a href="{{ route('settings.theme') }}" class="btn-ghost">
           Cancel
         </a>
       </div>

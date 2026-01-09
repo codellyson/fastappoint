@@ -4,27 +4,30 @@
 
 @section('content')
   <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-    <div class="mb-6 sm:mb-8">
-      <a href="{{ route('settings.withdrawals.bank-accounts') }}" class="inline-flex items-center text-xs sm:text-sm text-sand-11 hover:text-sand-12 mb-3 sm:mb-4 min-h-[44px]">
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    <div class="mb-6">
+      <a href="{{ route('settings.withdrawals.bank-accounts') }}" class="text-sm text-primary hover:text-primary-dark font-semibold inline-flex items-center gap-2 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
         Back to Bank Accounts
       </a>
-      <h1 class="text-xl sm:text-2xl font-bold text-sand-12">Add Bank Account</h1>
-      <p class="text-sm sm:text-base text-sand-11 mt-1">Add a new bank account for withdrawals</p>
     </div>
 
-    <form method="POST" action="{{ route('settings.withdrawals.bank-accounts.store') }}" class="bg-white border border-sand-7 rounded-xl p-4 sm:p-6" id="addBankForm">
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900">Add Bank Account</h1>
+      <p class="text-sm text-neutral-600 mt-1">Add a new bank account for withdrawals</p>
+    </div>
+
+    <form method="POST" action="{{ route('settings.withdrawals.bank-accounts.store') }}" class="bg-white border border-neutral-200 rounded-xl p-4 sm:p-6" id="addBankForm">
       {{ csrfField() }}
 
       <div class="space-y-5">
         <div>
-          <label for="bankCode" class="block text-sm font-medium text-sand-12 mb-1">Bank</label>
+          <label for="bankCode" class="block text-sm font-medium text-neutral-900 mb-1">Bank</label>
           <select
             id="bankCode"
             name="bankCode"
-            class="w-full px-4 py-2.5 border border-sand-7 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
+            class="input-field bg-white"
             required
           >
             <option value="">Select your bank</option>
@@ -36,7 +39,7 @@
         </div>
 
         <div>
-          <label for="accountNumber" class="block text-sm font-medium text-sand-12 mb-1">Account Number</label>
+          <label for="accountNumber" class="block text-sm font-medium text-neutral-900 mb-1">Account Number</label>
           <input
             type="text"
             id="accountNumber"
@@ -44,19 +47,19 @@
             maxlength="10"
             pattern="[0-9]{10}"
             placeholder="Enter 10-digit account number"
-            class="w-full px-4 py-2.5 border border-sand-7 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="input-field"
             required
           />
         </div>
 
         <div id="verificationSection" class="hidden">
-          <div id="verifyingLoader" class="hidden bg-sand-2 border border-sand-6 rounded-lg p-4">
+          <div id="verifyingLoader" class="hidden bg-neutral-50 border border-neutral-200 rounded-lg p-4">
             <div class="flex items-center gap-3">
               <svg class="w-5 h-5 text-primary animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span class="text-sm text-sand-11">Verifying account...</span>
+              <span class="text-sm text-neutral-600">Verifying account...</span>
             </div>
           </div>
 
@@ -93,29 +96,29 @@
             id="isPrimary"
             name="isPrimary"
             value="true"
-            class="w-4 h-4 text-primary border-sand-7 rounded focus:ring-primary"
+            class="w-4 h-4 text-primary border-neutral-200 rounded focus:ring-primary"
           />
-          <label for="isPrimary" class="text-sm text-sand-12">Set as primary account</label>
+          <label for="isPrimary" class="text-sm text-neutral-900">Set as primary account</label>
         </div>
 
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4">
           <button type="submit" id="submitBtn" class="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 text-sm min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed" disabled>
             Add Bank Account
           </button>
-          <a href="{{ route('settings.withdrawals.bank-accounts') }}" class="px-6 py-2.5 border border-sand-7 text-sand-12 font-medium rounded-lg hover:bg-sand-2 text-sm text-center min-h-[44px] flex items-center justify-center">
+          <a href="{{ route('settings.withdrawals.bank-accounts') }}" class="px-6 py-2.5 border border-neutral-200 text-neutral-900 font-medium rounded-lg hover:bg-neutral-50 text-sm text-center min-h-[44px] flex items-center justify-center">
             Cancel
           </a>
         </div>
       </div>
     </form>
 
-    <div class="mt-6 bg-sand-2 border border-sand-6 rounded-xl p-4">
+    <div class="mt-6 bg-neutral-50 border border-neutral-200 rounded-xl p-4">
       <div class="flex items-start gap-3">
-        <svg class="w-5 h-5 text-sand-11 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 text-neutral-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
         </svg>
-        <div class="text-sm text-sand-11">
-          <p class="font-medium text-sand-12 mb-1">Secure & Verified</p>
+        <div class="text-sm text-neutral-600">
+          <p class="font-medium text-neutral-900 mb-1">Secure & Verified</p>
           <p>We verify your bank account details with your bank to ensure withdrawals go to the right account. Your banking information is encrypted and never shared.</p>
         </div>
       </div>

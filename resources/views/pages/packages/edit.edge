@@ -4,135 +4,145 @@
 
 @section('content')
   <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    @if(flashMessages.has('error'))
+      <div class="mb-6 bg-error-bg border-l-4 border-l-error text-error rounded-xl p-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="font-semibold">{{ flashMessages.get('error') }}</span>
+        </div>
+      </div>
+    @endif
+
     <div class="mb-6">
-      <a href="{{ route('packages.index') }}" class="inline-flex items-center gap-2 text-sand-11 hover:text-sand-12 text-sm">
+      <a href="{{ route('packages.index') }}" class="text-sm text-primary hover:text-primary-dark font-semibold inline-flex items-center gap-2 transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
         Back to Packages
       </a>
     </div>
 
-    @if(flashMessages.has('error'))
-      <div class="mb-6 bg-error/10 border border-error text-error rounded-lg p-4 text-sm">
-        {{ flashMessages.get('error') }}
+    <div class="card shadow-lg">
+      <div class="p-6 border-b border-neutral-200">
+        <h1 class="text-2xl font-bold text-neutral-900">Edit Package</h1>
+        <p class="text-sm text-neutral-600 mt-1">Update package details and bundle pricing</p>
       </div>
-    @endif
 
-    <div class="bg-white border border-sand-7 rounded-xl p-6">
-      <h1 class="text-xl font-bold text-sand-12 mb-6">Edit Package</h1>
-
-      <form method="POST" action="{{ route('packages.update', { id: pkg.id }) }}" enctype="multipart/form-data" x-data="packageForm()">
+      <form method="POST" action="{{ route('packages.update', { id: pkg.id }) }}" enctype="multipart/form-data" x-data="packageForm()" class="p-6 space-y-6">
         {{ csrfField() }}
 
-        <div class="space-y-6">
-          <div>
-            <label for="name" class="block text-sm font-medium text-sand-12 mb-2">Package Name *</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              required
-              value="{{ pkg.name }}"
-              placeholder="e.g., Bridal Package, Full Session Bundle"
-              class="w-full px-4 py-3 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[48px]"
-            />
-          </div>
+        <div>
+          <label for="name" class="block text-sm font-medium text-neutral-900 mb-2">Package Name *</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            value="{{ pkg.name }}"
+            placeholder="e.g., Bridal Package, Full Session Bundle"
+            class="w-full px-4 py-3 input-field"
+          />
+        </div>
 
-          <div>
-            <label for="description" class="block text-sm font-medium text-sand-12 mb-2">Description</label>
-            <textarea
-              id="description"
-              name="description"
-              rows="3"
-              placeholder="What's included in this package?"
-              class="w-full px-4 py-3 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            >{{ pkg.description || '' }}</textarea>
-          </div>
+        <div>
+          <label for="description" class="block text-sm font-medium text-neutral-900 mb-2">
+            Description <span class="text-neutral-500">(optional)</span>
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            rows="3"
+            placeholder="What's included in this package?"
+            class="w-full px-4 py-3 input-field"
+          >{{ pkg.description || '' }}</textarea>
+        </div>
 
-          <div>
-            <label class="block text-sm font-medium text-sand-12 mb-2">Select Services (minimum 2) *</label>
-            <p class="text-sm text-sand-11 mb-3">Choose the services to include in this package</p>
-            <div class="space-y-2 max-h-64 overflow-y-auto border border-sand-6 rounded-lg p-3">
-              @each(service in services)
-                <label class="flex items-start gap-3 p-3 hover:bg-sand-2 rounded-lg cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="serviceIds[]"
-                    value="{{ service.id }}"
-                    {{ pkg.serviceIds.includes(service.id) ? 'checked' : '' }}
-                    @change="updateTotals()"
-                    data-price="{{ service.price }}"
-                    data-duration="{{ service.durationMinutes || 30 }}"
-                    class="mt-1 w-5 h-5 text-primary border-sand-7 rounded focus:ring-primary/20"
-                  />
-                  <div class="flex-1">
-                    <p class="font-medium text-sand-12">{{ service.name }}</p>
-                    <p class="text-sm text-sand-11">{{ service.durationMinutes || 30 }} min</p>
-                  </div>
-                  <p class="font-medium text-sand-12">₦{{ Number(service.price).toLocaleString() }}</p>
-                </label>
-              @endeach
-            </div>
-          </div>
-
-          <div class="bg-sand-2 rounded-lg p-4">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-sand-11">Selected services value:</span>
-              <span class="font-semibold text-sand-12" x-text="'₦' + originalPrice.toLocaleString()"></span>
-            </div>
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-sand-11">Total duration:</span>
-              <span class="font-semibold text-sand-12" x-text="totalDuration + ' minutes'"></span>
-            </div>
-          </div>
-
-          <div>
-            <label for="packagePrice" class="block text-sm font-medium text-sand-12 mb-2">Package Price *</label>
-            <p class="text-sm text-sand-11 mb-2">Set a price lower than the combined value to offer a discount</p>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sand-11">₦</span>
-              <input
-                type="number"
-                id="packagePrice"
-                name="packagePrice"
-                required
-                min="0"
-                step="100"
-                x-model="packagePrice"
-                @input="updateSavings()"
-                class="w-full pl-10 pr-4 py-3 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[48px]"
-              />
-            </div>
-            <div x-show="savings > 0" class="mt-2 text-sm text-success font-medium">
-              Customers save ₦<span x-text="savings.toLocaleString()"></span> (<span x-text="savingsPercent"></span>% off)
-            </div>
-          </div>
-
-          <div>
-            <label for="image" class="block text-sm font-medium text-sand-12 mb-2">Package Image</label>
-            @if(pkg.image)
-              <div class="mb-3">
-                <img src="{{ pkg.image }}" alt="{{ pkg.name }}" class="w-32 h-24 object-cover rounded-lg border border-sand-6" />
-                <p class="text-xs text-sand-11 mt-1">Current image. Upload a new one to replace.</p>
-              </div>
-            @endif
-            <input
-              type="file"
-              id="image"
-              name="image"
-              accept="image/jpeg,image/png,image/webp"
-              class="w-full px-4 py-3 border border-sand-7 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-            />
-            <p class="text-xs text-sand-11 mt-1">JPG, PNG, or WebP. Max 5MB.</p>
+        <div>
+          <label class="block text-sm font-medium text-neutral-900 mb-2">Select Services (minimum 2) *</label>
+          <p class="text-sm text-neutral-600 mb-3">Choose the services to include in this package</p>
+          <div class="space-y-2 max-h-64 overflow-y-auto border border-neutral-200 rounded-lg p-3">
+            @each(service in services)
+              <label class="flex items-start gap-3 p-3 hover:bg-neutral-50 rounded-lg cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="serviceIds[]"
+                  value="{{ service.id }}"
+                  {{ pkg.serviceIds.includes(service.id) ? 'checked' : '' }}
+                  @change="updateTotals()"
+                  data-price="{{ service.price }}"
+                  data-duration="{{ service.durationMinutes || 30 }}"
+                  class="mt-1 w-5 h-5 text-primary border-neutral-200 rounded focus:ring-primary/20"
+                />
+                <div class="flex-1">
+                  <p class="font-medium text-neutral-900">{{ service.name }}</p>
+                  <p class="text-sm text-neutral-600">{{ service.durationMinutes || 30 }} min</p>
+                </div>
+                <p class="font-medium text-neutral-900">₦{{ Number(service.price).toLocaleString() }}</p>
+              </label>
+            @endeach
           </div>
         </div>
 
-        <div class="mt-8 flex flex-col sm:flex-row gap-3">
-          <button type="submit" class="flex-1 px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 min-h-[48px]">
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-neutral-600">Selected services value:</span>
+            <span class="font-semibold text-neutral-900" x-text="'₦' + originalPrice.toLocaleString()"></span>
+          </div>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-neutral-600">Total duration:</span>
+            <span class="font-semibold text-neutral-900" x-text="totalDuration + ' minutes'"></span>
+          </div>
+        </div>
+
+        <div>
+          <label for="packagePrice" class="block text-sm font-medium text-neutral-900 mb-2">Package Price *</label>
+          <p class="text-sm text-neutral-600 mb-2">Set a price lower than the combined value to offer a discount</p>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600">₦</span>
+            <input
+              type="number"
+              id="packagePrice"
+              name="packagePrice"
+              required
+              min="0"
+              step="100"
+              x-model="packagePrice"
+              @input="updateSavings()"
+              class="w-full pl-10 pr-4 py-3 input-field"
+            />
+          </div>
+          <div x-show="savings > 0" class="mt-2 text-sm text-success font-medium">
+            Customers save ₦<span x-text="savings.toLocaleString()"></span> (<span x-text="savingsPercent"></span>% off)
+          </div>
+        </div>
+
+        <div>
+          <label for="image" class="block text-sm font-medium text-neutral-900 mb-2">
+            Package Image <span class="text-neutral-500">(optional)</span>
+          </label>
+          @if(pkg.image)
+            <div class="mb-3">
+              <img src="{{ pkg.image }}" alt="{{ pkg.name }}" class="w-32 h-24 object-cover rounded-lg border border-neutral-200" />
+              <p class="text-xs text-neutral-500 mt-1">Current image. Upload a new one to replace.</p>
+            </div>
+          @endif
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/jpeg,image/png,image/webp"
+            class="w-full px-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+          />
+          <p class="text-xs text-neutral-500 mt-1">JPG, PNG, or WebP. Max 5MB.</p>
+        </div>
+
+        <div class="pt-4 flex gap-3">
+          <button type="submit" class="btn-primary">
             Save Changes
           </button>
-          <a href="{{ route('packages.index') }}" class="px-6 py-3 border border-sand-7 text-sand-11 font-medium rounded-lg hover:bg-sand-2 text-center min-h-[48px] flex items-center justify-center">
+          <a href="{{ route('packages.index') }}" class="btn-ghost">
             Cancel
           </a>
         </div>
