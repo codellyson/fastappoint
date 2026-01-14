@@ -1,8 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Business from '#models/business'
 import BusinessBankAccount from '#models/business-bank-account'
+import Transaction from '#models/transaction'
 import withdrawalService from '#services/withdrawal_service'
-import walletService from '../services/wallet_service.js'
 import {
   addBankAccountValidator,
   withdrawalRequestValidator,
@@ -18,7 +18,16 @@ export default class WithdrawalsController {
     const business = await Business.findOrFail(user.businessId)
 
     const balanceInfo = await withdrawalService.getBalanceInfo(business.id)
-    const wallets = await walletService.getBusinessWallets(business.id)
+
+    // Get balances per currency from transactions
+    const balancesByCurrency = await Transaction.getBusinessBalances(business.id)
+    const wallets = balancesByCurrency.map((b) => ({
+      currency: b.currency,
+      balance: b.balance,
+      availableBalance: b.balance,
+      heldBalance: 0,
+    }))
+
     const withdrawals = await withdrawalService.getWithdrawalHistory(business.id, 10)
     const bankAccounts = await BusinessBankAccount.query()
       .where('businessId', business.id)

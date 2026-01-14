@@ -2,12 +2,10 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import Business from '#models/business'
 import SubscriptionPlan from '#models/subscription_plan'
-import Subscription from '#models/subscription'
 import subscriptionService from '../services/subscription_service.js'
-import stripeService from '../services/stripe_service.js'
 import currencyService from '../services/currency_service.js'
+import flutterwaveService from '../services/flutterwave_service.js'
 import env from '#start/env'
-import Stripe from 'stripe'
 
 export default class SubscriptionsController {
   /**
@@ -34,6 +32,7 @@ export default class SubscriptionsController {
     const acceptLanguage = request.header('accept-language') || ''
     if (acceptLanguage) {
       const detected = currencyService.detectCurrencyFromLocale(acceptLanguage)
+      console.log('[SUBSCRIPTION] Detected currency from Accept-Language header:', detected)
       if (detected) {
         return detected
       }
@@ -48,7 +47,7 @@ export default class SubscriptionsController {
    */
   async index({ view, request }: HttpContext) {
     const plans = await SubscriptionPlan.query().where('isActive', true).orderBy('sortOrder', 'asc')
-    
+
     // Subscription prices are location-based (buyer's location determines currency)
     const currency = this.detectBuyerCurrency(request)
 
@@ -122,20 +121,8 @@ export default class SubscriptionsController {
     }
 
     // Use subscription currency if available (location-based payment)
-    // For Stripe subscriptions without currency, try to detect from Stripe price
-    let currency = subscription?.currency
-    if (!currency && subscription?.stripeSubscriptionId && stripeService.isConfigured()) {
-      try {
-        const stripeSub = await stripeService.retrieveSubscription(subscription.stripeSubscriptionId)
-        if (stripeSub.items?.data?.[0]?.price?.currency) {
-          currency = stripeSub.items.data[0].price.currency.toUpperCase()
-        }
-      } catch (error) {
-        console.warn('[SUBSCRIPTION] Could not retrieve currency from Stripe:', error)
-      }
-    }
     // Fallback to business currency or default
-    currency = currency || business.currency || 'NGN'
+    const currency = subscription?.currency || business.currency || 'NGN'
 
     return view.render('pages/subscriptions/manage', {
       business,
@@ -160,8 +147,11 @@ export default class SubscriptionsController {
 
     try {
       // All plans require payment - redirect to payment with currency
-      const currencyParam = currency || (await Business.findOrFail(auth.user!.businessId)).currency || 'NGN'
-      return response.redirect().toRoute('subscriptions.payment', { planId: plan.id }, { qs: { currency: currencyParam } })
+      // const currencyParam =
+      //   currency || (await Business.findOrFail(auth.user!.businessId)).currency || 'NGN'
+      return response
+        .redirect()
+        .toRoute('subscriptions.payment', { planId: plan.id }, { qs: { currency: currency } })
     } catch (error: any) {
       session.flash('error', error.message || 'Failed to create subscription')
       return response.redirect().back()
@@ -188,35 +178,27 @@ export default class SubscriptionsController {
     const currency = this.detectBuyerCurrency(request)
 
     const paystackPublicKey = env.get('PAYSTACK_PUBLIC_KEY')
-    const stripePublicKey = env.get('STRIPE_PUBLIC_KEY')
 
-    // Paystack only supports NGN and a few African currencies
-    const paystackSupportedCurrencies = ['NGN', 'ZAR', 'KES', 'GHS', 'UGX']
+    // Paystack supports NGN, ZAR, KES, GHS, UGX, XOF
+    const paystackSupportedCurrencies = ['NGN', 'ZAR', 'KES', 'GHS', 'UGX', 'XOF']
     const isPaystackCurrency = paystackSupportedCurrencies.includes(currency.toUpperCase())
-    
+
     // Automatically determine the correct payment provider based on buyer's currency
-    let paymentProvider: 'paystack' | 'stripe'
-    
+    let paymentProvider: 'paystack' | 'flutterwave'
+
     if (isPaystackCurrency) {
-      // Use Paystack for supported currencies
+      // Use Paystack for African currencies
       paymentProvider = 'paystack'
     } else {
-      // Non-Paystack currencies require Stripe
-      // Check if platform has Stripe configured (not business-specific)
-      if (!stripeService.isConfigured() || !stripePublicKey) {
+      // Use Flutterwave for international currencies
+      if (!flutterwaveService.isConfigured()) {
         session.flash(
           'error',
-          `${currency} payments require Stripe, which is not configured on this platform. Please contact support or use a Paystack-supported currency.`
+          `${currency} payments require Flutterwave, which is not configured on this platform. Please contact support.`
         )
         return response.redirect().toRoute('subscriptions.select')
       }
-      paymentProvider = 'stripe'
-    }
-
-    // Sync plan to Stripe if using Stripe (use the determined currency)
-    if (paymentProvider === 'stripe' && stripeService.isConfigured()) {
-      await subscriptionService.syncPlanToStripe(plan, currency)
-      await plan.refresh()
+      paymentProvider = 'flutterwave'
     }
 
     return view.render('pages/subscriptions/payment', {
@@ -224,14 +206,13 @@ export default class SubscriptionsController {
       plan,
       paymentProvider,
       paystackPublicKey,
-      stripePublicKey,
       currency,
     })
   }
 
   /**
-   * Create Stripe payment intent for subscription
-   * Creates a subscription and returns the payment intent for the first invoice
+   * Initialize one-time payment for subscription
+   * Returns payment data for Paystack (inline) or Flutterwave (redirect)
    */
   async createPaymentIntent({ params, request, response, auth }: HttpContext) {
     if (!auth.user) {
@@ -244,75 +225,80 @@ export default class SubscriptionsController {
 
     // Detect buyer's currency from location
     const currency = this.detectBuyerCurrency(request)
+    console.log('[SUBSCRIPTION] Detected currency:', currency)
 
-    if (!stripeService.isConfigured()) {
-      return response.status(400).json({ error: 'Stripe is not configured' })
+    // Determine payment provider based on buyer's currency
+    const paystackSupportedCurrencies = ['NGN', 'ZAR', 'KES', 'GHS', 'UGX', 'XOF']
+    const isPaystackCurrency = paystackSupportedCurrencies.includes(currency.toUpperCase())
+    console.log('[SUBSCRIPTION] Is Paystack currency:', isPaystackCurrency)
+    const paymentProvider = isPaystackCurrency ? 'paystack' : 'flutterwave'
+    console.log('[SUBSCRIPTION] Payment provider:', paymentProvider)
+
+    // Check if selected provider is configured
+    const paystackPublicKey = env.get('PAYSTACK_PUBLIC_KEY')
+    if (paymentProvider === 'paystack' && !paystackPublicKey) {
+      console.log('[SUBSCRIPTION] Paystack public key is not configured')
+      return response.status(400).json({ error: 'Paystack is not configured' })
+    }
+    if (paymentProvider === 'flutterwave' && !flutterwaveService.isConfigured()) {
+      console.log('[SUBSCRIPTION] Flutterwave is not configured')
+      return response.status(400).json({ error: 'Flutterwave is not configured' })
     }
 
     try {
-      // Ensure plan has Stripe price ID for the correct currency
-      await subscriptionService.syncPlanToStripe(plan, currency)
-      await plan.refresh()
+      const appUrl = env.get('APP_URL')
+      const callbackUrl = `${appUrl}/subscriptions/${plan.id}/verify`
 
-      if (!plan.stripePriceId) {
-        return response.status(400).json({ error: 'Failed to create Stripe price for plan' })
-      }
+      // Get plan price for buyer's currency (returns in smallest unit: cents/kobo)
+      const amountInCents = plan.getPriceForCurrency(currency)
+      console.log('[SUBSCRIPTION] Plan price for', currency, ':', amountInCents)
 
-      // Get or create Stripe customer
-      // Check if business has an existing subscription with a customer ID
-      const existingSubscription = await Subscription.query()
-        .where('businessId', business.id)
-        .whereNotNull('stripeCustomerId')
-        .first()
-      
-      let customerId = existingSubscription?.stripeCustomerId || business.stripeAccountId
-      
-      if (!customerId) {
-        const customer = await stripeService.createCustomer(business.email, business.name, {
-          business_id: business.id.toString(),
+      if (paymentProvider === 'paystack') {
+        // Return data for Paystack inline payment (frontend handles)
+        return response.json({
+          paymentProvider: 'paystack',
+          publicKey: paystackPublicKey,
+          email: user.email,
+          amount: amountInCents, // Paystack expects amount in cents
+          currency: currency,
+          reference: `sub-${plan.id}-${business.id}-${Date.now()}`,
+          callbackUrl: callbackUrl,
+          metadata: {
+            businessId: business.id.toString(),
+            planId: plan.id.toString(),
+            planName: plan.displayName,
+          },
         })
-        customerId = customer.id
-        // Note: customerId will be stored in the subscription record, not business
-      }
+      } else {
+        // Initialize Flutterwave payment (redirect)
+        const result = await flutterwaveService.initializePayment(
+          amountInCents / 100, // Flutterwave expects decimal amount
+          currency,
+          user.email,
+          user.fullName || user.email,
+          `${callbackUrl}?provider=flutterwave`,
+          {
+            businessId: business.id.toString(),
+            planId: plan.id.toString(),
+            planName: plan.displayName,
+          }
+        )
 
-      // Create subscription with payment intent
-      // This creates an incomplete subscription with a payment intent for the first invoice
-      const subscription = await stripeService.createSubscription(
-        customerId,
-        plan.stripePriceId,
-        {
-          business_id: business.id.toString(),
-          plan_id: plan.id.toString(),
+        if (!result.success || !result.paymentLink) {
+          return response.status(400).json({ error: 'Failed to initialize Flutterwave payment' })
         }
-      )
 
-      // Extract payment intent from subscription's latest invoice
-      const stripeSub = subscription as any
-      const invoice = stripeSub.latest_invoice
-      
-      // Handle both expanded and non-expanded invoice
-      let paymentIntent: Stripe.PaymentIntent | null = null
-      
-      if (typeof invoice === 'object' && invoice.payment_intent) {
-        if (typeof invoice.payment_intent === 'object') {
-          paymentIntent = invoice.payment_intent as Stripe.PaymentIntent
-        } else {
-          // Payment intent is just an ID, retrieve it
-          paymentIntent = await stripeService.retrievePaymentIntent(invoice.payment_intent)
-        }
+        return response.json({
+          paymentProvider: 'flutterwave',
+          paymentLink: result.paymentLink,
+          reference: result.reference,
+          currency: currency,
+          amount: amountInCents,
+        })
       }
-
-      if (!paymentIntent || !paymentIntent.client_secret) {
-        return response.status(400).json({ error: 'Failed to create payment intent' })
-      }
-
-      return response.json({
-        clientSecret: paymentIntent.client_secret,
-        paymentIntentId: paymentIntent.id,
-      })
     } catch (error: any) {
-      console.error('[SUBSCRIPTION] Error creating payment intent:', error)
-      return response.status(500).json({ error: error.message || 'Failed to create payment intent' })
+      console.error('[SUBSCRIPTION] Error creating payment:', error)
+      return response.status(500).json({ error: error.message || 'Failed to create payment' })
     }
   }
 
@@ -328,36 +314,49 @@ export default class SubscriptionsController {
     const business = await Business.findOrFail(user.businessId)
     const plan = await SubscriptionPlan.findOrFail(params.planId)
     const reference = request.qs().reference
-    const paymentIntentId = request.qs().payment_intent
-    
+    const provider = request.qs().provider // 'paystack' or 'flutterwave'
+
     // Detect buyer's currency - subscription payments are location-based
     const currency = this.detectBuyerCurrency(request)
 
-    // Determine payment provider based on buyer's currency, not business settings
-    const paystackSupportedCurrencies = ['NGN', 'ZAR', 'KES', 'GHS', 'UGX']
+    // Determine payment provider
+    const paystackSupportedCurrencies = ['NGN', 'ZAR', 'KES', 'GHS', 'UGX', 'XOF']
     const isPaystackCurrency = paystackSupportedCurrencies.includes(currency.toUpperCase())
-    const paymentProvider = isPaystackCurrency ? 'paystack' : 'stripe'
+    const paymentProvider = provider || (isPaystackCurrency ? 'paystack' : 'flutterwave')
 
     try {
-      // Handle Stripe payment
-      if (paymentProvider === 'stripe' && paymentIntentId && stripeService.isConfigured()) {
-        const paymentIntent = await stripeService.retrievePaymentIntent(paymentIntentId)
+      // Handle Flutterwave payment
+      if (paymentProvider === 'flutterwave') {
+        if (!reference) {
+          session.flash('error', 'Payment reference is required')
+          return response.redirect().back()
+        }
 
-        if (paymentIntent.status !== 'succeeded') {
-          session.flash('error', 'Payment was not successful. Please try again.')
+        // Extract transaction ID from reference (format: booking-{id}-{timestamp})
+        const transactionId = reference.split('-')[1]
+
+        const verification = await flutterwaveService.verifyTransaction(transactionId)
+
+        if (!verification.success || verification.status !== 'successful') {
+          console.error('[SUBSCRIPTION] Flutterwave payment verification failed:', verification)
+          session.flash(
+            'error',
+            'Payment verification failed. Please contact support if payment was deducted.'
+          )
           return response.redirect().toRoute('subscriptions.select')
         }
 
+        // Create subscription with one-time payment
         const subscription = await subscriptionService.createSubscription(
           business,
           plan,
           business.email,
-          undefined,
-          paymentIntentId,
-          currency // Already detected from buyer's location at top of method
+          undefined, // No authorization code for one-time payments
+          reference, // Store payment reference
+          currency
         )
 
-        console.log('[SUBSCRIPTION] Created Stripe subscription:', {
+        console.log('[SUBSCRIPTION] Created Flutterwave subscription:', {
           subscriptionId: subscription.id,
           planId: plan.id,
           businessId: business.id,
@@ -401,7 +400,7 @@ export default class SubscriptionsController {
         }
 
         if (!data.status || data.data?.status !== 'success') {
-          console.error('[SUBSCRIPTION] Payment verification failed:', data)
+          console.error('[SUBSCRIPTION] Paystack payment verification failed:', data)
           session.flash(
             'error',
             'Payment verification failed. Please contact support if payment was deducted.'
@@ -409,31 +408,25 @@ export default class SubscriptionsController {
           return response.redirect().toRoute('subscriptions.select')
         }
 
-        // Extract authorization code for recurring billing
-        const authorizationCode = data.data?.authorization?.authorization_code
-
-        // Create subscription with buyer's currency (location-based)
+        // Create subscription with one-time payment (no authorization code needed)
         const subscription = await subscriptionService.createSubscription(
           business,
           plan,
           business.email,
-          authorizationCode,
-          undefined,
-          currency // Already detected from buyer's location
+          undefined, // No authorization code for one-time payments
+          reference, // Store payment reference
+          currency
         )
 
-        console.log('[SUBSCRIPTION] Created subscription:', {
+        console.log('[SUBSCRIPTION] Created Paystack subscription:', {
           subscriptionId: subscription.id,
           planId: plan.id,
           businessId: business.id,
         })
 
-        // Refresh business to get updated status
         await business.refresh()
-
         session.flash('success', `Successfully subscribed to ${plan.displayName} plan!`)
 
-        // Redirect to onboarding if not yet onboarded, otherwise to manage
         if (!business.isOnboarded) {
           return response.redirect().toRoute('onboarding.show')
         }
@@ -443,12 +436,9 @@ export default class SubscriptionsController {
         console.log('[SUBSCRIPTION] Dev mode: Creating subscription without payment verification')
         await subscriptionService.createSubscription(business, plan, business.email)
 
-        // Refresh business to get updated status
         await business.refresh()
-
         session.flash('success', `Successfully subscribed to ${plan.displayName} plan!`)
 
-        // Redirect to onboarding if not yet onboarded, otherwise to manage
         if (!business.isOnboarded) {
           return response.redirect().toRoute('onboarding.show')
         }

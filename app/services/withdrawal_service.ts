@@ -4,11 +4,8 @@ import Transaction from '#models/transaction'
 import WithdrawalRequest from '#models/withdrawal-request'
 import BusinessBankAccount from '#models/business-bank-account'
 import Business from '#models/business'
-import Wallet from '#models/wallet'
-import WalletTransaction from '#models/wallet_transaction'
 import emailService from '#services/email_service'
 import currencyService from './currency_service.js'
-import walletService from './wallet_service.js'
 
 interface PaystackBank {
   name: string
@@ -33,50 +30,33 @@ class WithdrawalService {
 
   /**
    * Get the available balance for a business
-   * Uses wallet balances instead of calculating from transactions
+   * Calculates from transactions instead of wallet
    */
   async getBalanceInfo(businessId: number): Promise<BalanceInfo> {
     const business = await Business.findOrFail(businessId)
     const businessCurrency = business.currency || 'NGN'
 
-    // Get all wallets for the business
-    const wallets = await walletService.getBusinessWallets(businessId)
+    // Get all currencies this business has transactions in
+    const balancesByCurrency = await Transaction.getBusinessBalances(businessId)
 
-    // Convert all wallet balances to business base currency
+    // Convert all balances to business base currency
     let totalEarnings = 0
-    let totalAvailable = 0
-    let totalHeld = 0
 
-    for (const wallet of wallets) {
-      if (wallet.currency === businessCurrency) {
-        totalEarnings += wallet.balance
-        totalAvailable += wallet.availableBalance
-        totalHeld += wallet.heldBalance
+    for (const { currency, balance } of balancesByCurrency) {
+      if (currency === businessCurrency) {
+        totalEarnings += balance
       } else {
         // Convert to business currency
-        const convertedBalance = await currencyService.convertAmount(
-          Math.round(wallet.balance * 100),
-          wallet.currency,
+        const converted = await currencyService.convertAmount(
+          Math.round(balance * 100),
+          currency,
           businessCurrency
         )
-        const convertedAvailable = await currencyService.convertAmount(
-          Math.round(wallet.availableBalance * 100),
-          wallet.currency,
-          businessCurrency
-        )
-        const convertedHeld = await currencyService.convertAmount(
-          Math.round(wallet.heldBalance * 100),
-          wallet.currency,
-          businessCurrency
-        )
-
-        totalEarnings += convertedBalance / 100
-        totalAvailable += convertedAvailable / 100
-        totalHeld += convertedHeld / 100
+        totalEarnings += converted / 100
       }
     }
 
-    // Sum of completed withdrawals (withdrawals are in business currency)
+    // Sum of completed withdrawals (in business currency)
     const withdrawnResult = await WithdrawalRequest.query()
       .where('businessId', businessId)
       .where('status', 'completed')
@@ -85,14 +65,20 @@ class WithdrawalService {
 
     const totalWithdrawn = Number(withdrawnResult?.$extras.total || 0)
 
-    // Pending withdrawals are already held in wallet
-    const pendingWithdrawals = totalHeld
+    // Pending withdrawals (in business currency)
+    const pendingResult = await WithdrawalRequest.query()
+      .where('businessId', businessId)
+      .whereIn('status', ['pending', 'processing'])
+      .sum('amount as total')
+      .first()
+
+    const pendingWithdrawals = Number(pendingResult?.$extras.total || 0)
 
     return {
       totalEarnings,
       totalWithdrawn,
       pendingWithdrawals,
-      availableBalance: Math.max(0, totalAvailable),
+      availableBalance: Math.max(0, totalEarnings - totalWithdrawn - pendingWithdrawals),
     }
   }
 
@@ -249,13 +235,23 @@ class WithdrawalService {
     const business = await Business.findOrFail(businessId)
     const businessCurrency = business.currency || 'NGN'
 
-    // Check wallet balance
-    const wallet = await walletService.getBalance(businessId, businessCurrency)
-    if (!wallet || wallet.availableBalance < amount) {
-      const available = wallet?.availableBalance || 0
+    // Check balance from transactions
+    const balance = await Transaction.getBusinessBalance(businessId, businessCurrency)
+
+    // Get pending withdrawals
+    const pendingResult = await WithdrawalRequest.query()
+      .where('businessId', businessId)
+      .whereIn('status', ['pending', 'processing'])
+      .sum('amount as total')
+      .first()
+
+    const pendingWithdrawals = Number(pendingResult?.$extras.total || 0)
+    const availableBalance = balance - pendingWithdrawals
+
+    if (availableBalance < amount) {
       return {
         success: false,
-        error: `Insufficient balance. Available: ₦${available.toLocaleString()}`,
+        error: `Insufficient balance. Available: ₦${availableBalance.toLocaleString()}`,
       }
     }
 
@@ -274,40 +270,13 @@ class WithdrawalService {
       }
     }
 
-    // Hold amount in wallet
-    const reference = `WD-${Date.now()}`
-    const holdResult = await walletService.hold(businessId, businessCurrency, amount, {
-      withdrawalRequestId: undefined, // Will be set after creation
-      reference,
-      description: `Withdrawal hold`,
-    })
-
-    if (!holdResult.success) {
-      return { success: false, error: holdResult.error || 'Failed to hold balance' }
-    }
-
-    // Create withdrawal request
+    // Create withdrawal request (no need to hold in wallet anymore)
     const withdrawal = await WithdrawalRequest.create({
       businessId,
       bankAccountId,
       amount,
       status: 'pending',
     })
-
-    // Update wallet transaction with withdrawal request ID
-    if (holdResult.wallet) {
-      const walletTransaction = await WalletTransaction.query()
-        .where('walletId', holdResult.wallet!.id)
-        .where('type', 'hold')
-        .where('reference', reference)
-        .orderBy('createdAt', 'desc')
-        .first()
-
-      if (walletTransaction) {
-        walletTransaction.withdrawalRequestId = withdrawal.id
-        await walletTransaction.save()
-      }
-    }
 
     return { success: true, withdrawal }
   }
@@ -424,19 +393,6 @@ class WithdrawalService {
 
         return { success: true }
       } else {
-        // Release held amount on failure
-        const businessCurrency = withdrawal.business.currency || 'NGN'
-        await walletService.release(
-          withdrawal.businessId,
-          businessCurrency,
-          withdrawal.amount,
-          {
-            withdrawalRequestId: withdrawal.id,
-            reference: reference,
-            description: `Withdrawal processing failed - amount released`,
-          }
-        )
-
         withdrawal.status = 'failed'
         withdrawal.failureReason = data.message || 'Transfer failed'
         await withdrawal.save()
@@ -445,19 +401,6 @@ class WithdrawalService {
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error'
-
-      // Release held amount on error
-      const businessCurrency = withdrawal.business.currency || 'NGN'
-      await walletService.release(
-        withdrawal.businessId,
-        businessCurrency,
-        withdrawal.amount,
-        {
-          withdrawalRequestId: withdrawal.id,
-          reference: reference,
-          description: `Withdrawal processing error - amount released`,
-        }
-      )
 
       withdrawal.status = 'failed'
       withdrawal.failureReason = message
@@ -492,6 +435,22 @@ class WithdrawalService {
     withdrawal.processedAt = DateTime.now()
     await withdrawal.save()
 
+    // Create transaction record for the withdrawal
+    await Transaction.create({
+      businessId: withdrawal.businessId,
+      withdrawalRequestId: withdrawal.id,
+      amount: withdrawal.amount,
+      platformFee: 0,
+      businessAmount: withdrawal.amount,
+      status: 'success',
+      provider: 'paystack',
+      type: 'withdrawal',
+      direction: 'debit',
+      currency: withdrawal.business.currency || 'NGN',
+      reference: withdrawal.paystackReference || reference,
+      providerReference: reference,
+    })
+
     // Send success notification email
     await this.sendWithdrawalSuccessEmail(withdrawal)
 
@@ -517,19 +476,6 @@ class WithdrawalService {
       console.log(`[WITHDRAWAL] Withdrawal #${withdrawal.id} already marked as failed`)
       return
     }
-
-    // Release held amount back to available balance
-    const businessCurrency = withdrawal.business.currency || 'NGN'
-    await walletService.release(
-      withdrawal.businessId,
-      businessCurrency,
-      withdrawal.amount,
-      {
-        withdrawalRequestId: withdrawal.id,
-        reference: withdrawal.paystackReference || reference,
-        description: `Withdrawal failed - amount released`,
-      }
-    )
 
     withdrawal.status = 'failed'
     withdrawal.failureReason = reason || 'Transfer failed'

@@ -16,4 +16,7 @@ export default defineConfig({
       reload: ['resources/views/**/*.edge'],
     }),
   ],
+  server: {
+    allowedHosts: ['fastappoint.outray.app', 'www.fastappoint.com'],
+  },
 })

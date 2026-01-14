@@ -1,18 +1,15 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { createHmac } from 'node:crypto'
 import env from '#start/env'
-import { DateTime } from 'luxon'
 import Booking from '#models/booking'
-import Business from '#models/business'
-import Subscription from '#models/subscription'
-import SubscriptionPayment from '#models/subscription_payment'
 import Transaction from '#models/transaction'
 import emailService from '#services/email_service'
 import subscriptionService from '../services/subscription_service.js'
 import receiptService from '../services/receipt_service.js'
 import withdrawalService from '../services/withdrawal_service.js'
-import walletService from '../services/wallet_service.js'
-import stripeService from '../services/stripe_service.js'
+import polarService from '../services/polar_service.js'
+import flutterwaveService from '../services/flutterwave_service.js'
+import db from '@adonisjs/lucid/services/db'
 
 export default class WebhookController {
   async paystack({ request, response }: HttpContext) {
@@ -160,17 +157,12 @@ export default class WebhookController {
         transaction.businessAmount = amount - platformFee
         transaction.status = 'success'
         transaction.provider = 'paystack'
+        transaction.type = 'payment'
+        transaction.direction = 'credit'
         transaction.reference = bookingInTrx.paymentReference || reference
         transaction.providerReference = reference
         transaction.currency = currency
         await transaction.useTransaction(trx).save()
-
-        // Credit wallet
-        await walletService.credit(bookingInTrx.businessId, currency, transaction.businessAmount, {
-          transactionId: transaction.id,
-          reference: transaction.reference,
-          description: `Payment for booking #${bookingInTrx.id}`,
-        })
 
         // Update booking reference for email
         booking = bookingInTrx
@@ -346,439 +338,351 @@ export default class WebhookController {
     await withdrawalService.handleTransferReversed(reference, reason)
   }
 
-  async stripe({ request, response }: HttpContext) {
-    if (!stripeService.isConfigured()) {
-      console.error('[WEBHOOK] Stripe is not configured')
-      return response.status(500).send('Server configuration error')
+  async polar({ request, response }: HttpContext) {
+    if (!polarService.isConfigured()) {
+      console.error('[WEBHOOK] Polar is not configured')
+      return response.status(503).send('Polar webhook handler not configured')
     }
-
-    const signature = request.header('stripe-signature')
-    const rawBody = request.raw()
-
-    if (!signature || !rawBody) {
-      return response.status(400).send('Invalid request')
-    }
-
-    const event = stripeService.verifyWebhookSignature(rawBody, signature)
-
-    if (!event) {
-      console.error('[WEBHOOK] Invalid Stripe signature')
-      return response.status(401).send('Invalid signature')
-    }
-
-    console.log(`[WEBHOOK] Received Stripe event: ${event.type}`)
 
     try {
-      switch (event.type) {
-        case 'payment_intent.succeeded':
-          await this.handleStripePaymentSuccess(event.data.object as any)
-          break
-        case 'payment_intent.payment_failed':
-          await this.handleStripePaymentFailed(event.data.object as any)
-          break
-        case 'account.updated':
-          await this.handleStripeAccountUpdated(event.data.object as any)
-          break
-        case 'customer.subscription.created':
-        case 'customer.subscription.updated':
-          await this.handleStripeSubscriptionUpdated(event.data.object as any)
-          break
-        case 'customer.subscription.deleted':
-          await this.handleStripeSubscriptionDeleted(event.data.object as any)
-          break
-        case 'invoice.payment_succeeded':
-          await this.handleStripeInvoicePaymentSucceeded(event.data.object as any)
-          break
-        case 'invoice.payment_failed':
-          await this.handleStripeInvoicePaymentFailed(event.data.object as any)
-          break
-        default:
-          console.log(`[WEBHOOK] Unhandled Stripe event: ${event.type}`)
-      }
-    } catch (error) {
-      console.error(`[WEBHOOK] Error processing Stripe event ${event.type}:`, error)
-      return response.status(500).send('Processing error')
-    }
+      const body = request.raw()
+      const signature = request.header('webhook-signature')
 
-    return response.status(200).send('OK')
+      if (!signature) {
+        console.error('[WEBHOOK] Missing Polar webhook signature')
+        return response.status(400).send('Missing signature')
+      }
+
+      // Verify webhook signature
+      const headers = {
+        'webhook-signature': signature,
+      }
+
+      if (!polarService.verifyWebhookSignature(body || '', headers)) {
+        console.error('[WEBHOOK] Invalid Polar webhook signature')
+        return response.status(400).send('Invalid signature')
+      }
+
+      // Parse the webhook event
+      const event = polarService.parseWebhookPayload(body || '')
+      console.log(`[WEBHOOK] Polar event received: ${event.type}`)
+
+      // Handle different event types
+      switch (event.type) {
+        case 'order.created':
+          await this.handlePolarOrderCreated(event.data)
+          break
+
+        case 'checkout.created':
+          console.log('[WEBHOOK] Polar checkout.created event received')
+          break
+
+        case 'checkout.updated':
+          console.log('[WEBHOOK] Polar checkout.updated event received')
+          break
+
+        default:
+          console.log(`[WEBHOOK] Unhandled Polar event type: ${event.type}`)
+      }
+
+      return response.status(200).send('OK')
+    } catch (error) {
+      console.error('[WEBHOOK] Error processing Polar webhook:', error)
+      return response.status(500).send('Webhook processing failed')
+    }
   }
 
-  private async handleStripePaymentSuccess(paymentIntent: {
-    id: string
-    amount: number
-    metadata: Record<string, string>
-  }) {
-    const bookingId = paymentIntent.metadata.booking_id
-    if (!bookingId) {
-      console.log(`[WEBHOOK] No booking_id in payment intent metadata: ${paymentIntent.id}`)
-      return
-    }
+  /**
+   * Handle Polar order.created webhook (payment successful)
+   */
+  private async handlePolarOrderCreated(order: any) {
+    try {
+      const metadata = order.metadata || {}
+      const bookingId = metadata.bookingId
 
-    let booking = await Booking.query()
-      .where('id', Number.parseInt(bookingId))
-      .preload('business')
-      .preload('service')
-      .first()
+      if (!bookingId) {
+        console.error('[WEBHOOK] Polar order missing bookingId in metadata')
+        return
+      }
 
-    if (!booking) {
-      console.log(`[WEBHOOK] No booking found for payment intent: ${paymentIntent.id}`)
-      return
-    }
+      const booking = await Booking.query()
+        .where('id', bookingId)
+        .preload('business')
+        .preload('service')
+        .first()
 
-    const existingTransaction = await Transaction.query()
-      .where('providerReference', paymentIntent.id)
-      .where('status', 'success')
-      .first()
+      if (!booking) {
+        console.error(`[WEBHOOK] Booking not found: ${bookingId}`)
+        return
+      }
 
-    if (existingTransaction) {
-      console.log(`[WEBHOOK] Transaction already processed for payment intent: ${paymentIntent.id}`)
-      if (booking.paymentStatus !== 'paid') {
+      // Idempotency check
+      if (booking.paymentStatus === 'paid' && booking.status === 'confirmed') {
+        console.log(`[WEBHOOK] Booking ${bookingId} already marked as paid`)
+        return
+      }
+
+      const amount = order.amount / 100 // Polar sends amount in smallest currency unit
+      const currency = order.currency.toUpperCase()
+      const platformFee = Math.round(amount * 0.025) // 2.5% platform fee
+
+      await db.transaction(async (trx) => {
+        // Update booking
         booking.paymentStatus = 'paid'
         booking.status = 'confirmed'
-        await booking.save()
-      }
-      return
-    }
+        booking.paymentReference = order.id
+        await booking.useTransaction(trx).save()
 
-    if (!booking) {
-      console.log(`[WEBHOOK] No booking found for payment intent: ${paymentIntent.id}`)
-      return
-    }
-
-    try {
-      await Booking.transaction(async (trx) => {
-        const bookingInTrx = await Booking.query({ client: trx }).where('id', booking!.id).first()
-
-        if (!bookingInTrx) {
-          throw new Error('Booking not found in transaction')
-        }
-
-        if (bookingInTrx.paymentStatus === 'paid') {
-          console.log(`[WEBHOOK] Booking #${bookingInTrx.id} already paid (checked in transaction)`)
-          return
-        }
-
-        bookingInTrx.paymentStatus = 'paid'
-        bookingInTrx.status = 'confirmed'
-        await bookingInTrx.useTransaction(trx).save()
-
-        // Get currency from payment intent
-        let paymentCurrency = bookingInTrx.business.currency || 'NGN'
-        try {
-          const fullPaymentIntent = await stripeService.retrievePaymentIntent(paymentIntent.id)
-          paymentCurrency = fullPaymentIntent.currency.toUpperCase()
-        } catch (error) {
-          console.warn('[WEBHOOK] Could not retrieve payment intent for currency:', error)
-        }
-
-        const amount = paymentIntent.amount / 100
-        const platformFee = Math.round(amount * 0.025)
-
+        // Create transaction record
         const transaction = new Transaction()
-        transaction.businessId = bookingInTrx.businessId
-        transaction.bookingId = bookingInTrx.id
+        transaction.businessId = booking.businessId
+        transaction.bookingId = booking.id
         transaction.amount = amount
         transaction.platformFee = platformFee
         transaction.businessAmount = amount - platformFee
         transaction.status = 'success'
-        transaction.provider = 'stripe'
-        transaction.reference = bookingInTrx.paymentReference || paymentIntent.id
-        transaction.providerReference = paymentIntent.id
-        transaction.currency = paymentCurrency
+        transaction.provider = 'polar'
+        transaction.type = 'payment'
+        transaction.direction = 'credit'
+        transaction.reference = order.id
+        transaction.providerReference = order.id
+        transaction.currency = currency
         await transaction.useTransaction(trx).save()
-
-        // Credit wallet
-        await walletService.credit(
-          bookingInTrx.businessId,
-          paymentCurrency,
-          transaction.businessAmount,
-          {
-            transactionId: transaction.id,
-            reference: transaction.reference,
-            description: `Payment for booking #${bookingInTrx.id}`,
-          }
-        )
-
-        booking = bookingInTrx
       })
 
+      // Send confirmation email
+      try {
+        await emailService.sendBookingConfirmation({
+          customerName: booking.customerName,
+          customerEmail: booking.customerEmail,
+          businessName: booking.business.name,
+          serviceName: booking.service?.name || '',
+          date: booking.date.toFormat('EEE, MMM d, yyyy'),
+          time: booking.startTime,
+          duration: `${booking.service?.durationMinutes || 30} minutes`,
+          amount,
+          currency,
+          reference: order.id,
+        })
+      } catch (error) {
+        console.error('[EMAIL] Failed to send booking confirmation:', error)
+      }
+
+      // Generate receipt
       const transaction = await Transaction.query()
         .where('bookingId', booking.id)
         .where('status', 'success')
-        .where('providerReference', paymentIntent.id)
+        .where('providerReference', order.id)
         .first()
 
       if (transaction) {
-        receiptService.generateReceipt(booking, transaction).catch((error: unknown) => {
+        try {
+          await receiptService.generateReceipt(booking, transaction)
+          console.log(`[WEBHOOK] Receipt generated for booking ${booking.id}`)
+        } catch (error) {
           console.error('[WEBHOOK] Failed to generate receipt:', error)
-        })
+        }
       }
 
-      const dateFormatted = booking.date.toFormat('EEEE, MMMM d, yyyy')
-
-      // Get currency from payment intent for Stripe - retrieve full payment intent
-      let paymentCurrency = booking.business.currency || 'NGN'
-      try {
-        const fullPaymentIntent = await stripeService.retrievePaymentIntent(paymentIntent.id)
-        paymentCurrency = fullPaymentIntent.currency.toUpperCase()
-      } catch (error) {
-        console.warn('[WEBHOOK] Could not retrieve payment intent for currency:', error)
-      }
-
-      await emailService.sendBookingConfirmation({
-        customerName: booking.customerName,
-        customerEmail: booking.customerEmail,
-        businessName: booking.business.name,
-        serviceName: booking.service.name,
-        date: dateFormatted,
-        time: `${booking.startTime} - ${booking.endTime}`,
-        duration: booking.service.formattedDuration,
-        amount: transaction?.amount || booking.amount,
-        currency: paymentCurrency,
-        reference: booking.paymentReference?.substring(0, 8).toUpperCase() || '',
-      })
-
-      await emailService.sendBusinessNotification({
-        businessEmail: booking.business.email,
-        businessName: booking.business.name,
-        customerName: booking.customerName,
-        customerEmail: booking.customerEmail,
-        customerPhone: booking.customerPhone,
-        serviceName: booking.service.name,
-        date: dateFormatted,
-        time: `${booking.startTime} - ${booking.endTime}`,
-        amount: booking.amount,
-      })
-
-      console.log(`[WEBHOOK] Booking #${booking.id} confirmed via Stripe webhook`)
+      console.log(`[WEBHOOK] Successfully processed Polar order for booking ${booking.id}`)
     } catch (error) {
-      console.error(
-        `[WEBHOOK] Error processing payment_intent.succeeded for booking #${booking.id}:`,
-        error
-      )
+      console.error('[WEBHOOK] Error handling Polar order.created:', error)
       throw error
     }
   }
 
-  private async handleStripePaymentFailed(paymentIntent: {
-    id: string
-    metadata: Record<string, string>
-    last_payment_error?: { message?: string }
-  }) {
-    const bookingId = paymentIntent.metadata.booking_id
-    if (!bookingId) {
-      return
+  /**
+   * Handle Flutterwave webhooks
+   */
+  async flutterwave({ request, response }: HttpContext) {
+    if (!flutterwaveService.isConfigured()) {
+      console.error('[WEBHOOK] Flutterwave is not configured')
+      return response.status(503).send('Flutterwave webhook handler not configured')
     }
 
-    const booking = await Booking.find(Number.parseInt(bookingId))
-    if (!booking) {
-      return
-    }
-
-    booking.paymentAttempts = (booking.paymentAttempts || 0) + 1
-    booking.lastPaymentError = paymentIntent.last_payment_error?.message || 'Payment failed'
-    await booking.save()
-
-    await booking.load('business')
-    await booking.load('service')
-    const appUrl = env.get('APP_URL', `https://${env.get('APP_DOMAIN', 'fastappoint.com')}`)
-    const paymentUrl = `${appUrl}/book/${booking.business.slug}/booking/${booking.id}/payment`
-    const manageUrl = `${appUrl}/book/${booking.business.slug}/booking/${booking.id}/manage`
-
-    await emailService
-      .sendPaymentFailureNotification({
-        customerName: booking.customerName,
-        customerEmail: booking.customerEmail,
-        businessName: booking.business.name,
-        serviceName: booking.service.name,
-        amount: booking.amount,
-        errorMessage: booking.lastPaymentError || 'Payment failed',
-        bookingUrl: manageUrl,
-        paymentUrl: paymentUrl,
-      })
-      .catch((error) => {
-        console.error('[WEBHOOK] Failed to send payment failure email:', error)
-      })
-
-    let paymentCurrency = booking.business.currency || 'NGN'
     try {
-      const fullPaymentIntent = await stripeService.retrievePaymentIntent(paymentIntent.id)
-      paymentCurrency = fullPaymentIntent.currency.toUpperCase()
+      // Verify webhook signature
+      const signature = request.header('verif-hash')
+
+      if (!signature) {
+        console.error('[WEBHOOK] Missing Flutterwave webhook signature')
+        return response.status(400).send('Missing signature')
+      }
+
+      if (!flutterwaveService.verifyWebhookSignature(signature)) {
+        console.error('[WEBHOOK] Invalid Flutterwave webhook signature')
+        return response.status(400).send('Invalid signature')
+      }
+
+      const payload = request.body()
+      const event = payload.event
+      const data = payload.data
+
+      console.log(`[WEBHOOK] Flutterwave event received: ${event}`)
+
+      // Handle different event types
+      switch (event) {
+        case 'charge.completed':
+          await this.handleFlutterwaveChargeCompleted(data)
+          break
+
+        default:
+          console.log(`[WEBHOOK] Unhandled Flutterwave event: ${event}`)
+      }
+
+      return response.status(200).send('OK')
     } catch (error) {
-      console.warn('[WEBHOOK] Could not retrieve payment intent for currency:', error)
+      console.error('[WEBHOOK] Error processing Flutterwave webhook:', error)
+      return response.status(500).send('Internal server error')
     }
-
-    await Transaction.create({
-      businessId: booking.businessId,
-      bookingId: booking.id,
-      amount: 0,
-      platformFee: 0,
-      businessAmount: 0,
-      status: 'failed',
-      provider: 'stripe',
-      currency: paymentCurrency,
-      reference: booking.paymentReference || paymentIntent.id,
-      providerReference: paymentIntent.id,
-    })
-
-    console.log(`[WEBHOOK] Recorded failed Stripe payment for booking #${booking.id}`)
   }
 
-  private async handleStripeAccountUpdated(account: {
-    id: string
-    charges_enabled: boolean
-    payouts_enabled: boolean
-    details_submitted: boolean
-  }) {
-    const business = await Business.query().where('stripeAccountId', account.id).first()
-    if (!business) {
-      return
+  /**
+   * Handle successful Flutterwave charge
+   */
+  private async handleFlutterwaveChargeCompleted(data: any) {
+    try {
+      const { tx_ref: transactionReference, status, amount, currency, id: transactionId } = data
+
+      if (status !== 'successful') {
+        console.log(`[WEBHOOK] Flutterwave charge not successful: ${status}`)
+        return
+      }
+
+      // Check if this is a subscription payment (format: subscription-{planId}-{businessId}-{timestamp})
+      const subscriptionMatch = transactionReference.match(/^subscription-(\d+)-(\d+)-\d+$/)
+      if (subscriptionMatch) {
+        await this.handleFlutterwaveSubscriptionPayment(data)
+        return
+      }
+
+      // Extract booking ID from transaction reference (format: booking-{id}-{timestamp})
+      const bookingMatch = transactionReference.match(/^booking-(\d+)-\d+$/)
+      if (!bookingMatch) {
+        console.error(`[WEBHOOK] Invalid Flutterwave tx_ref format: ${transactionReference}`)
+        return
+      }
+
+      const bookingId = Number.parseInt(bookingMatch[1])
+
+      const booking = await Booking.query()
+        .where('id', bookingId)
+        .preload('business')
+        .preload('service')
+        .first()
+
+      if (!booking) {
+        console.error(`[WEBHOOK] Booking not found for tx_ref: ${transactionReference}`)
+        return
+      }
+
+      // Idempotency check
+      if (booking.paymentStatus === 'paid' && booking.status === 'confirmed') {
+        console.log(`[WEBHOOK] Booking ${bookingId} already processed, skipping`)
+        return
+      }
+
+      // Calculate platform fee (2.5%)
+      const platformFee = Math.round(amount * 0.025)
+
+      // Update booking and create transaction record in a database transaction
+      await db.transaction(async (trx) => {
+        // Update booking
+        booking.paymentStatus = 'paid'
+        booking.status = 'confirmed'
+        booking.paymentReference = transactionReference
+        await booking.useTransaction(trx).save()
+
+        // Create transaction record
+        const transaction = new Transaction()
+        transaction.businessId = booking.businessId
+        transaction.bookingId = booking.id
+        transaction.amount = amount
+        transaction.platformFee = platformFee
+        transaction.businessAmount = amount - platformFee
+        transaction.status = 'success'
+        transaction.provider = 'flutterwave'
+        transaction.type = 'payment'
+        transaction.direction = 'credit'
+        transaction.reference = transactionReference
+        transaction.providerReference = transactionId
+        transaction.currency = currency
+        await transaction.useTransaction(trx).save()
+      })
+
+      // Send confirmation email
+      try {
+        await emailService.sendBookingConfirmation({
+          customerName: booking.customerName,
+          customerEmail: booking.customerEmail,
+          businessName: booking.business.name,
+          serviceName: booking.service?.name || '',
+          date: booking.date.toFormat('EEE, MMM d, yyyy'),
+          time: booking.startTime,
+          duration: `${booking.service?.durationMinutes || 30} minutes`,
+          amount,
+          currency,
+          reference: transactionReference,
+        })
+      } catch (error) {
+        console.error('[EMAIL] Failed to send booking confirmation:', error)
+      }
+
+      // Generate receipt
+      const transaction = await Transaction.query()
+        .where('bookingId', booking.id)
+        .where('status', 'success')
+        .where('providerReference', transactionId)
+        .first()
+
+      if (transaction) {
+        try {
+          await receiptService.generateReceipt(booking, transaction)
+          console.log(`[WEBHOOK] Receipt generated for booking ${booking.id}`)
+        } catch (error) {
+          console.error('[WEBHOOK] Failed to generate receipt:', error)
+        }
+      }
+
+      console.log(`[WEBHOOK] Successfully processed Flutterwave charge for booking ${booking.id}`)
+    } catch (error) {
+      console.error('[WEBHOOK] Error handling Flutterwave charge.completed:', error)
+      throw error
     }
-
-    business.stripeChargesEnabled = account.charges_enabled
-    business.stripePayoutsEnabled = account.payouts_enabled
-    business.stripeAccountStatus = account.details_submitted ? 'complete' : 'incomplete'
-    await business.save()
-
-    console.log(`[WEBHOOK] Updated Stripe account status for business #${business.id}`)
   }
 
-  private async handleStripeSubscriptionUpdated(subscription: {
-    id: string
-    status: string
-    current_period_start: number
-    current_period_end: number
-    cancel_at_period_end: boolean
-    metadata: Record<string, string>
-  }) {
-    const subscriptionRecord = await Subscription.query()
-      .where('stripeSubscriptionId', subscription.id)
-      .first()
+  /**
+   * Handle Flutterwave subscription payment
+   */
+  private async handleFlutterwaveSubscriptionPayment(data: any) {
+    try {
+      const { tx_ref: transactionReference, status, amount, currency } = data
 
-    if (!subscriptionRecord) {
-      return
+      if (status !== 'successful') {
+        console.log(`[WEBHOOK] Flutterwave subscription payment not successful: ${status}`)
+        return
+      }
+
+      // Extract planId and businessId from reference (format: subscription-{planId}-{businessId}-{timestamp})
+      const match = transactionReference.match(/^subscription-(\d+)-(\d+)-\d+$/)
+      if (!match) {
+        console.error(`[WEBHOOK] Invalid subscription tx_ref format: ${transactionReference}`)
+        return
+      }
+
+      const planId = Number.parseInt(match[1])
+      const businessId = Number.parseInt(match[2])
+
+      console.log(`[WEBHOOK] Processing subscription payment for business ${businessId}, plan ${planId}`)
+
+      // The subscription will be created when the user completes the verify flow
+      // This webhook just confirms the payment was successful
+      // We don't create the subscription here because we need the user's session
+
+      console.log(`[WEBHOOK] Flutterwave subscription payment confirmed: ${transactionReference}`)
+    } catch (error) {
+      console.error('[WEBHOOK] Error handling Flutterwave subscription payment:', error)
+      throw error
     }
-
-    subscriptionRecord.status =
-      subscription.status === 'active'
-        ? 'active'
-        : subscription.status === 'trialing'
-          ? 'trialing'
-          : subscription.status === 'past_due'
-            ? 'past_due'
-            : 'cancelled'
-    subscriptionRecord.currentPeriodStart = DateTime.fromSeconds(subscription.current_period_start)
-    subscriptionRecord.currentPeriodEnd = DateTime.fromSeconds(subscription.current_period_end)
-    subscriptionRecord.cancelAtPeriodEnd = subscription.cancel_at_period_end
-
-    if (subscription.status === 'cancelled') {
-      subscriptionRecord.cancelledAt = DateTime.now()
-    }
-
-    await subscriptionRecord.save()
-
-    const business = await Business.findOrFail(subscriptionRecord.businessId)
-    business.subscriptionStatus =
-      subscription.status === 'active'
-        ? 'active'
-        : subscription.status === 'past_due'
-          ? 'past_due'
-          : 'cancelled'
-    business.subscriptionEndsAt = subscriptionRecord.currentPeriodEnd
-    await business.save()
-
-    console.log(`[WEBHOOK] Updated Stripe subscription ${subscription.id}`)
-  }
-
-  private async handleStripeSubscriptionDeleted(subscription: {
-    id: string
-    metadata: Record<string, string>
-  }) {
-    const subscriptionRecord = await Subscription.query()
-      .where('stripeSubscriptionId', subscription.id)
-      .first()
-
-    if (!subscriptionRecord) {
-      return
-    }
-
-    subscriptionRecord.status = 'cancelled'
-    subscriptionRecord.cancelledAt = DateTime.now()
-    await subscriptionRecord.save()
-
-    const business = await Business.findOrFail(subscriptionRecord.businessId)
-    business.subscriptionStatus = 'cancelled'
-    business.subscriptionEndsAt = DateTime.now()
-    await business.save()
-
-    console.log(`[WEBHOOK] Cancelled Stripe subscription ${subscription.id}`)
-  }
-
-  private async handleStripeInvoicePaymentSucceeded(invoice: {
-    id: string
-    subscription: string | null
-    amount_paid: number
-    currency: string
-    metadata: Record<string, string>
-  }) {
-    if (!invoice.subscription) {
-      return
-    }
-
-    const subscriptionRecord = await Subscription.query()
-      .where('stripeSubscriptionId', invoice.subscription)
-      .first()
-
-    if (!subscriptionRecord) {
-      return
-    }
-
-    await SubscriptionPayment.create({
-      subscriptionId: subscriptionRecord.id,
-      amount: invoice.amount_paid / 100,
-      status: 'success',
-      stripeInvoiceId: invoice.id,
-      paidAt: DateTime.now(),
-    })
-
-    subscriptionRecord.status = 'active'
-    await subscriptionRecord.save()
-
-    const business = await Business.findOrFail(subscriptionRecord.businessId)
-    business.subscriptionStatus = 'active'
-    await business.save()
-
-    console.log(
-      `[WEBHOOK] Recorded successful invoice payment for subscription ${invoice.subscription}`
-    )
-  }
-
-  private async handleStripeInvoicePaymentFailed(invoice: {
-    id: string
-    subscription: string | null
-    metadata: Record<string, string>
-  }) {
-    if (!invoice.subscription) {
-      return
-    }
-
-    const subscriptionRecord = await Subscription.query()
-      .where('stripeSubscriptionId', invoice.subscription)
-      .first()
-
-    if (!subscriptionRecord) {
-      return
-    }
-
-    subscriptionRecord.status = 'past_due'
-    await subscriptionRecord.save()
-
-    const business = await Business.findOrFail(subscriptionRecord.businessId)
-    business.subscriptionStatus = 'past_due'
-    await business.save()
-
-    console.log(
-      `[WEBHOOK] Recorded failed invoice payment for subscription ${invoice.subscription}`
-    )
   }
 }

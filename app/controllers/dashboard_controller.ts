@@ -2,10 +2,8 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Business from '#models/business'
 import Booking from '#models/booking'
 import Transaction from '#models/transaction'
-import WalletTransaction from '#models/wallet_transaction'
 import { DateTime } from 'luxon'
 import currencyService from '../services/currency_service.js'
-import walletService from '../services/wallet_service.js'
 
 export default class DashboardController {
   async index({ view, auth, response }: HttpContext) {
@@ -49,21 +47,22 @@ export default class DashboardController {
       .whereIn('status', ['confirmed', 'completed'])
       .count('* as total')
 
-    // Get revenue from wallet transactions (credits) for this month
-    const monthWalletTransactions = await WalletTransaction.query()
+    // Get revenue from transactions (successful payments) for this month
+    const monthTransactions = await Transaction.query()
       .where('businessId', business.id)
-      .where('type', 'credit')
+      .where('type', 'payment')
+      .where('status', 'success')
       .where('createdAt', '>=', monthStart!)
-      .select('currency', 'amount')
+      .select('currency', 'businessAmount')
       .exec()
 
     const businessCurrency = business.currency || 'NGN'
     const revenueByCurrency: Record<string, number> = {}
     let totalRevenueInBaseCurrency = 0
 
-    for (const walletTx of monthWalletTransactions) {
-      const currency = walletTx.currency || businessCurrency
-      const amount = walletTx.amount
+    for (const tx of monthTransactions) {
+      const currency = tx.currency || businessCurrency
+      const amount = tx.businessAmount
 
       // Sum by currency
       if (!revenueByCurrency[currency]) {

@@ -21,9 +21,12 @@ export default await Env.create(new URL('../', import.meta.url), {
   PAYSTACK_SECRET_KEY: Env.schema.string.optional(),
   PAYSTACK_PUBLIC_KEY: Env.schema.string.optional(),
 
-  STRIPE_SECRET_KEY: Env.schema.string.optional(),
-  STRIPE_PUBLIC_KEY: Env.schema.string.optional(),
-  STRIPE_WEBHOOK_SECRET: Env.schema.string.optional(),
+  POLAR_ACCESS_TOKEN: Env.schema.string.optional(),
+  POLAR_WEBHOOK_SECRET: Env.schema.string.optional(),
+
+  FLUTTERWAVE_PUBLIC_KEY: Env.schema.string.optional(),
+  FLUTTERWAVE_SECRET_KEY: Env.schema.string.optional(),
+  FLUTTERWAVE_WEBHOOK_SECRET: Env.schema.string.optional(),
 
   BREVO_API_KEY: Env.schema.string.optional(),
   FROM_EMAIL: Env.schema.string.optional(),

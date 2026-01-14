@@ -1,144 +1,121 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Payment - {{ booking.business.name }}</title>
-  <link rel="preconnect" href="https://fonts.bunny.net" />
-  <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700&display=swap" rel="stylesheet" />
+@layout('layouts/app')
 
-  <style>
-    :root {
-      --sand-1: #fdfdfc;
-      --sand-2: #f9f9f8;
-      --sand-3: #f1f0ef;
-      --sand-4: #e9e8e6;
-      --sand-5: #e2e1de;
-      --sand-6: #dad9d6;
-      --sand-7: #cfceca;
-      --sand-8: #bcbbb5;
-      --sand-9: #8d8d86;
-      --sand-10: #82827c;
-      --sand-11: #63635e;
-      --sand-12: #21201c;
-      --success: #10b981;
-      --error: #ef4444;
-      --warning: #f59e0b;
-    }
-  </style>
+@set('title', 'Payment - ' + booking.business.name)
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ["Instrument Sans", "sans-serif"]
-          },
-          colors: {
-            primary: {
-              DEFAULT: "#5A45FF",
-              lighter: "#a599ff"
-            },
-            sand: {
-              1: "var(--sand-1)",
-              2: "var(--sand-2)",
-              3: "var(--sand-3)",
-              4: "var(--sand-4)",
-              5: "var(--sand-5)",
-              6: "var(--sand-6)",
-              7: "var(--sand-7)",
-              8: "var(--sand-8)",
-              9: "var(--sand-9)",
-              10: "var(--sand-10)",
-              11: "var(--sand-11)",
-              12: "var(--sand-12)"
-            },
-            success: "var(--success)",
-            error: "var(--error)",
-            warning: "var(--warning)"
-          }
-        }
-      }
-    };
-  </script>
+@section('content')
   @if(paymentProvider === 'paystack')
     <script src="https://js.paystack.co/v1/inline.js"></script>
-  @else
-    <script src="https://js.stripe.com/v3/"></script>
   @endif
-</head>
-<body class="bg-sand-2 text-sand-12 min-h-screen font-sans">
-  <div class="max-w-md mx-auto px-4 py-8">
-    {{-- Business Header --}}
-    <div class="text-center mb-8">
-      <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-        <span class="text-2xl font-bold text-primary">{{ booking.business.name.charAt(0) }}</span>
-      </div>
-      <h1 class="text-xl font-bold text-sand-12">{{ booking.business.name }}</h1>
+
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <div class="mb-6">
+      <a href="/book/{{ booking.business.slug }}" class="text-sm text-primary hover:text-primary-dark font-semibold inline-flex items-center gap-2 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Booking
+      </a>
+    </div>
+    {{-- Page Header --}}
+    <div class="mb-6">
+      <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900">Complete Payment</h1>
+      <p class="text-sm text-neutral-600 mt-1">{{ booking.business.name }}</p>
     </div>
 
     {{-- Booking Summary --}}
-    <div class="bg-white border border-sand-7 rounded-xl p-6 mb-6">
-      <h2 class="text-lg font-semibold text-sand-12 mb-4">Booking Summary</h2>
+    <div class="bg-white border border-neutral-200 rounded-xl p-6 mb-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h2 class="text-lg font-semibold text-neutral-900">Booking Summary</h2>
+      </div>
 
-      <div class="space-y-3">
-        <div class="flex justify-between">
-          <span class="text-sand-11">Service</span>
-          <span class="font-medium text-sand-12">{{ booking.service.name }}</span>
+      <div class="space-y-0">
+        <div class="flex items-start justify-between py-3 border-b border-neutral-100">
+          <div class="flex items-center gap-2 text-neutral-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <span class="text-sm">Service</span>
+          </div>
+          <span class="font-semibold text-neutral-900 text-right">{{ booking.service.name }}</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-sand-11">Date</span>
-          <span class="font-medium text-sand-12">{{ booking.date.toFormat('EEE, MMM d, yyyy') }}</span>
+        <div class="flex items-start justify-between py-3 border-b border-neutral-100">
+          <div class="flex items-center gap-2 text-neutral-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <span class="text-sm">Date</span>
+          </div>
+          <span class="font-semibold text-neutral-900 text-right">{{ booking.date.toFormat('EEEE, MMMM d, yyyy') }}</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-sand-11">Time</span>
-          <span class="font-medium text-sand-12">{{ booking.startTime }} - {{ booking.endTime }}</span>
+        <div class="flex items-start justify-between py-3 border-b border-neutral-100">
+          <div class="flex items-center gap-2 text-neutral-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span class="text-sm">Time</span>
+          </div>
+          <span class="font-semibold text-neutral-900">{{ booking.startTime }} - {{ booking.endTime }}</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-sand-11">Duration</span>
-          <span class="font-medium text-sand-12">{{ booking.service.formattedDuration }}</span>
+        <div class="flex items-start justify-between py-3 border-b border-neutral-100">
+          <div class="flex items-center gap-2 text-neutral-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span class="text-sm">Duration</span>
+          </div>
+          <span class="font-semibold text-neutral-900">{{ booking.service.formattedDuration }}</span>
         </div>
-        <div class="border-t border-sand-6 pt-3 mt-3 space-y-2">
-          @if(booking.depositAmount > 0)
-            <div class="flex justify-between">
-              <span class="text-sand-11">Service Total</span>
-              <span class="text-sand-12">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(totalAmount || (convertedDepositAmount + convertedBalanceDue)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-sand-11">Deposit (due now)</span>
-              <span class="font-bold text-primary text-lg">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(convertedAmount || convertedDepositAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-sand-9">Balance (due at appointment)</span>
-              <span class="text-sand-11">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(convertedBalanceDue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-            </div>
-          @else
-            <div class="flex justify-between">
-              <span class="font-medium text-sand-12">Total</span>
-              <span class="font-bold text-primary text-lg">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(convertedAmount || booking.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-            </div>
-          @endif
-        </div>
+        @if(booking.depositAmount > 0)
+          <div class="flex items-start justify-between py-3 border-b border-neutral-100">
+            <span class="text-sm text-neutral-600">Service Total</span>
+            <span class="font-semibold text-neutral-900">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(totalAmount || (convertedDepositAmount + convertedBalanceDue)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+          </div>
+          <div class="flex items-start justify-between py-3 border-b border-neutral-100">
+            <span class="text-sm text-neutral-600">Balance (due at appointment)</span>
+            <span class="font-semibold text-neutral-600">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(convertedBalanceDue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+          </div>
+          <div class="flex items-start justify-between py-3">
+            <span class="text-sm font-medium text-neutral-900">Deposit (due now)</span>
+            <span class="text-2xl font-bold text-success">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(convertedAmount || convertedDepositAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+          </div>
+        @else
+          <div class="flex items-start justify-between py-3">
+            <span class="text-sm font-medium text-neutral-900">Total Amount</span>
+            <span class="text-2xl font-bold text-success">{{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || 'NGN') }}{{ Number(convertedAmount || booking.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+          </div>
+        @endif
       </div>
     </div>
 
     {{-- Customer Info --}}
-    <div class="bg-white border border-sand-7 rounded-xl p-6 mb-6">
-      <h3 class="font-medium text-sand-12 mb-3">Your Information</h3>
-      <div class="space-y-2 text-sm">
-        <div class="flex justify-between">
-          <span class="text-sand-11">Name</span>
-          <span class="text-sand-12">{{ booking.customerName }}</span>
+    <div class="bg-white border border-neutral-200 rounded-xl p-6 mb-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
         </div>
-        <div class="flex justify-between">
-          <span class="text-sand-11">Email</span>
-          <span class="text-sand-12">{{ booking.customerEmail }}</span>
+        <h3 class="text-lg font-semibold text-neutral-900">Your Information</h3>
+      </div>
+
+      <div class="space-y-0">
+        <div class="flex items-start justify-between py-3 border-b border-neutral-100">
+          <span class="text-sm text-neutral-600">Name</span>
+          <span class="font-semibold text-neutral-900 text-right">{{ booking.customerName }}</span>
+        </div>
+        <div class="flex items-start justify-between py-3 border-b border-neutral-100">
+          <span class="text-sm text-neutral-600">Email</span>
+          <span class="font-semibold text-neutral-900 text-right">{{ booking.customerEmail }}</span>
         </div>
         @if(booking.customerPhone)
-          <div class="flex justify-between">
-            <span class="text-sand-11">Phone</span>
-            <span class="text-sand-12">{{ booking.customerPhone }}</span>
+          <div class="flex items-start justify-between py-3">
+            <span class="text-sm text-neutral-600">Phone</span>
+            <span class="font-semibold text-neutral-900 text-right">{{ booking.customerPhone }}</span>
           </div>
         @endif
       </div>
@@ -146,56 +123,49 @@
 
     {{-- Payment Status & Timer --}}
     @if(timeRemaining !== null && timeRemaining > 0)
-      <div class="bg-warning/10 border border-warning/20 rounded-xl p-4 mb-4">
-        <div class="flex items-center justify-between">
-          <span class="text-sm text-sand-12">Time remaining to complete payment:</span>
-          <span id="timer" class="font-mono font-semibold text-warning text-lg">--:--</span>
+      <div class="bg-warning/10 border border-warning/20 rounded-lg p-4 mb-6 flex items-center gap-3">
+        <svg class="w-5 h-5 text-warning flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div class="flex-1 flex items-center justify-between">
+          <span class="text-sm font-medium text-neutral-900">Time remaining to complete payment:</span>
+          <span id="timer" class="font-mono font-bold text-warning text-lg">--:--</span>
         </div>
       </div>
     @endif
 
     {{-- Error Message --}}
     @if(errorMessage)
-      <div class="bg-error/10 border border-error/20 rounded-xl p-4 mb-4">
-        <div class="flex items-start gap-2">
-          <svg class="w-5 h-5 text-error mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          <div>
-            <p class="text-sm font-medium text-error mb-1">Payment Failed</p>
-            <p class="text-sm text-sand-11">{{ errorMessage }}</p>
-          </div>
+      <div class="bg-error/10 border border-error/20 rounded-lg p-4 mb-6 flex items-start gap-3">
+        <svg class="w-5 h-5 text-error mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div>
+          <p class="text-sm font-semibold text-error mb-1">Payment Failed</p>
+          <p class="text-sm text-neutral-600">{{ errorMessage }}</p>
         </div>
       </div>
     @endif
 
     {{-- Payment Attempts Info --}}
     @if(booking.paymentAttempts > 0)
-      <div class="bg-sand-3 rounded-lg p-3 mb-4 text-center">
-        <p class="text-sm text-sand-11">
-          Payment attempts: <span class="font-medium">{{ booking.paymentAttempts }}/3</span>
+      <div class="bg-neutral-50 border border-neutral-200 rounded-lg p-4 mb-6">
+        <p class="text-sm text-neutral-600 text-center">
+          Payment attempts: <span class="font-semibold text-neutral-900">{{ booking.paymentAttempts }}/3</span>
         </p>
-      </div>
-    @endif
-
-    {{-- Stripe Card Element (only shown for Stripe) --}}
-    @if(paymentProvider === 'stripe')
-      <div class="bg-white border border-sand-7 rounded-xl p-6 mb-6">
-        <h3 class="font-medium text-sand-12 mb-4">Payment Details</h3>
-        <div id="stripe-card-element" class="p-3 border border-sand-7 rounded-lg mb-3">
-          <!-- Stripe Elements will create form elements here -->
-        </div>
-        <div id="stripe-card-errors" class="text-sm text-error mt-2" role="alert"></div>
       </div>
     @endif
 
     {{-- Pay Button --}}
     <button
       id="payBtn"
-      onclick="{{ paymentProvider === 'paystack' ? 'payWithPaystack()' : 'payWithStripe()' }}"
-      class="w-full py-4 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+      onclick="{{ paymentProvider === 'paystack' ? 'payWithPaystack()' : 'payWithFlutterwave()' }}"
+      class="w-full py-4 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-colors text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       {{ timeRemaining === 0 ? 'disabled' : '' }}
     >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+      </svg>
       @if(timeRemaining === 0)
         Payment Expired
       @elseif(booking.depositAmount > 0)
@@ -209,19 +179,20 @@
     @if(canRetry && booking.paymentAttempts > 0 && booking.paymentAttempts < 3)
       <button
         onclick="location.reload()"
-        class="w-full py-3 mt-3 border-2 border-primary text-primary font-medium rounded-xl hover:bg-primary/5"
+        class="w-full py-3 mt-3 border-2 border-primary text-primary font-semibold rounded-xl hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
       >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
         Try Again
       </button>
     @endif
 
-    <p class="text-center text-sm text-sand-11 mt-4">
-      Secure payment powered by {{ paymentProvider === 'paystack' ? 'Paystack' : 'Stripe' }}
-    </p>
-
-    {{-- Footer --}}
-    <div class="mt-12 text-center text-sm text-sand-10">
-      Powered by <a href="/" class="text-primary hover:underline">FastAppoint</a>
+    <div class="mt-6 flex items-center justify-center gap-2 text-sm text-neutral-600">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+      </svg>
+      <p>Secure payment powered by {{ paymentProvider === 'paystack' ? 'Paystack' : 'Flutterwave' }}</p>
     </div>
   </div>
 
@@ -320,63 +291,20 @@
         });
         handler.openIframe();
       }
-    @else
-      const stripe = Stripe('{{ stripePublicKey }}');
-      let card;
-      let clientSecret;
-      let paymentIntentId;
-
-      // Initialize Stripe Elements
-      const elements = stripe.elements();
-      card = elements.create('card', {
-        style: {
-          base: {
-            fontSize: '16px',
-            color: '#21201c',
-            '::placeholder': {
-              color: '#82827c',
-            },
-          },
-        },
-      });
-
-      // Mount card element
-      const cardElement = document.getElementById('stripe-card-element');
-      if (cardElement) {
-        card.mount('#stripe-card-element');
-      }
-
-      // Handle real-time validation errors
-      card.on('change', function(event) {
-        const displayError = document.getElementById('stripe-card-errors');
-        if (displayError) {
-          if (event.error) {
-            displayError.textContent = event.error.message;
-          } else {
-            displayError.textContent = '';
-          }
-        }
-      });
-
-      async function payWithStripe() {
+    @elseif(paymentProvider === 'flutterwave')
+      async function payWithFlutterwave() {
         const payBtn = document.getElementById('payBtn');
-        const displayError = document.getElementById('stripe-card-errors');
-
         if (payBtn && payBtn.disabled) {
           return;
         }
 
-        if (displayError) {
-          displayError.textContent = '';
-        }
-
         if (payBtn) {
           payBtn.disabled = true;
-          payBtn.textContent = 'Processing...';
+          payBtn.textContent = 'Redirecting to Flutterwave...';
         }
 
         try {
-          // Create payment intent via backend
+          // Create payment link via backend
           const response = await fetch('/book/{{ booking.business.slug }}/booking/{{ booking.id }}/create-payment-intent?currency={{ customerCurrency || businessCurrency || 'NGN' }}', {
             method: 'POST',
             headers: {
@@ -388,44 +316,25 @@
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to create payment intent');
+            throw new Error(errorData.error || 'Failed to create payment link');
           }
 
           const data = await response.json();
-          clientSecret = data.clientSecret;
-          paymentIntentId = data.paymentIntentId;
 
-          // Confirm payment with card element
-          const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-              card: card,
-            }
-          });
-
-          if (error) {
-            if (displayError) {
-              displayError.textContent = error.message;
-            }
-            if (payBtn) {
-              payBtn.disabled = false;
-              payBtn.textContent = '{{ booking.depositAmount > 0 ? "Pay Deposit" : "Pay" }} {{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || "NGN") }}{{ Number(convertedAmount || booking.amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}';
-            }
-          } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-            // Payment succeeded, redirect to verify
-            window.location.href = '/book/{{ booking.business.slug }}/booking/{{ booking.id }}/verify?payment_intent=' + paymentIntentId + '&currency={{ customerCurrency || businessCurrency || "NGN" }}';
+          // Redirect to Flutterwave checkout
+          if (data.paymentLink) {
+            window.location.href = data.paymentLink;
+          } else {
+            throw new Error('No payment link received');
           }
         } catch (error) {
           console.error('Error:', error);
-          if (displayError) {
-            displayError.textContent = error.message || 'An error occurred. Please try again.';
-          }
+          alert(error.message || 'Failed to initialize payment. Please try again.');
           if (payBtn) {
             payBtn.disabled = false;
             payBtn.textContent = '{{ booking.depositAmount > 0 ? "Pay Deposit" : "Pay" }} {{ currencyService.getCurrencySymbol(customerCurrency || businessCurrency || "NGN") }}{{ Number(convertedAmount || booking.amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}';
           }
         }
       }
-    @endif
   </script>
-</body>
-</html>
+@endsection

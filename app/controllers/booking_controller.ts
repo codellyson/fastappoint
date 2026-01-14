@@ -20,8 +20,8 @@ import receiptService from '#services/receipt_service'
 import storageService from '../services/storage_service.js'
 import googleCalendarService from '../services/google_calendar_service.js'
 import currencyService from '../services/currency_service.js'
-import walletService from '../services/wallet_service.js'
-import stripeService from '../services/stripe_service.js'
+import flutterwaveService from '../services/flutterwave_service.js'
+import db from '@adonisjs/lucid/services/db'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
 export default class BookingController {
@@ -614,12 +614,13 @@ export default class BookingController {
     const totalAmountDecimal = convertedDepositAmountDecimal + convertedBalanceDueDecimal
 
     const paystackPublicKey = env.get('PAYSTACK_PUBLIC_KEY', 'pk_test_xxxxx')
-    const stripePublicKey = env.get('STRIPE_PUBLIC_KEY')
 
     // Determine payment provider based on currency
     const paystackSupportedCurrencies = ['NGN', 'ZAR', 'KES', 'GHS', 'UGX']
     const isPaystackCurrency = paystackSupportedCurrencies.includes(customerCurrency.toUpperCase())
-    const paymentProvider = isPaystackCurrency ? 'paystack' : 'stripe'
+
+    // Determine payment provider: Paystack (for African currencies) or Flutterwave (for international)
+    const paymentProvider = isPaystackCurrency ? 'paystack' : 'flutterwave'
 
     // Calculate time remaining
     let timeRemaining: number | null = null
@@ -635,7 +636,6 @@ export default class BookingController {
     return view.render('pages/book/payment', {
       booking,
       paystackPublicKey,
-      stripePublicKey,
       timeRemaining,
       canRetry: booking.canRetryPayment,
       errorMessage,
@@ -673,12 +673,12 @@ export default class BookingController {
       booking.business.currency ||
       'NGN'
 
-    if (!stripeService.isConfigured()) {
-      return response.status(400).json({ error: 'Stripe is not configured' })
+    // Use Flutterwave for international payments
+    if (!flutterwaveService.isConfigured()) {
+      return response.status(400).json({ error: 'Flutterwave is not configured' })
     }
 
     try {
-      // Convert booking amount from business currency to customer currency
       const businessCurrency = booking.business.currency || 'NGN'
       const amountInSmallestUnit = Math.round(booking.amount * 100)
       const convertedAmount = await currencyService.convertAmount(
@@ -687,27 +687,30 @@ export default class BookingController {
         customerCurrency
       )
 
-      // Create payment intent
-      const paymentIntent = await stripeService.createPaymentIntent(
-        convertedAmount / 100, // Convert from smallest unit to decimal
+      const appUrl = env.get('APP_URL') || 'http://localhost:3333'
+      const result = await flutterwaveService.initializePayment(
+        convertedAmount / 100, // Flutterwave expects decimal amount
         customerCurrency,
+        booking.customerEmail,
+        booking.customerName,
+        `${appUrl}/book/${booking.business.slug}/booking/${booking.id}/verify?provider=flutterwave`,
         {
-          booking_id: booking.id.toString(),
-          business_id: booking.businessId.toString(),
-          business_slug: booking.business.slug,
-          service_name: booking.service?.name || '',
+          businessId: booking.businessId.toString(),
+          bookingId: booking.id.toString(),
+          serviceName: booking.service?.name || '',
         }
       )
 
       return response.json({
-        clientSecret: paymentIntent.client_secret,
-        paymentIntentId: paymentIntent.id,
+        paymentLink: result.paymentLink,
+        reference: result.reference,
+        provider: 'flutterwave',
       })
     } catch (error: any) {
-      console.error('[BOOKING] Error creating payment intent:', error)
+      console.error('[BOOKING] Error creating Flutterwave payment:', error)
       return response
         .status(500)
-        .json({ error: error.message || 'Failed to create payment intent' })
+        .json({ error: error.message || 'Failed to create Flutterwave payment' })
     }
   }
 
@@ -817,14 +820,15 @@ export default class BookingController {
 
   async verifyPayment({ params, request, response, session }: HttpContext) {
     const reference = request.qs().reference
-    const paymentIntentId = request.qs().payment_intent
+    const transactionId = request.qs().transaction_id
+    const provider = request.qs().provider
 
-    // Handle Stripe payment
-    if (paymentIntentId && stripeService.isConfigured()) {
+    // Handle Flutterwave payment verification
+    if (provider === 'flutterwave' && transactionId && flutterwaveService.isConfigured()) {
       try {
-        const paymentIntent = await stripeService.retrievePaymentIntent(paymentIntentId)
+        const verification = await flutterwaveService.verifyTransaction(transactionId)
 
-        if (paymentIntent.status !== 'succeeded') {
+        if (!verification.success || verification.status !== 'successful') {
           session.flash('error', 'Payment was not successful. Please try again.')
           return response.redirect().toRoute('book.payment', {
             slug: params.slug,
@@ -850,47 +854,33 @@ export default class BookingController {
           })
         }
 
-        // Process Stripe payment (similar to Paystack flow)
-        await booking.load('business')
-        await booking.load('service')
-
-        // Update booking status
-        booking.paymentStatus = 'paid'
-        booking.status = 'confirmed'
-        booking.paymentReference = paymentIntentId
-        await booking.save()
-
-        // Get currency from payment intent
-        let paymentCurrency = booking.business.currency || 'NGN'
-        try {
-          const fullPaymentIntent = await stripeService.retrievePaymentIntent(paymentIntentId)
-          paymentCurrency = fullPaymentIntent.currency.toUpperCase()
-        } catch (error) {
-          console.warn('[BOOKING] Could not retrieve payment intent for currency:', error)
-        }
-
-        // Create transaction record
-        const amount = paymentIntent.amount / 100
+        // Process Flutterwave payment
+        const amount = verification.amount
+        const currency = verification.currency
         const platformFee = Math.round(amount * 0.025)
 
-        const transaction = new Transaction()
-        transaction.businessId = booking.businessId
-        transaction.bookingId = booking.id
-        transaction.amount = amount
-        transaction.platformFee = platformFee
-        transaction.businessAmount = amount - platformFee
-        transaction.status = 'success'
-        transaction.provider = 'stripe'
-        transaction.reference = paymentIntentId
-        transaction.providerReference = paymentIntentId
-        transaction.currency = paymentCurrency
-        await transaction.save()
+        await db.transaction(async (trx) => {
+          // Update booking
+          booking.paymentStatus = 'paid'
+          booking.status = 'confirmed'
+          booking.paymentReference = verification.reference
+          await booking.useTransaction(trx).save()
 
-        // Credit wallet
-        await walletService.credit(booking.businessId, paymentCurrency, transaction.businessAmount, {
-          transactionId: transaction.id,
-          reference: transaction.reference,
-          description: `Payment for booking #${booking.id}`,
+          // Create transaction record
+          const transaction = new Transaction()
+          transaction.businessId = booking.businessId
+          transaction.bookingId = booking.id
+          transaction.amount = amount
+          transaction.platformFee = platformFee
+          transaction.businessAmount = amount - platformFee
+          transaction.status = 'success'
+          transaction.provider = 'flutterwave'
+          transaction.type = 'payment'
+          transaction.direction = 'credit'
+          transaction.reference = verification.reference
+          transaction.providerReference = transactionId
+          transaction.currency = currency
+          await transaction.useTransaction(trx).save()
         })
 
         // Send confirmation email
@@ -903,21 +893,20 @@ export default class BookingController {
             date: booking.date.toFormat('EEE, MMM d, yyyy'),
             time: booking.startTime,
             duration: `${booking.service?.durationMinutes || 30} minutes`,
-            amount: amount,
-            currency: paymentIntent.currency.toUpperCase(),
-            reference: paymentIntentId,
+            amount,
+            currency,
+            reference: verification.reference,
           })
         } catch (error) {
           console.error('[EMAIL] Failed to send booking confirmation:', error)
         }
 
-        // Redirect to confirmation
         return response.redirect().toRoute('book.confirmation', {
           slug: params.slug,
           bookingId: booking.id,
         })
       } catch (error: any) {
-        console.error('[BOOKING] Error verifying Stripe payment:', error)
+        console.error('[BOOKING] Error verifying Flutterwave payment:', error)
         session.flash(
           'error',
           'Payment verification failed. Please contact support if payment was deducted.'
@@ -1052,22 +1041,12 @@ export default class BookingController {
                 transaction.businessAmount = amount - platformFee
                 transaction.status = 'success'
                 transaction.provider = 'paystack'
+                transaction.type = 'payment'
+                transaction.direction = 'credit'
                 transaction.reference = booking.paymentReference || reference
                 transaction.providerReference = data.data.reference
                 transaction.currency = currency
                 await transaction.useTransaction(trx2).save()
-
-                // Credit wallet
-                await walletService.credit(
-                  booking.businessId,
-                  currency,
-                  transaction.businessAmount,
-                  {
-                    transactionId: transaction.id,
-                    reference: transaction.reference,
-                    description: `Payment for booking #${booking.id}`,
-                  }
-                )
 
                 return {
                   amount,
@@ -1151,17 +1130,6 @@ export default class BookingController {
 
       // Get currency from transaction metadata or detect from payment provider
       let paymentCurrency = booking.business.currency || 'NGN'
-
-      // For Stripe payments, try to get currency from payment intent
-      if (booking.paymentReference && booking.paymentReference.startsWith('pi_')) {
-        try {
-          const paymentIntent = await stripeService.retrievePaymentIntent(booking.paymentReference)
-          paymentCurrency = paymentIntent.currency.toUpperCase()
-        } catch (error) {
-          // Fallback to business currency
-          console.warn('[BOOKING] Could not retrieve payment intent for currency:', error)
-        }
-      }
 
       await emailService.sendBookingConfirmation({
         customerName: booking.customerName,

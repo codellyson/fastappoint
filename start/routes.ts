@@ -17,7 +17,6 @@ const PortfoliosController = () => import('#controllers/portfolios_controller')
 const PackagesController = () => import('#controllers/packages_controller')
 const SubscriptionsController = () => import('#controllers/subscriptions_controller')
 const WithdrawalsController = () => import('#controllers/withdrawals_controller')
-const StripeController = () => import('#controllers/stripe_controller')
 
 const GoogleCalendarController = () => import('#controllers/google_calendar_controller')
 const CustomerAuthsController = () => import('#controllers/customer_auths_controller')
@@ -136,18 +135,6 @@ router
     router
       .post('/settings/payments', [SettingsController, 'updatePayments'])
       .as('settings.payments.update')
-    router
-      .post('/settings/payments/stripe/create', [StripeController, 'createAccount'])
-      .as('settings.stripe.create')
-    router
-      .get('/settings/payments/stripe/return', [StripeController, 'return'])
-      .as('settings.stripe.return')
-    router
-      .get('/settings/payments/stripe/refresh', [StripeController, 'refresh'])
-      .as('settings.stripe.refresh')
-    router
-      .get('/settings/payments/stripe/dashboard', [StripeController, 'dashboard'])
-      .as('settings.stripe.dashboard')
     router
       .get('/settings/booking-page', [SettingsController, 'bookingPage'])
       .as('settings.booking-page')
@@ -376,7 +363,10 @@ router
 router.get('/api/featured', [FeaturedController, 'getActiveFeatured']).as('api.featured')
 
 router.post('/webhooks/paystack', [WebhookController, 'paystack']).as('webhooks.paystack')
-router.post('/webhooks/stripe', [WebhookController, 'stripe']).as('webhooks.stripe')
+router.post('/webhooks/polar', [WebhookController, 'polar']).as('webhooks.polar')
+router
+  .post('/webhooks/flutterwave', [WebhookController, 'flutterwave'])
+  .as('webhooks.flutterwave')
 
 // Customer portal routes
 router

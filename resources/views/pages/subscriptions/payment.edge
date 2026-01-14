@@ -47,13 +47,9 @@
         >
           Subscribe Now
         </button>
-      @elseif(paymentProvider === 'stripe' && stripePublicKey)
-        <div id="stripe-card-element" class="mb-4 p-4 border border-sand-7 rounded-lg bg-white">
-          <!-- Stripe Elements will be mounted here -->
-        </div>
-        <div id="stripe-card-errors" class="text-error text-sm mb-4" role="alert"></div>
+      @elseif(paymentProvider === 'flutterwave')
         <button
-          onclick="payWithStripe()"
+          onclick="payWithFlutterwave()"
           class="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90"
         >
           Subscribe Now
@@ -94,46 +90,11 @@
     </script>
   @endif
 
-  @if(paymentProvider === 'stripe' && stripePublicKey)
-    <script src="https://js.stripe.com/v3/"></script>
+  @if(paymentProvider === 'flutterwave')
     <script>
-      const stripe = Stripe('{{ stripePublicKey }}');
-      let card;
-      let clientSecret;
-      let paymentIntentId;
-      
-      // Initialize Stripe Elements
-      const elements = stripe.elements();
-      card = elements.create('card', {
-        style: {
-          base: {
-            fontSize: '16px',
-            color: '#21201c',
-            '::placeholder': {
-              color: '#82827c',
-            },
-          },
-        },
-      });
-      
-      card.mount('#stripe-card-element');
-      
-      // Handle real-time validation errors
-      card.on('change', function(event) {
-        const displayError = document.getElementById('stripe-card-errors');
-        if (event.error) {
-          displayError.textContent = event.error.message;
-        } else {
-          displayError.textContent = '';
-        }
-      });
-      
-      async function payWithStripe() {
-        const displayError = document.getElementById('stripe-card-errors');
-        displayError.textContent = '';
-        
+      async function payWithFlutterwave() {
         try {
-          // Create payment intent via your backend
+          // Get payment link from backend
           const response = await fetch('/subscriptions/{{ plan.id }}/create-payment-intent', {
             method: 'POST',
             headers: {
@@ -142,32 +103,23 @@
             },
             credentials: 'same-origin'
           });
-          
+
           if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.error || 'Failed to create payment intent');
+            throw new Error(error.error || 'Failed to initialize payment');
           }
-          
+
           const data = await response.json();
-          clientSecret = data.clientSecret;
-          paymentIntentId = data.paymentIntentId;
-          
-          // Confirm payment with card element
-          const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-              card: card,
-            }
-          });
-          
-          if (error) {
-            displayError.textContent = error.message;
-          } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-            // Payment succeeded, redirect to verify
-            window.location.href = '/subscriptions/{{ plan.id }}/verify?payment_intent=' + paymentIntentId;
+
+          if (data.paymentLink) {
+            // Redirect to Flutterwave payment page
+            window.location.href = data.paymentLink;
+          } else {
+            throw new Error('No payment link received');
           }
         } catch (error) {
           console.error('Error:', error);
-          displayError.textContent = error.message || 'An error occurred. Please try again.';
+          alert(error.message || 'An error occurred. Please try again.');
         }
       }
     </script>
