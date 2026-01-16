@@ -60,6 +60,7 @@ const shieldConfig = defineConfig({
       '/api/push/subscribe',
       '/api/push/unsubscribe',
       '/api/push/test',
+      '/webhooks/flutterwave',
     ],
     enableXsrfCookie: false,
     methods: ['POST', 'PUT', 'PATCH', 'DELETE'],

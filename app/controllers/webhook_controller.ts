@@ -85,6 +85,13 @@ export default class WebhookController {
     const reference = data.reference as string
     const metadata = data.metadata as Record<string, unknown> | undefined
 
+    // Check if this is a subscription payment (format: sub-{planId}-{businessId}-{timestamp})
+    const subscriptionMatch = reference.match(/^sub-(\d+)-(\d+)-\d+$/)
+    if (subscriptionMatch) {
+      await this.handlePaystackSubscriptionPayment(data)
+      return
+    }
+
     let booking: Booking | null = null
 
     if (metadata?.booking_id) {
@@ -376,159 +383,6 @@ export default class WebhookController {
     await withdrawalService.handleTransferReversed(reference, reason)
   }
 
-  async polar({ request, response }: HttpContext) {
-    if (!polarService.isConfigured()) {
-      console.error('[WEBHOOK] Polar is not configured')
-      return response.status(503).send('Polar webhook handler not configured')
-    }
-
-    try {
-      const body = request.raw()
-      const signature = request.header('webhook-signature')
-
-      if (!signature) {
-        console.error('[WEBHOOK] Missing Polar webhook signature')
-        return response.status(400).send('Missing signature')
-      }
-
-      // Verify webhook signature
-      const headers = {
-        'webhook-signature': signature,
-      }
-
-      if (!polarService.verifyWebhookSignature(body || '', headers)) {
-        console.error('[WEBHOOK] Invalid Polar webhook signature')
-        return response.status(400).send('Invalid signature')
-      }
-
-      // Parse the webhook event
-      const event = polarService.parseWebhookPayload(body || '')
-      console.log(`[WEBHOOK] Polar event received: ${event.type}`)
-
-      // Handle different event types
-      switch (event.type) {
-        case 'order.created':
-          await this.handlePolarOrderCreated(event.data)
-          break
-
-        case 'checkout.created':
-          console.log('[WEBHOOK] Polar checkout.created event received')
-          break
-
-        case 'checkout.updated':
-          console.log('[WEBHOOK] Polar checkout.updated event received')
-          break
-
-        default:
-          console.log(`[WEBHOOK] Unhandled Polar event type: ${event.type}`)
-      }
-
-      return response.status(200).send('OK')
-    } catch (error) {
-      console.error('[WEBHOOK] Error processing Polar webhook:', error)
-      return response.status(500).send('Webhook processing failed')
-    }
-  }
-
-  /**
-   * Handle Polar order.created webhook (payment successful)
-   */
-  private async handlePolarOrderCreated(order: any) {
-    try {
-      const metadata = order.metadata || {}
-      const bookingId = metadata.bookingId
-
-      if (!bookingId) {
-        console.error('[WEBHOOK] Polar order missing bookingId in metadata')
-        return
-      }
-
-      const booking = await Booking.query()
-        .where('id', bookingId)
-        .preload('business')
-        .preload('service')
-        .first()
-
-      if (!booking) {
-        console.error(`[WEBHOOK] Booking not found: ${bookingId}`)
-        return
-      }
-
-      // Idempotency check
-      if (booking.paymentStatus === 'paid' && booking.status === 'confirmed') {
-        console.log(`[WEBHOOK] Booking ${bookingId} already marked as paid`)
-        return
-      }
-
-      const amount = order.amount / 100 // Polar sends amount in smallest currency unit
-      const currency = order.currency.toUpperCase()
-      const platformFee = Math.round(amount * 0.025) // 2.5% platform fee
-
-      await db.transaction(async (trx) => {
-        // Update booking
-        booking.paymentStatus = 'paid'
-        booking.status = 'confirmed'
-        booking.paymentReference = order.id
-        await booking.useTransaction(trx).save()
-
-        // Create transaction record
-        const transaction = new Transaction()
-        transaction.businessId = booking.businessId
-        transaction.bookingId = booking.id
-        transaction.amount = amount
-        transaction.platformFee = platformFee
-        transaction.businessAmount = amount - platformFee
-        transaction.status = 'success'
-        transaction.provider = 'polar'
-        transaction.type = 'payment'
-        transaction.direction = 'credit'
-        transaction.reference = order.id
-        transaction.providerReference = order.id
-        transaction.currency = currency
-        await transaction.useTransaction(trx).save()
-      })
-
-      // Send confirmation email
-      try {
-        await emailService.sendBookingConfirmation({
-          customerName: booking.customerName,
-          customerEmail: booking.customerEmail,
-          businessName: booking.business.name,
-          serviceName: booking.service?.name || '',
-          date: booking.date.toFormat('EEE, MMM d, yyyy'),
-          time: booking.startTime,
-          duration: `${booking.service?.durationMinutes || 30} minutes`,
-          amount,
-          currency,
-          reference: order.id,
-        })
-      } catch (error) {
-        console.error('[EMAIL] Failed to send booking confirmation:', error)
-      }
-
-      // Generate receipt
-      const transaction = await Transaction.query()
-        .where('bookingId', booking.id)
-        .where('status', 'success')
-        .where('providerReference', order.id)
-        .first()
-
-      if (transaction) {
-        try {
-          await receiptService.generateReceipt(booking, transaction)
-          console.log(`[WEBHOOK] Receipt generated for booking ${booking.id}`)
-        } catch (error) {
-          console.error('[WEBHOOK] Failed to generate receipt:', error)
-        }
-      }
-
-      console.log(`[WEBHOOK] Successfully processed Polar order for booking ${booking.id}`)
-    } catch (error) {
-      console.error('[WEBHOOK] Error handling Polar order.created:', error)
-      throw error
-    }
-  }
-
   /**
    * Handle Flutterwave webhooks
    */
@@ -742,15 +596,169 @@ export default class WebhookController {
       const planId = Number.parseInt(match[1])
       const businessId = Number.parseInt(match[2])
 
-      console.log(`[WEBHOOK] Processing subscription payment for business ${businessId}, plan ${planId}`)
+      console.log(
+        `[WEBHOOK] Processing subscription payment for business ${businessId}, plan ${planId}`
+      )
 
-      // The subscription will be created when the user completes the verify flow
-      // This webhook just confirms the payment was successful
-      // We don't create the subscription here because we need the user's session
+      // Check if subscription already exists (idempotency)
+      const existingSubscription = await db
+        .from('subscriptions')
+        .where('business_id', businessId)
+        .where('status', 'active')
+        .orderBy('created_at', 'desc')
+        .first()
 
-      console.log(`[WEBHOOK] Flutterwave subscription payment confirmed: ${transactionReference}`)
+      if (existingSubscription) {
+        console.log(
+          `[WEBHOOK] Active subscription already exists for business ${businessId}, skipping creation`
+        )
+        return
+      }
+
+      // Load business and plan
+      const BusinessModule = await import('#models/business')
+      const SubscriptionPlanModule = await import('#models/subscription_plan')
+      const Business = BusinessModule.default
+      const SubscriptionPlan = SubscriptionPlanModule.default
+
+      const business = await Business.findOrFail(businessId)
+      const plan = await SubscriptionPlan.findOrFail(planId)
+
+      // Create subscription - this ensures subscription is created even if user doesn't complete redirect
+      const subscription = await subscriptionService.createSubscription(
+        business,
+        plan,
+        business.email,
+        undefined, // No authorization code for one-time payments
+        transactionReference, // Store payment reference
+        currency.toUpperCase()
+      )
+
+      console.log(
+        `[WEBHOOK] Created subscription ${subscription.id} for business ${businessId}, plan ${plan.displayName}`
+      )
+
+      // Send subscription confirmation email to business owner
+      try {
+        const businessOwner = await User.query()
+          .where('businessId', businessId)
+          .where('role', 'owner')
+          .first()
+
+        if (businessOwner) {
+          await emailService.sendSubscriptionPaymentConfirmation({
+            businessEmail: businessOwner.email,
+            businessName: business.name,
+            planName: plan.displayName,
+            amount: amount,
+            currency: currency.toUpperCase(),
+            reference: transactionReference,
+          })
+          console.log(
+            `[WEBHOOK] Sent subscription confirmation email to ${businessOwner.email} for ${plan.displayName} plan`
+          )
+        }
+      } catch (emailError) {
+        console.error('[WEBHOOK] Failed to send subscription confirmation email:', emailError)
+      }
     } catch (error) {
       console.error('[WEBHOOK] Error handling Flutterwave subscription payment:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Handle Paystack subscription payment
+   */
+  private async handlePaystackSubscriptionPayment(data: Record<string, unknown>) {
+    try {
+      const reference = data.reference as string
+      const status = data.status as string
+      const currency = (data.currency as string) || 'NGN'
+
+      if (status !== 'success') {
+        console.log(`[WEBHOOK] Paystack subscription payment not successful: ${status}`)
+        return
+      }
+
+      // Extract planId and businessId from reference (format: sub-{planId}-{businessId}-{timestamp})
+      const match = reference.match(/^sub-(\d+)-(\d+)-\d+$/)
+      if (!match) {
+        console.error(`[WEBHOOK] Invalid subscription reference format: ${reference}`)
+        return
+      }
+
+      const planId = Number.parseInt(match[1])
+      const businessId = Number.parseInt(match[2])
+
+      console.log(
+        `[WEBHOOK] Processing Paystack subscription payment for business ${businessId}, plan ${planId}`
+      )
+
+      // Check if subscription already exists (idempotency)
+      const existingSubscription = await db
+        .from('subscriptions')
+        .where('business_id', businessId)
+        .where('status', 'active')
+        .orderBy('created_at', 'desc')
+        .first()
+
+      if (existingSubscription) {
+        console.log(
+          `[WEBHOOK] Active subscription already exists for business ${businessId}, skipping creation`
+        )
+        return
+      }
+
+      // Load business and plan
+      const BusinessModule = await import('#models/business')
+      const SubscriptionPlanModule = await import('#models/subscription_plan')
+      const Business = BusinessModule.default
+      const SubscriptionPlan = SubscriptionPlanModule.default
+
+      const business = await Business.findOrFail(businessId)
+      const plan = await SubscriptionPlan.findOrFail(planId)
+
+      // Create subscription - this ensures subscription is created even if user doesn't complete redirect
+      const subscription = await subscriptionService.createSubscription(
+        business,
+        plan,
+        business.email,
+        undefined, // No authorization code for one-time payments
+        reference, // Store payment reference
+        currency.toUpperCase()
+      )
+
+      console.log(
+        `[WEBHOOK] Created subscription ${subscription.id} for business ${businessId}, plan ${plan.displayName}`
+      )
+
+      // Send subscription confirmation email to business owner
+      try {
+        const businessOwner = await User.query()
+          .where('businessId', businessId)
+          .where('role', 'owner')
+          .first()
+
+        if (businessOwner) {
+          const amountValue = typeof data.amount === 'number' ? data.amount : Number(data.amount)
+          await emailService.sendSubscriptionPaymentConfirmation({
+            businessEmail: businessOwner.email,
+            businessName: business.name,
+            planName: plan.displayName,
+            amount: amountValue / 100, // Convert kobo to naira
+            currency: currency,
+            reference: reference,
+          })
+          console.log(
+            `[WEBHOOK] Sent subscription confirmation email to ${businessOwner.email} for ${plan.displayName} plan`
+          )
+        }
+      } catch (emailError) {
+        console.error('[WEBHOOK] Failed to send subscription confirmation email:', emailError)
+      }
+    } catch (error) {
+      console.error('[WEBHOOK] Error handling Paystack subscription payment:', error)
       throw error
     }
   }

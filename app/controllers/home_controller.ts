@@ -5,7 +5,13 @@ import currencyService from '#services/currency_service'
 import { DateTime } from 'luxon'
 
 export default class HomeController {
-  async index({ view, request }: HttpContext) {
+  async index({ view, request, auth, response }: HttpContext) {
+    // Redirect authenticated users to dashboard
+    await auth.check()
+    if (auth.isAuthenticated) {
+      return response.redirect().toRoute('dashboard')
+    }
+
     // Fetch active featured businesses
     const featuredBusinesses = await FeaturedBusiness.query()
       .where('status', 'active')

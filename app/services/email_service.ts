@@ -86,6 +86,15 @@ interface GenericEmailData {
   }
 }
 
+interface SubscriptionPaymentData {
+  businessEmail: string
+  businessName: string
+  planName: string
+  amount: number
+  currency: string
+  reference: string
+}
+
 class EmailService {
   private apiKey: string | null = null
   private fromEmail: string
@@ -149,12 +158,6 @@ class EmailService {
   }
 
   async sendBookingConfirmation(data: BookingConfirmationData) {
-    if (!this.apiKey) {
-      console.log('[Email Mock] Booking confirmation to:', data.customerEmail)
-      console.log('[Email Mock] Data:', JSON.stringify(data, null, 2))
-      return { success: true, mock: true }
-    }
-
     const result = await this.sendViaBrevoApi({
       to: [{ email: data.customerEmail }],
       subject: `Booking Confirmed - ${data.businessName}`,
@@ -162,120 +165,115 @@ class EmailService {
     })
 
     if (result.success) {
-      console.log('[EmailService] Brevo API response:', JSON.stringify(result.data, null, 2))
+      console.log('[EmailService] Booking confirmation sent to:', data.customerEmail)
     }
 
     return result
   }
 
   async sendBusinessNotification(data: BusinessNotificationData) {
-    if (!this.apiKey) {
-      console.log('[Email Mock] Business notification to:', data.businessEmail)
-      console.log('[Email Mock] Data:', JSON.stringify(data, null, 2))
-      return { success: true, mock: true }
-    }
-
-    return await this.sendViaBrevoApi({
+    const result = await this.sendViaBrevoApi({
       to: [{ email: data.businessEmail }],
       subject: `New Booking - ${data.customerName}`,
       htmlContent: this.getBusinessNotificationHtml(data),
     })
+
+    if (result.success) {
+      console.log('[EmailService] Business notification sent to:', data.businessEmail)
+    }
+
+    return result
   }
 
   async sendBookingReminder(data: BookingReminderData) {
-    if (!this.apiKey) {
-      console.log('[Email Mock] Booking reminder to:', data.customerEmail)
-      console.log('[Email Mock] Data:', JSON.stringify(data, null, 2))
-      return { success: true, mock: true }
-    }
-
     const subject =
       data.reminderType === '24h'
         ? `Reminder: Your appointment tomorrow at ${data.businessName}`
         : `Reminder: Your appointment in 1 hour at ${data.businessName}`
 
-    return await this.sendViaBrevoApi({
+    const result = await this.sendViaBrevoApi({
       to: [{ email: data.customerEmail }],
       subject,
       htmlContent: this.getBookingReminderHtml(data),
     })
+
+    if (result.success) {
+      console.log('[EmailService] Booking reminder sent to:', data.customerEmail)
+    }
+
+    return result
   }
 
   async send(data: { to: string; subject: string; html: string }) {
-    if (!this.apiKey) {
-      console.log('[Email Mock] Sending email to:', data.to)
-      console.log('[Email Mock] Subject:', data.subject)
-      return { success: true, mock: true }
-    }
-
-    return await this.sendViaBrevoApi({
+    const result = await this.sendViaBrevoApi({
       to: [{ email: data.to }],
       subject: data.subject,
       htmlContent: data.html,
     })
+
+    if (result.success) {
+      console.log('[EmailService] Email sent to:', data.to)
+    }
+
+    return result
   }
 
   async sendGenericEmail(data: GenericEmailData) {
-    if (!this.apiKey) {
-      console.log('[Email Mock] Generic email to:', data.to)
-      console.log('[Email Mock] Subject:', data.subject)
-      return { success: true, mock: true }
-    }
-
-    return await this.sendViaBrevoApi({
+    const result = await this.sendViaBrevoApi({
       to: [{ email: data.to }],
       subject: data.subject,
       htmlContent: this.getGenericEmailHtml(data.templateData),
     })
+
+    if (result.success) {
+      console.log('[EmailService] Generic email sent to:', data.to)
+    }
+
+    return result
   }
 
   async sendPaymentFailureNotification(data: PaymentFailureData) {
-    if (!this.apiKey) {
-      console.log('[Email Mock] Payment failure notification to:', data.customerEmail)
-      console.log('[Email Mock] Data:', JSON.stringify(data, null, 2))
-      return { success: true, mock: true }
-    }
-
-    return await this.sendViaBrevoApi({
+    const result = await this.sendViaBrevoApi({
       to: [{ email: data.customerEmail }],
       subject: `Payment Failed - ${data.businessName}`,
       htmlContent: this.getPaymentFailureHtml(data),
     })
+
+    if (result.success) {
+      console.log('[EmailService] Payment failure notification sent to:', data.customerEmail)
+    }
+
+    return result
   }
 
   async sendPasswordReset(data: PasswordResetData) {
-    if (!this.apiKey) {
-      console.log('[Email Mock] Password reset to:', data.email)
-      console.log('[Email Mock] Reset URL:', data.resetUrl)
-      return { success: true, mock: true }
-    }
-
-    return await this.sendViaBrevoApi({
+    const result = await this.sendViaBrevoApi({
       to: [{ email: data.email }],
       subject: 'Reset Your Password - FastAppoint',
       htmlContent: this.getPasswordResetHtml(data),
     })
+
+    if (result.success) {
+      console.log('[EmailService] Password reset email sent to:', data.email)
+    }
+
+    return result
   }
 
   async sendWelcomeEmail(data: WelcomeEmailData) {
-    if (!this.apiKey) {
-      console.log('[Email Mock] Welcome email to:', data.email)
-      console.log('[Email Mock] Business:', data.businessName)
-      return { success: true, mock: true }
-    }
-
     const result = await this.sendViaBrevoApi({
       to: [{ email: data.email }],
       subject: 'Welcome to FastAppoint! 🎉',
       htmlContent: this.getWelcomeEmailHtml(data),
     })
 
-    if (result.success && result.data) {
-      const data2 = result.data as { messageId?: string }
-      console.log('[EmailService] Brevo API response:', JSON.stringify(data, null, 2))
-
-      if (data2.messageId) {
-        console.log('[EmailService] Email sent with message ID:', data2.messageId)
+    if (result.success) {
+      console.log('[EmailService] Welcome email sent to:', data.email)
+      if (result.data) {
+        const data2 = result.data as { messageId?: string }
+        if (data2.messageId) {
+          console.log('[EmailService] Message ID:', data2.messageId)
+        }
       }
     }
 
@@ -283,13 +281,6 @@ class EmailService {
   }
 
   async sendBookingRescheduleNotification(data: BookingRescheduleData) {
-    if (!this.apiKey) {
-      console.log('[Email Mock] Booking reschedule notification to customer:', data.customerEmail)
-      console.log('[Email Mock] Booking reschedule notification to business:', data.businessEmail)
-      console.log('[Email Mock] Data:', JSON.stringify(data, null, 2))
-      return { success: true, mock: true }
-    }
-
     // Send to customer
     const customerResult = await this.sendViaBrevoApi({
       to: [{ email: data.customerEmail }],
@@ -304,7 +295,31 @@ class EmailService {
       htmlContent: this.getBookingRescheduleBusinessHtml(data),
     })
 
-    return { success: customerResult.success && businessResult.success }
+    const success = customerResult.success && businessResult.success
+    if (success) {
+      console.log(
+        '[EmailService] Booking reschedule notifications sent to:',
+        data.customerEmail,
+        'and',
+        data.businessEmail
+      )
+    }
+
+    return { success }
+  }
+
+  async sendSubscriptionPaymentConfirmation(data: SubscriptionPaymentData) {
+    const result = await this.sendViaBrevoApi({
+      to: [{ email: data.businessEmail }],
+      subject: `Subscription Payment Received - ${data.planName}`,
+      htmlContent: this.getSubscriptionPaymentHtml(data),
+    })
+
+    if (result.success) {
+      console.log('[EmailService] Subscription payment confirmation sent to:', data.businessEmail)
+    }
+
+    return result
   }
 
   private getPasswordResetHtml(data: PasswordResetData): string {
@@ -899,6 +914,68 @@ class EmailService {
       </div>
       <div style="padding: 30px; color: #21201c; font-size: 15px; line-height: 1.6;">
         ${data.content}
+      </div>
+      <div style="background: #f9f9f8; padding: 20px; text-align: center; border-top: 1px solid #e9e8e6;">
+        <p style="margin: 0; color: #82827c; font-size: 13px;">
+          Powered by <a href="${env.get('APP_URL', 'https://fastappoint.com')}" style="color: #5A45FF; text-decoration: none;">FastAppoint</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`
+  }
+
+  private getSubscriptionPaymentHtml(data: SubscriptionPaymentData): string {
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9f9f8;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <div style="background: #10b981; padding: 30px; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 24px;">Payment Received! 💰</h1>
+      </div>
+      <div style="padding: 30px;">
+        <p style="color: #21201c; font-size: 16px; margin-bottom: 20px;">
+          Hi ${data.businessName},
+        </p>
+        <p style="color: #63635e; font-size: 15px; line-height: 1.6;">
+          Great news! Your subscription payment has been successfully processed.
+        </p>
+
+        <div style="background: #f0fdf4; border-radius: 12px; padding: 20px; margin: 24px 0; border: 2px solid #10b981;">
+          <h3 style="margin: 0 0 16px; color: #21201c; font-size: 15px;">Payment Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #63635e; font-size: 14px;">Plan</td>
+              <td style="padding: 8px 0; color: #21201c; font-size: 14px; text-align: right; font-weight: 500;">${data.planName}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #63635e; font-size: 14px;">Amount</td>
+              <td style="padding: 8px 0; color: #10b981; font-size: 14px; text-align: right; font-weight: 600;">${this.formatAmountForEmail(data.amount, data.currency)}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #63635e; font-size: 14px;">Reference</td>
+              <td style="padding: 8px 0; color: #21201c; font-size: 12px; text-align: right; font-family: monospace;">${data.reference}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background: #f0f0ff; border-radius: 8px; padding: 16px; margin: 24px 0;">
+          <p style="margin: 0; color: #21201c; font-size: 14px; line-height: 1.6;">
+            <strong>What's Next?</strong><br>
+            Your subscription is now active and you can continue accepting bookings without interruption. You can view your subscription details and payment history in your dashboard.
+          </p>
+        </div>
+
+        <p style="color: #63635e; font-size: 14px; line-height: 1.6;">
+          Thank you for your continued trust in FastAppoint. We're here to help your business grow!
+        </p>
       </div>
       <div style="background: #f9f9f8; padding: 20px; text-align: center; border-top: 1px solid #e9e8e6;">
         <p style="margin: 0; color: #82827c; font-size: 13px;">
