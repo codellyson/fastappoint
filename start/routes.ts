@@ -22,6 +22,7 @@ const GoogleCalendarController = () => import('#controllers/google_calendar_cont
 const CustomerAuthsController = () => import('#controllers/customer_auths_controller')
 const BlogController = () => import('#controllers/blog_controller')
 const HomeController = () => import('#controllers/home_controller')
+const PushSubscriptionController = () => import('#controllers/push_subscription_controller')
 router.get('/', [HomeController, 'index']).as('home')
 router.get('/pricing', [HomeController, 'pricing']).as('pricing')
 
@@ -390,3 +391,24 @@ router
       .as('customer.create-password.post')
   })
   .prefix('/my')
+
+// Push Notification Routes (authenticated users only)
+router
+  .group(() => {
+    router.get('/public-key', [PushSubscriptionController, 'getPublicKey']).as('push.public-key')
+    router.post('/subscribe', [PushSubscriptionController, 'subscribe']).as('push.subscribe')
+    router.post('/unsubscribe', [PushSubscriptionController, 'unsubscribe']).as('push.unsubscribe')
+    router.get('/subscriptions', [PushSubscriptionController, 'index']).as('push.index')
+    router.delete('/subscriptions/:id', [PushSubscriptionController, 'destroy']).as('push.destroy')
+    router.post('/test', [PushSubscriptionController, 'sendTest']).as('push.test')
+  })
+  .prefix('/api/push')
+  .use(middleware.auth())
+
+// Push Notification Test Page (authenticated users only)
+router
+  .get('/push-test', async ({ view }) => {
+    return view.render('pages/push-test')
+  })
+  .as('push.test-page')
+  .use(middleware.auth())

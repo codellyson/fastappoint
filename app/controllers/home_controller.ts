@@ -5,7 +5,7 @@ import currencyService from '#services/currency_service'
 import { DateTime } from 'luxon'
 
 export default class HomeController {
-  async index({ view }: HttpContext) {
+  async index({ view, request }: HttpContext) {
     // Fetch active featured businesses
     const featuredBusinesses = await FeaturedBusiness.query()
       .where('status', 'active')
@@ -14,8 +14,24 @@ export default class HomeController {
       .orderBy('startsAt', 'desc')
       .limit(10)
 
+    // Fetch active subscription plans
+    const plans = await SubscriptionPlan.query()
+      .where('isActive', true)
+      .where('price', '>', 0)
+      .orderBy('sortOrder', 'asc')
+      .limit(3)
+
+    const currencyOverride = request.qs().currency
+
+    // Detect currency from user's locale
+    const acceptLanguage = request.header('accept-language') || ''
+    const currency =
+      currencyOverride || currencyService.detectCurrencyFromLocale(acceptLanguage) || 'NGN'
+
     return view.render('pages/landing', {
       featuredBusinesses,
+      plans,
+      currency,
     })
   }
 

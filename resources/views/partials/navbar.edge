@@ -1,6 +1,6 @@
 <header class="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-16">
+    <div class="flex justify-between items-center h-16" x-data="{ menuOpen: false, userMenuOpen: false, businessMenuOpen: false, financialsMenuOpen: false }">
       <a href="{{ auth.isAuthenticated ? route('dashboard') : route('home') }}" class="flex items-center gap-3">
         <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-sm">
           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -14,10 +14,63 @@
         @if(auth.isAuthenticated)
           <a href="{{ route('dashboard') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Dashboard</a>
           <a href="{{ route('bookings.index') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Bookings</a>
-          <a href="{{ route('services.index') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Services</a>
-          <a href="{{ route('packages.index') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Packages</a>
-          <a href="{{ route('portfolio.index') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Portfolio</a>
-          <a href="{{ route('staff.index') }}" class="text-neutral-600 hover:text-primary text-sm font-semibold transition-colors">Staff</a>
+
+          {{-- Business Dropdown --}}
+          <div class="relative" @click.away="businessMenuOpen = false">
+            <button
+              @click="businessMenuOpen = !businessMenuOpen"
+              class="flex items-center gap-1 text-neutral-600 hover:text-primary text-sm font-semibold transition-colors"
+            >
+              Business
+              <svg class="w-4 h-4" :class="{ 'rotate-180': businessMenuOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div
+              x-show="businessMenuOpen"
+              x-cloak
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0 -translate-y-1"
+              x-transition:enter-end="opacity-100 translate-y-0"
+              x-transition:leave="transition ease-in duration-150"
+              x-transition:leave-start="opacity-100 translate-y-0"
+              x-transition:leave-end="opacity-0 -translate-y-1"
+              class="absolute left-0 mt-2 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg py-1 z-50"
+            >
+              <a href="{{ route('services.index') }}" class="block px-4 py-2.5 text-sm text-neutral-900 hover:bg-neutral-100">Services</a>
+              <a href="{{ route('packages.index') }}" class="block px-4 py-2.5 text-sm text-neutral-900 hover:bg-neutral-100">Packages</a>
+              <a href="{{ route('portfolio.index') }}" class="block px-4 py-2.5 text-sm text-neutral-900 hover:bg-neutral-100">Portfolio</a>
+              <a href="{{ route('staff.index') }}" class="block px-4 py-2.5 text-sm text-neutral-900 hover:bg-neutral-100">Staff</a>
+              <a href="{{ route('time-off.index') }}" class="block px-4 py-2.5 text-sm text-neutral-900 hover:bg-neutral-100">Time Off</a>
+            </div>
+          </div>
+
+          {{-- Financials Dropdown --}}
+          <div class="relative" @click.away="financialsMenuOpen = false">
+            <button
+              @click="financialsMenuOpen = !financialsMenuOpen"
+              class="flex items-center gap-1 text-neutral-600 hover:text-primary text-sm font-semibold transition-colors"
+            >
+              Financials
+              <svg class="w-4 h-4" :class="{ 'rotate-180': financialsMenuOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div
+              x-show="financialsMenuOpen"
+              x-cloak
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0 -translate-y-1"
+              x-transition:enter-end="opacity-100 translate-y-0"
+              x-transition:leave="transition ease-in duration-150"
+              x-transition:leave-start="opacity-100 translate-y-0"
+              x-transition:leave-end="opacity-0 -translate-y-1"
+              class="absolute left-0 mt-2 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg py-1 z-50"
+            >
+              <a href="{{ route('settings.withdrawals.index') }}" class="block px-4 py-2.5 text-sm text-neutral-900 hover:bg-neutral-100">Withdrawals</a>
+              <a href="{{ route('settings.payments') }}" class="block px-4 py-2.5 text-sm text-neutral-900 hover:bg-neutral-100">Payment Settings</a>
+            </div>
+          </div>
         @else
           <a href="/" class="text-neutral-600 hover:text-primary text-sm font-medium">Home</a>
           <a href="{{ route('blog.index') }}" class="text-primary text-sm font-medium">Blog</a>
@@ -25,7 +78,7 @@
         @endif
       </nav>
 
-      <div class="flex items-center gap-4" x-data="{ menuOpen: false, userMenuOpen: false }">
+      <div class="flex items-center gap-4">
         @if(auth.isAuthenticated)
           {{-- Mobile Menu Button --}}
           <button
@@ -53,15 +106,48 @@
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 -translate-y-1"
             class="absolute top-16 left-0 right-0 md:hidden bg-white border-b border-neutral-200 shadow-lg"
+            x-data="{ mobileBusinessOpen: false, mobileFinancialsOpen: false }"
           >
             <div class="px-4 py-2 space-y-1">
               <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Dashboard</a>
               <a href="{{ route('bookings.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Bookings</a>
-              <a href="{{ route('services.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Services</a>
-              <a href="{{ route('packages.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Packages</a>
-              <a href="{{ route('portfolio.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Portfolio</a>
-              <a href="{{ route('staff.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Staff</a>
-              <a href="{{ route('time-off.index') }}" class="block px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg">Time Off</a>
+
+              {{-- Business Section --}}
+              <div>
+                <button
+                  @click="mobileBusinessOpen = !mobileBusinessOpen"
+                  class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg"
+                >
+                  <span>Business</span>
+                  <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': mobileBusinessOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+                <div x-show="mobileBusinessOpen" x-collapse class="pl-4 space-y-1">
+                  <a href="{{ route('services.index') }}" class="block px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg">Services</a>
+                  <a href="{{ route('packages.index') }}" class="block px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg">Packages</a>
+                  <a href="{{ route('portfolio.index') }}" class="block px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg">Portfolio</a>
+                  <a href="{{ route('staff.index') }}" class="block px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg">Staff</a>
+                  <a href="{{ route('time-off.index') }}" class="block px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg">Time Off</a>
+                </div>
+              </div>
+
+              {{-- Financials Section --}}
+              <div>
+                <button
+                  @click="mobileFinancialsOpen = !mobileFinancialsOpen"
+                  class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 rounded-lg"
+                >
+                  <span>Financials</span>
+                  <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': mobileFinancialsOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+                <div x-show="mobileFinancialsOpen" x-collapse class="pl-4 space-y-1">
+                  <a href="{{ route('settings.withdrawals.index') }}" class="block px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg">Withdrawals</a>
+                  <a href="{{ route('settings.payments') }}" class="block px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg">Payment Settings</a>
+                </div>
+              </div>
             </div>
           </div>
 

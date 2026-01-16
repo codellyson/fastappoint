@@ -3,12 +3,15 @@ import { createHmac } from 'node:crypto'
 import env from '#start/env'
 import Booking from '#models/booking'
 import Transaction from '#models/transaction'
+import User from '#models/user'
 import emailService from '#services/email_service'
 import subscriptionService from '../services/subscription_service.js'
 import receiptService from '../services/receipt_service.js'
 import withdrawalService from '../services/withdrawal_service.js'
 import polarService from '../services/polar_service.js'
 import flutterwaveService from '../services/flutterwave_service.js'
+import pushNotificationService from '../services/push_notification_service.js'
+import currencyService from '../services/currency_service.js'
 import db from '@adonisjs/lucid/services/db'
 
 export default class WebhookController {
@@ -212,6 +215,41 @@ export default class WebhookController {
         time: `${booking.startTime} - ${booking.endTime}`,
         amount: booking.amount,
       })
+
+      // Send push notifications to business owner
+      const businessOwner = await User.query()
+        .where('businessId', booking.businessId)
+        .where('role', 'owner')
+        .first()
+
+      if (businessOwner) {
+        // Notify about new confirmed booking
+        pushNotificationService
+          .sendNewBookingNotification(businessOwner.id, {
+            id: booking.id,
+            customerName: booking.customerName,
+            serviceName: booking.service.name,
+            time: `${booking.date.toFormat('MMM d')} at ${booking.startTime}`,
+          })
+          .catch((error) => {
+            console.error('[WEBHOOK Push] Failed to send booking notification:', error)
+          })
+
+        // Notify about payment received
+        pushNotificationService
+          .sendPaymentConfirmation(businessOwner.id, {
+            id: transaction?.id || 0,
+            amount: currencyService.formatPrice(
+              transaction?.amount || booking.amount,
+              paymentCurrency,
+              false
+            ),
+            bookingId: booking.id,
+          })
+          .catch((error) => {
+            console.error('[WEBHOOK Push] Failed to send payment notification:', error)
+          })
+      }
 
       console.log(`[WEBHOOK] Booking #${booking.id} confirmed via webhook`)
     } catch (error) {
@@ -626,6 +664,37 @@ export default class WebhookController {
         })
       } catch (error) {
         console.error('[EMAIL] Failed to send booking confirmation:', error)
+      }
+
+      // Send push notifications to business owner
+      const businessOwner = await User.query()
+        .where('businessId', booking.businessId)
+        .where('role', 'owner')
+        .first()
+
+      if (businessOwner) {
+        // Notify about new confirmed booking
+        pushNotificationService
+          .sendNewBookingNotification(businessOwner.id, {
+            id: booking.id,
+            customerName: booking.customerName,
+            serviceName: booking.service?.name || '',
+            time: `${booking.date.toFormat('MMM d')} at ${booking.startTime}`,
+          })
+          .catch((error) => {
+            console.error('[WEBHOOK Push] Failed to send booking notification:', error)
+          })
+
+        // Notify about payment received
+        pushNotificationService
+          .sendPaymentConfirmation(businessOwner.id, {
+            id: 0, // transaction not created yet
+            amount: currencyService.formatPrice(amount, currency, false),
+            bookingId: booking.id,
+          })
+          .catch((error) => {
+            console.error('[WEBHOOK Push] Failed to send payment notification:', error)
+          })
       }
 
       // Generate receipt

@@ -21,6 +21,7 @@ import storageService from '../services/storage_service.js'
 import googleCalendarService from '../services/google_calendar_service.js'
 import currencyService from '../services/currency_service.js'
 import flutterwaveService from '../services/flutterwave_service.js'
+import pushNotificationService from '../services/push_notification_service.js'
 import db from '@adonisjs/lucid/services/db'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
@@ -527,6 +528,25 @@ export default class BookingController {
         idempotencyKey: randomUUID(),
       })
 
+      // Send push notification to business owner about new booking (pending payment)
+      const businessOwner = await User.query()
+        .where('businessId', business.id)
+        .where('role', 'owner')
+        .first()
+
+      if (businessOwner) {
+        pushNotificationService
+          .sendNewBookingNotification(businessOwner.id, {
+            id: booking.id,
+            customerName: data.customerName,
+            serviceName: packageInfo?.name || service.name,
+            time: `${selectedDate.toFormat('MMM d')} at ${data.time}`,
+          })
+          .catch((error) => {
+            console.error('[Push] Failed to send new booking notification:', error)
+          })
+      }
+
       const paymentUrl = `/book/${params.slug}/booking/${booking.id}/payment`
 
       if (isJsonRequest) {
@@ -901,6 +921,25 @@ export default class BookingController {
           console.error('[EMAIL] Failed to send booking confirmation:', error)
         }
 
+        // Send push notifications to business owner about confirmed booking
+        const businessOwner = await User.query()
+          .where('businessId', booking.businessId)
+          .where('role', 'owner')
+          .first()
+
+        if (businessOwner) {
+          pushNotificationService
+            .sendNewBookingNotification(businessOwner.id, {
+              id: booking.id,
+              customerName: booking.customerName,
+              serviceName: booking.service?.name || '',
+              time: `${booking.date.toFormat('MMM d')} at ${booking.startTime}`,
+            })
+            .catch((error) => {
+              console.error('[Push] Failed to send booking confirmation to business:', error)
+            })
+        }
+
         return response.redirect().toRoute('book.confirmation', {
           slug: params.slug,
           bookingId: booking.id,
@@ -1031,7 +1070,8 @@ export default class BookingController {
 
                 const amount = data.data.amount / 100
                 const platformFee = Math.round(amount * 0.025)
-                const currency = data.data.currency?.toUpperCase() || booking.business.currency || 'NGN'
+                const currency =
+                  data.data.currency?.toUpperCase() || booking.business.currency || 'NGN'
 
                 const transaction = new Transaction()
                 transaction.businessId = booking.businessId
@@ -1156,6 +1196,41 @@ export default class BookingController {
         time: `${booking.startTime} - ${booking.endTime}`,
         amount: booking.amount,
       })
+
+      // Send push notifications for confirmed booking
+      const businessOwner = await User.query()
+        .where('businessId', booking.businessId)
+        .where('role', 'owner')
+        .first()
+
+      if (businessOwner) {
+        // Notify business owner about confirmed booking
+        pushNotificationService
+          .sendNewBookingNotification(businessOwner.id, {
+            id: booking.id,
+            customerName: booking.customerName,
+            serviceName: booking.service.name,
+            time: `${booking.date.toFormat('MMM d')} at ${booking.startTime}`,
+          })
+          .catch((error) => {
+            console.error('[Push] Failed to send booking confirmation to business:', error)
+          })
+
+        // Notify business owner about payment received
+        pushNotificationService
+          .sendPaymentConfirmation(businessOwner.id, {
+            id: transaction?.id || 0,
+            amount: currencyService.formatPrice(
+              transaction?.amount || booking.amount,
+              paymentCurrency,
+              false
+            ),
+            bookingId: booking.id,
+          })
+          .catch((error) => {
+            console.error('[Push] Failed to send payment confirmation to business:', error)
+          })
+      }
 
       // Create Google Calendar event (async, non-blocking)
       if (booking.business.googleCalendarEnabled) {
@@ -1324,6 +1399,25 @@ export default class BookingController {
     booking.cancellationReason = 'Cancelled by customer'
     await booking.save()
 
+    // Send push notification to business owner about cancelled booking
+    const businessOwner = await User.query()
+      .where('businessId', booking.businessId)
+      .where('role', 'owner')
+      .first()
+
+    if (businessOwner) {
+      pushNotificationService
+        .sendBookingCancelled(businessOwner.id, {
+          bookingId: booking.id,
+          customerName: booking.customerName,
+          serviceName: booking.service.name,
+          time: `${booking.date.toFormat('MMM d')} at ${booking.startTime}`,
+        })
+        .catch((error) => {
+          console.error('[Push] Failed to send cancellation notification:', error)
+        })
+    }
+
     // Delete Google Calendar event (async, non-blocking)
     if (booking.business.googleCalendarEnabled && booking.googleEventId) {
       const eventId = booking.googleEventId
@@ -1454,6 +1548,25 @@ export default class BookingController {
         newTime,
         manageUrl,
       })
+
+      // Send push notification to business owner about rescheduled booking
+      const businessOwner = await User.query()
+        .where('businessId', booking.businessId)
+        .where('role', 'owner')
+        .first()
+
+      if (businessOwner) {
+        pushNotificationService
+          .sendBookingRescheduled(businessOwner.id, {
+            bookingId: booking.id,
+            customerName: booking.customerName,
+            serviceName: booking.service.name,
+            newTime: newDate + ' at ' + newTime.split(' - ')[0],
+          })
+          .catch((error) => {
+            console.error('[Push] Failed to send reschedule notification:', error)
+          })
+      }
 
       // Update Google Calendar event (async, non-blocking)
       if (booking.business.googleCalendarEnabled && booking.googleEventId) {

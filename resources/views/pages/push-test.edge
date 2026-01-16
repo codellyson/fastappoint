@@ -1,0 +1,305 @@
+@layout('layouts/app')
+
+@section('content')
+<div class="min-h-screen bg-gradient-to-br from-primary/5 to-neutral-50 py-12">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    {{-- Header --}}
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-neutral-900 mb-4">Push Notification Test</h1>
+      <p class="text-lg text-neutral-600">Test your push notification implementation</p>
+    </div>
+
+    <div class="space-y-6">
+      {{-- Browser Support Check --}}
+      <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6" x-data="{ supported: 'serviceWorker' in navigator && 'PushManager' in window }">
+        <h2 class="text-xl font-semibold text-neutral-900 mb-4">1. Browser Support</h2>
+        <div class="flex items-center gap-3">
+          <div x-show="supported" class="flex items-center gap-2 text-green-600">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span class="font-medium">Push notifications are supported in your browser</span>
+          </div>
+          <div x-show="!supported" class="flex items-center gap-2 text-red-600">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+            <span class="font-medium">Push notifications are NOT supported in your browser</span>
+          </div>
+        </div>
+      </div>
+
+      {{-- Service Worker Registration --}}
+      <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6" x-data="serviceWorkerTest()">
+        <h2 class="text-xl font-semibold text-neutral-900 mb-4">2. Service Worker Registration</h2>
+
+        <button
+          @click="registerServiceWorker()"
+          :disabled="loading || registered"
+          class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          <span x-show="!loading && !registered">Register Service Worker</span>
+          <span x-show="loading">Registering...</span>
+          <span x-show="registered && !loading">✓ Registered</span>
+        </button>
+
+        <div x-show="message" x-transition class="mt-4 p-4 rounded-lg" :class="success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'">
+          <p class="text-sm" x-text="message"></p>
+        </div>
+      </div>
+
+      {{-- Push Subscription --}}
+      <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6" x-data="subscriptionTest()" x-init="init()">
+        <h2 class="text-xl font-semibold text-neutral-900 mb-4">3. Push Subscription</h2>
+
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-neutral-600">Current Status:</span>
+            <span x-show="isSubscribed" class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">Subscribed</span>
+            <span x-show="!isSubscribed" class="px-3 py-1 bg-neutral-100 text-neutral-800 text-sm font-medium rounded-full">Not Subscribed</span>
+          </div>
+
+          <div class="flex gap-3">
+            <button
+              @click="subscribe()"
+              :disabled="loading || isSubscribed"
+              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <span x-show="!loading">Subscribe to Push</span>
+              <span x-show="loading">Subscribing...</span>
+            </button>
+
+            <button
+              @click="unsubscribe()"
+              :disabled="loading || !isSubscribed"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <span x-show="!loading">Unsubscribe</span>
+              <span x-show="loading">Unsubscribing...</span>
+            </button>
+          </div>
+
+          <div x-show="message" x-transition class="p-4 rounded-lg" :class="success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'">
+            <p class="text-sm" x-text="message"></p>
+          </div>
+        </div>
+      </div>
+
+      {{-- Send Test Notification --}}
+      <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6" x-data="notificationTest()">
+        <h2 class="text-xl font-semibold text-neutral-900 mb-4">4. Send Test Notification</h2>
+
+        <div class="space-y-4">
+          <p class="text-sm text-neutral-600">Send a test push notification to verify everything is working</p>
+
+          <button
+            @click="sendTest()"
+            :disabled="loading"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <span x-show="!loading">🔔 Send Test Notification</span>
+            <span x-show="loading">Sending...</span>
+          </button>
+
+          <div x-show="message" x-transition class="p-4 rounded-lg" :class="success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'">
+            <p class="text-sm" x-text="message"></p>
+          </div>
+        </div>
+      </div>
+
+      {{-- Debugging Info --}}
+      <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6" x-data="debugInfo()" x-init="loadInfo()">
+        <h2 class="text-xl font-semibold text-neutral-900 mb-4">5. Debug Information</h2>
+
+        <div class="space-y-3">
+          <div class="flex justify-between py-2 border-b border-neutral-100">
+            <span class="text-sm text-neutral-600">Notification Permission:</span>
+            <span class="text-sm font-medium" x-text="permission"></span>
+          </div>
+
+          <div class="flex justify-between py-2 border-b border-neutral-100">
+            <span class="text-sm text-neutral-600">Service Worker Status:</span>
+            <span class="text-sm font-medium" x-text="swStatus"></span>
+          </div>
+
+          <div class="flex justify-between py-2 border-b border-neutral-100">
+            <span class="text-sm text-neutral-600">Active Subscriptions:</span>
+            <span class="text-sm font-medium" x-text="subscriptionCount"></span>
+          </div>
+
+          <button
+            @click="loadInfo()"
+            class="mt-4 px-4 py-2 bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors text-sm"
+          >
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
+
+      {{-- Instructions --}}
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 class="text-lg font-semibold text-blue-900 mb-3">📋 Test Instructions</h3>
+        <ol class="space-y-2 text-sm text-blue-800">
+          <li>1. Check that your browser supports push notifications ✓</li>
+          <li>2. Register the service worker</li>
+          <li>3. Subscribe to push notifications (grant permission when prompted)</li>
+          <li>4. Send a test notification</li>
+          <li>5. You should see a notification appear on your device!</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function serviceWorkerTest() {
+    return {
+      loading: false,
+      registered: false,
+      success: false,
+      message: '',
+
+      async registerServiceWorker() {
+        this.loading = true
+        this.message = ''
+
+        try {
+          const registration = await navigator.serviceWorker.register('/sw.js')
+          console.log('Service Worker registered:', registration)
+
+          this.registered = true
+          this.success = true
+          this.message = 'Service Worker registered successfully! Scope: ' + registration.scope
+        } catch (error) {
+          console.error('Service Worker registration failed:', error)
+          this.success = false
+          this.message = 'Failed to register Service Worker: ' + error.message
+        } finally {
+          this.loading = false
+        }
+      }
+    }
+  }
+
+  function subscriptionTest() {
+    return {
+      loading: false,
+      isSubscribed: false,
+      success: false,
+      message: '',
+      pushManager: null,
+
+      async init() {
+        await this.$nextTick()
+        if (window.pushManager) {
+          this.pushManager = window.pushManager
+          this.isSubscribed = await this.pushManager.checkSubscription()
+        }
+      },
+
+      async subscribe() {
+        this.loading = true
+        this.message = ''
+
+        try {
+          await this.pushManager.subscribe()
+          this.isSubscribed = true
+          this.success = true
+          this.message = 'Successfully subscribed to push notifications!'
+        } catch (error) {
+          console.error('Subscription failed:', error)
+          this.success = false
+          this.message = 'Failed to subscribe: ' + error.message
+        } finally {
+          this.loading = false
+        }
+      },
+
+      async unsubscribe() {
+        this.loading = true
+        this.message = ''
+
+        try {
+          await this.pushManager.unsubscribe()
+          this.isSubscribed = false
+          this.success = true
+          this.message = 'Successfully unsubscribed from push notifications'
+        } catch (error) {
+          console.error('Unsubscribe failed:', error)
+          this.success = false
+          this.message = 'Failed to unsubscribe: ' + error.message
+        } finally {
+          this.loading = false
+        }
+      }
+    }
+  }
+
+  function notificationTest() {
+    return {
+      loading: false,
+      success: false,
+      message: '',
+
+      async sendTest() {
+        this.loading = true
+        this.message = ''
+
+        try {
+          const response = await fetch('/api/push/test', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+
+          const data = await response.json()
+
+          if (data.success) {
+            this.success = true
+            this.message = '✓ Test notification sent successfully! Check your device for the notification.'
+          } else {
+            throw new Error(data.error || 'Failed to send test notification')
+          }
+        } catch (error) {
+          console.error('Test notification failed:', error)
+          this.success = false
+          this.message = 'Failed to send test: ' + error.message
+        } finally {
+          this.loading = false
+        }
+      }
+    }
+  }
+
+  function debugInfo() {
+    return {
+      permission: 'Loading...',
+      swStatus: 'Loading...',
+      subscriptionCount: 'Loading...',
+
+      async loadInfo() {
+        // Check permission
+        this.permission = Notification.permission
+
+        // Check service worker
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.getRegistration()
+          this.swStatus = registration ? 'Active' : 'Not Registered'
+        } else {
+          this.swStatus = 'Not Supported'
+        }
+
+        // Check subscriptions
+        try {
+          const response = await fetch('/api/push/subscriptions')
+          const data = await response.json()
+          this.subscriptionCount = data.subscriptions ? data.subscriptions.length : 0
+        } catch (error) {
+          this.subscriptionCount = 'Error'
+        }
+      }
+    }
+  }
+</script>
+@endsection

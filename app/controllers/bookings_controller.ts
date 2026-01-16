@@ -109,6 +109,8 @@ export default class BookingsController {
     const booking = await Booking.query()
       .where('id', params.id)
       .where('businessId', user.businessId!)
+      .preload('service')
+      .preload('business')
       .first()
 
     if (!booking) {
@@ -117,6 +119,9 @@ export default class BookingsController {
 
     booking.status = 'completed'
     await booking.save()
+
+    // Note: Push notifications to customers are not supported yet since customers
+    // are guest users without accounts. Email notifications are sent instead.
 
     session.flash('success', 'Booking marked as completed')
     return response.redirect().back()

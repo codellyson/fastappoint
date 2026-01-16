@@ -45,4 +45,8 @@ export default await Env.create(new URL('../', import.meta.url), {
   R2_PUBLIC_URL: Env.schema.string.optional(),
 
   EXCHANGE_RATE_API_KEY: Env.schema.string.optional(),
+
+  VAPID_PUBLIC_KEY: Env.schema.string.optional(),
+  VAPID_PRIVATE_KEY: Env.schema.string.optional(),
+  VAPID_SUBJECT: Env.schema.string.optional(),
 })

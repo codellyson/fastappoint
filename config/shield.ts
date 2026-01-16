@@ -34,7 +34,12 @@ const shieldConfig = defineConfig({
         'ws://localhost:*',
         'http://localhost:*',
       ],
-      frameSrc: ["'self'", 'https://checkout.paystack.com', 'https://js.stripe.com', 'https://hooks.stripe.com'],
+      frameSrc: [
+        "'self'",
+        'https://checkout.paystack.com',
+        'https://js.stripe.com',
+        'https://hooks.stripe.com',
+      ],
       frameAncestors: ["'none'"],
       formAction: ["'self'", 'https://accounts.google.com'],
       baseUri: ["'self'"],
@@ -45,7 +50,17 @@ const shieldConfig = defineConfig({
 
   csrf: {
     enabled: true,
-    exceptRoutes: ['/api/*', '/webhooks/*', '/reset-password', '/book/*/embed', '/book/*/service/*/slots'],
+    exceptRoutes: [
+      '/api/*',
+      '/webhooks/*',
+      '/reset-password',
+      '/book/*/embed',
+      '/book/*/service/*/slots',
+      '/subscriptions/*/verify',
+      '/api/push/subscribe',
+      '/api/push/unsubscribe',
+      '/api/push/test',
+    ],
     enableXsrfCookie: false,
     methods: ['POST', 'PUT', 'PATCH', 'DELETE'],
   },

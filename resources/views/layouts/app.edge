@@ -135,12 +135,43 @@
       };
     </script>
 
+    {{-- Scroll animations --}}
+    <style>
+      [data-animate] {
+        opacity: 0;
+        transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      [data-animate="fade-up"] {
+        transform: translateY(40px);
+      }
+
+      [data-animate="fade-right"] {
+        transform: translateX(40px);
+      }
+
+      [data-animate="fade-left"] {
+        transform: translateX(-40px);
+      }
+
+      [data-animate].animated {
+        opacity: 1;
+        transform: translate(0, 0);
+      }
+    </style>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Push Notifications (only for authenticated users) --}}
+    @if(auth.user)
+      @vite(['resources/js/push-notifications.js'])
+    @endif
+
     @stack('dumper')
   </head>
-  <body class="min-h-screen w-screen font-sans bg-neutral-50" x-data="appState()" x-init="init()">
+  <body class="min-h-screen  font-sans bg-white" x-data="appState()" x-init="init()">
     @include('partials/toast')
-    
+
     <div class="min-h-screen flex flex-col">
       @include('partials/navbar')
 
@@ -152,6 +183,30 @@
         @include('partials/footer')
       @endif
     </div>
+
+    {{-- Scroll animation observer --}}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const animatedElements = document.querySelectorAll('[data-animate]');
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const delay = entry.target.getAttribute('data-delay') || 0;
+              setTimeout(() => {
+                entry.target.classList.add('animated');
+              }, delay);
+              observer.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.1,
+          rootMargin: '0px 0px -100px 0px'
+        });
+
+        animatedElements.forEach(el => observer.observe(el));
+      });
+    </script>
   </body>
 </html>
 
