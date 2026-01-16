@@ -122,8 +122,8 @@ All endpoints require authentication (`middleware.auth()`):
 VAPID keys are already configured in your `.env` file:
 
 ```env
-VAPID_PUBLIC_KEY=BBJoZVWM2EURtmJqc6A8fT40BP2ujs5OKeX0nNXcZNw255iPjVo_cigxxL3vpBZ9h3fK2RMwCh41DLpeNUtIlfk
-VAPID_PRIVATE_KEY=pYbIShPL46uR1YeJ6yCFLMaoFXogltlm2NLQ8bO93fI
+VAPID_PUBLIC_KEY=********
+VAPID_PRIVATE_KEY=**********
 VAPID_SUBJECT=mailto:support@fastappoint.com
 ```
 
